@@ -78,15 +78,29 @@ func createCallbacks(c *colly.Collector) *colly.Collector {
 	c.OnError(func(r *colly.Response, err error) {
 		attempt := r.Ctx.GetAny("attempt").(int)
 
-		if r.StatusCode == 429 {
-			log.Errorln("Error:", r.StatusCode, err)
-
-			if attempt <= maxRetries {
+		if r.StatusCode == 403 || r.StatusCode == 404 || r.StatusCode == 405 {
+			if attempt <= 1 {
 				unCache(r.Request.URL.String(), c.CacheDir)
-				log.Errorln("Waiting 2 seconds before next request...")
+				//				log.Errorln("Waiting 1 seconds before next request...")
 				r.Ctx.Put("attempt", attempt+1)
-				time.Sleep(2 * time.Second)
+				//time.Sleep(1 * time.Second)
 				r.Request.Retry()
+			} else {
+				if r.StatusCode == 403 {
+					log.Errorln("******* new forbidden")
+				}
+			}
+		} else {
+			if r.StatusCode == 429 {
+				log.Errorln("Error:", r.StatusCode, err)
+
+				if attempt <= maxRetries {
+					unCache(r.Request.URL.String(), c.CacheDir)
+					log.Errorln("Waiting 2 seconds before next request...")
+					r.Ctx.Put("attempt", attempt+1)
+					time.Sleep(2 * time.Second)
+					r.Request.Retry()
+				}
 			}
 		}
 	})
@@ -95,7 +109,8 @@ func createCallbacks(c *colly.Collector) *colly.Collector {
 }
 
 func DeleteScrapeCache() error {
-	return os.RemoveAll(getScrapeCacheDir())
+	//return os.RemoveAll(getScrapeCacheDir())
+	return nil
 }
 
 func getScrapeCacheDir() string {
