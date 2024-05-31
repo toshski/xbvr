@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/avast/retry-go/v4"
+	"github.com/xbapps/xbvr/pkg/common"
 )
 
 type Aka struct {
@@ -33,6 +34,7 @@ func (i *Aka) Save() error {
 	)
 
 	if err != nil {
+		log.Infof("%s", common.GetStackTrace())
 		log.Fatal("Failed to save ", err)
 	}
 
