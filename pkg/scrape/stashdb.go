@@ -35,6 +35,13 @@ type QueryScenesData struct {
 type QueryScenesResult struct {
 	Data QueryScenesData `json:"data"`
 }
+type FindScenesData struct {
+	Scene models.StashScene `json:"findScene"`
+}
+type FindScenesResult struct {
+	Data FindScenesData `json:"data"`
+}
+
 type FindStudioResponse struct {
 	Studio models.StashStudio `json:"studio"`
 }
@@ -69,6 +76,55 @@ type Image struct {
 	Width  int    `json:"width"`
 	Height int    `json:"height"`
 }
+
+const sceneFieldList = `
+id
+title
+details
+release_date
+date
+updated
+urls{
+  url
+  type
+  site {
+	  id
+	  name
+	  description
+	  url
+	  regex
+	  valid_types
+  }
+}
+studio{
+	id
+	name
+	updated
+}
+images{
+  url
+  width
+  height
+}
+performers{
+  performer{
+	id
+	updated
+	gender
+	name
+	aliases
+  }
+  as
+}
+fingerprints{
+  hash
+  duration
+  submissions
+}
+duration
+code  
+deleted
+`
 
 var Config models.ActorScraperConfig
 
@@ -122,6 +178,28 @@ func StashDb() {
 	}
 }
 
+func GetStashDbScene(stashId string) FindScenesResult {
+	var result FindScenesResult
+	if config.Config.Advanced.StashApiKey == "" {
+		return result
+	}
+	tlog := log.WithField("task", "scrape")
+	tlog.Infof("Scraping stash studio %s", stashId)
+	query := `
+		query  findScene($id: ID!) {
+			findScene(id: $id) {
+	` + sceneFieldList + `
+		  }
+		  }
+		  `
+	variables := `{"id": "` + stashId + `"}`
+	resp := CallStashDb(query, variables)
+	json.Unmarshal(resp, &result)
+
+	tlog.Info("Scrape of Stashdb completed")
+	return result
+}
+
 func findStudio(studio string, field string) FindStudioResult {
 	fieldType := "String"
 	if field == "id" {
@@ -165,7 +243,7 @@ func processStudioPerformers(studioId string) {
 	}
 
 	for _, performer := range performerList.Data.QueryPerformers.Performers {
-		updatePerformer(performer)
+		UpdatePerformer(performer)
 	}
 }
 func getPerformersPage(studioId string, page int) QueryPerformerResult {
@@ -273,52 +351,7 @@ func GetScenePage(variables string) QueryScenesResult {
 		queryScenes(input: $input) {
 		  count
 		 scenes{
-		  id
-		  title
-		  details
-		  release_date
-		  date
-		  updated
-		  urls{
-			url
-			type
-			site {
-                id
-                name
-                description
-                url
-                regex
-                valid_types
-            }
-		  }
-		  studio{
-			  id
-			  name
-			  updated
-		  }
-		  images{
-			url
-			width
-			height
-		  }
-		  performers{
-			performer{
-			  id
-			  updated
-			  gender
-			  name
-			  aliases
-			}
-			as
-		  }
-		  fingerprints{
-			hash
-			duration
-			submissions
-		  }
-		  duration
-		  code  
-		  deleted
+` + sceneFieldList + `
 		}
 	  }
 	  }
@@ -363,7 +396,7 @@ func saveScenesToExternalReferences(scenes QueryScenesResult, studioId string) {
 
 		// chek if we have the performers, may not in the case of loading scenes from the parent studio
 		for _, performer := range scene.Performers {
-			updatePerformer(performer.Performer)
+			UpdatePerformer(performer.Performer)
 		}
 
 		// see if we can link to an xbvr scene based on the urls
@@ -389,7 +422,7 @@ func saveScenesToExternalReferences(scenes QueryScenesResult, studioId string) {
 	}
 }
 
-func updatePerformer(newPerformer models.StashPerformer) {
+func UpdatePerformer(newPerformer models.StashPerformer) {
 	var ext models.ExternalReference
 	ext.FindExternalId("stashdb performer", newPerformer.ID)
 	var oldPerformer models.StashPerformer
