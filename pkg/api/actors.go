@@ -796,7 +796,7 @@ func (i ActorResource) splitActorByStashId(req *restful.Request, resp *restful.R
 	// the new actor will be the stash actor name plus (ex the existing name)
 	newName := fmt.Sprintf("%s (ex %s)", performer.Name, actor.Name)
 	if performer.Disambiguation != "" {
-		newName = fmt.Sprintf("%s ()(ex %s)", performer.Name, performer.Disambiguation, actor.Name)
+		newName = fmt.Sprintf("%s (%s)(ex %s)", performer.Name, performer.Disambiguation, actor.Name)
 	}
 
 	var existingActorImages []string
