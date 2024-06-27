@@ -68,6 +68,7 @@ type StashScene struct {
 	Studio     StashStudio        `json:"studio"`
 	Duration   int                `json:"duration"`
 	Code       string             `json:"code"`
+	Images     []Image            `json:"images"`
 }
 
 type StashPerformerAs struct {
@@ -80,4 +81,9 @@ type DELETEStashPerformerMin struct {
 	Updated string `json:"updated"`
 	Gender  string `json:"gender"`
 	Name    string `json:"name"`
+}
+type StashImage struct {
+	Url    StashPerformer `json:"url"`
+	Width  int            `json:"width"`
+	Height int            `json:"height"`
 }
