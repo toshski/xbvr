@@ -899,13 +899,47 @@ func (scrapeRules ActorScraperConfig) buildGenericActorScraperRules() {
 	scrapeRules.GenericActorScrapingConfig["povr scrape"] = siteDetails
 
 	siteDetails = GenericScraperRuleSet{}
-	siteDetails.Domain = "tmwvrnet.com"
-	siteDetails.SiteRules = append(siteDetails.SiteRules, GenericActorScraperRule{XbvrField: "image_url", Selector: `div.model-page__image img`, ResultType: "attr", Attribute: "data-src", PostProcessing: []PostProcessing{{Function: "AbsoluteUrl"}}})
-	siteDetails.SiteRules = append(siteDetails.SiteRules, GenericActorScraperRule{XbvrField: "start_year", Selector: `div.model-page__information span.title:contains("Debut year:") + span.value`})
-	siteDetails.SiteRules = append(siteDetails.SiteRules, GenericActorScraperRule{XbvrField: "hair_color", Selector: `div.model-page__information span.title:contains("Hair:") + span.value`})
-	siteDetails.SiteRules = append(siteDetails.SiteRules, GenericActorScraperRule{XbvrField: "eye_color", Selector: `div.model-page__information span.title:contains("Eyes:") + span.value`})
-	siteDetails.SiteRules = append(siteDetails.SiteRules, GenericActorScraperRule{XbvrField: "biography", Selector: `p.about`})
+	siteDetails.Domain = "teenmegaworld.net"
+	siteDetails.SiteRules = append(siteDetails.SiteRules, GenericActorScraperRule{XbvrField: "image_url", Selector: `meta[property="og:image"]`, ResultType: "attr", Attribute: "content", PostProcessing: []PostProcessing{{Function: "AbsoluteUrl"}}})
+	siteDetails.SiteRules = append(siteDetails.SiteRules, GenericActorScraperRule{XbvrField: "start_year", Selector: `dt.model-profile-information-key:contains("Debut year")`, PostProcessing: []PostProcessing{{Function: "DOMNextText"}}})
+	siteDetails.SiteRules = append(siteDetails.SiteRules, GenericActorScraperRule{XbvrField: "hair_color", Selector: `dt.model-profile-information-key:contains("Hair")`, PostProcessing: []PostProcessing{{Function: "DOMNextText"}}})
+	siteDetails.SiteRules = append(siteDetails.SiteRules, GenericActorScraperRule{XbvrField: "eye_color", Selector: `dt.model-profile-information-key:contains("Eyes")`, PostProcessing: []PostProcessing{{Function: "DOMNextText"}}})
+	siteDetails.SiteRules = append(siteDetails.SiteRules, GenericActorScraperRule{XbvrField: "biography", Selector: `p.model-profile-about`})
+	scrapeRules.GenericActorScrapingConfig["aboutgirlslove scrape"] = siteDetails
+	scrapeRules.GenericActorScrapingConfig["atmovs scrape"] = siteDetails
+	scrapeRules.GenericActorScrapingConfig["lollyhardcore scrape"] = siteDetails
+	scrapeRules.GenericActorScrapingConfig["hometeenvids scrape"] = siteDetails
+	scrapeRules.GenericActorScrapingConfig["hometoyteens scrape"] = siteDetails
+	scrapeRules.GenericActorScrapingConfig["privateteenvideo scrape"] = siteDetails
+	scrapeRules.GenericActorScrapingConfig["18firstsex scrape"] = siteDetails
+	scrapeRules.GenericActorScrapingConfig["gag-n-gape scrape"] = siteDetails
+	scrapeRules.GenericActorScrapingConfig["soloteengirls scrape"] = siteDetails
+	scrapeRules.GenericActorScrapingConfig["old-n-young scrape"] = siteDetails
+	scrapeRules.GenericActorScrapingConfig["watchmefucked scrape"] = siteDetails
+	scrapeRules.GenericActorScrapingConfig["wow-orgasms scrape"] = siteDetails
+	scrapeRules.GenericActorScrapingConfig["anal-angels scrape"] = siteDetails
+	scrapeRules.GenericActorScrapingConfig["teensexmovs scrape"] = siteDetails
+	scrapeRules.GenericActorScrapingConfig["dirty-doctor scrape"] = siteDetails
+	scrapeRules.GenericActorScrapingConfig["trickymasseur scrape"] = siteDetails
+	scrapeRules.GenericActorScrapingConfig["dirty-coach scrape"] = siteDetails
+	scrapeRules.GenericActorScrapingConfig["fuckstudies scrape"] = siteDetails
+	scrapeRules.GenericActorScrapingConfig["beauty-angels scrape"] = siteDetails
+	scrapeRules.GenericActorScrapingConfig["firstbgg scrape"] = siteDetails
+	scrapeRules.GenericActorScrapingConfig["teensexmania scrape"] = siteDetails
+	scrapeRules.GenericActorScrapingConfig["x-angels scrape"] = siteDetails
+	scrapeRules.GenericActorScrapingConfig["creampie-angels scrape"] = siteDetails
+	scrapeRules.GenericActorScrapingConfig["nubilegirlshd scrape"] = siteDetails
+	scrapeRules.GenericActorScrapingConfig["nylonsx scrape"] = siteDetails
+	scrapeRules.GenericActorScrapingConfig["exgfbox scrape"] = siteDetails
+	scrapeRules.GenericActorScrapingConfig["teenstarsonly scrape"] = siteDetails
+	scrapeRules.GenericActorScrapingConfig["squirtingvirgin scrape"] = siteDetails
+	scrapeRules.GenericActorScrapingConfig["teens3some scrape"] = siteDetails
+	scrapeRules.GenericActorScrapingConfig["rawcouples scrape"] = siteDetails
+	scrapeRules.GenericActorScrapingConfig["tmwpov scrape"] = siteDetails
 	scrapeRules.GenericActorScrapingConfig["tmwvrnet scrape"] = siteDetails
+	scrapeRules.GenericActorScrapingConfig["beauty4k scrape"] = siteDetails
+	scrapeRules.GenericActorScrapingConfig["ohmyholes scrape"] = siteDetails
+	scrapeRules.GenericActorScrapingConfig["anal-beauty scrape"] = siteDetails
 
 	siteDetails = GenericScraperRuleSet{}
 	siteDetails.Domain = "xsinsvr.com"
@@ -1175,10 +1209,148 @@ func (scrapeRules ActorScraperConfig) getSiteUrlMatchingRules() {
 		StashId: "ddff31bc-e9d0-475e-9c5b-1cc151eda27b",
 		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(czechvrnetwork|czechvr|czechvrcasting|czechvrfetish|vrintimacy).com\/([^\/]+)\/?$`, XbvrMatchResultPosition: 2, StashRule: `(czechvrnetwork|czechvr|czechvrcasting|czechvrfetish|vrintimacy).com\/([^\/]+)\/?$`, StashMatchResultPosition: 2}},
 	}
+
 	scrapeRules.StashSceneMatching["tmwvrnet"] = StashSiteConfig{
 		StashId: "fd1a7f1d-9cc3-4d30-be0d-1c05b2a8b9c3",
 		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(teenmegaworld.net|tmwvrnet.com)(\/trailers)?\/([^\/]+)\/?$`, XbvrMatchResultPosition: 3, StashRule: `(teenmegaworld.net|tmwvrnet.com)(\/trailers)?\/([^\/]+)\/?$`, StashMatchResultPosition: 3}},
 	}
+	scrapeRules.StashSceneMatching["ohmyholes"] = StashSiteConfig{
+		StashId: "4b012693-8660-49f6-b0d5-a022e7ab256f",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(teenmegaworld.net|ohmyholes.com)(\/trailers)?\/([^\/]+)\/?$`, XbvrMatchResultPosition: 3, StashRule: `(teenmegaworld.net|ohmyholes.com)(\/trailers)?\/([^\/]+)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["aboutgirlslove"] = StashSiteConfig{
+		StashId: "651d4063-d9c2-44c8-ae36-75c0e7db5bd4",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(teenmegaworld.net|aboutgirlslove.com)(\/trailers)?\/([^\/]+)\/?$`, XbvrMatchResultPosition: 3, StashRule: `(teenmegaworld.net|aboutgirlslove.com)(\/trailers)?\/([^\/]+)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["atmovs"] = StashSiteConfig{
+		StashId: "75c67028-dc39-4ac5-859b-e073ba169c13",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(teenmegaworld.net|atmovs.com)(\/trailers)?\/([^\/]+)\/?$`, XbvrMatchResultPosition: 3, StashRule: `(teenmegaworld.net|atmovs.com)(\/trailers)?\/([^\/]+)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["lollyhardcore"] = StashSiteConfig{
+		StashId: "6c0a5824-c763-4344-8040-6cff68ee2d6e",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(teenmegaworld.net|lollyhardcore.com)(\/trailers)?\/([^\/]+)\/?$`, XbvrMatchResultPosition: 3, StashRule: `(teenmegaworld.net|lollyhardcore.com)(\/trailers)?\/([^\/]+)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["hometeenvids"] = StashSiteConfig{
+		StashId: "f0885453-baa3-4a7b-9619-da8653afce86",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(teenmegaworld.net|hometeenvids.com)(\/trailers)?\/([^\/]+)\/?$`, XbvrMatchResultPosition: 3, StashRule: `(teenmegaworld.net|hometeenvids.com)(\/trailers)?\/([^\/]+)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["hometoyteens"] = StashSiteConfig{
+		StashId: "e088a61e-c9ca-43c7-8ee3-810580ed716e",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(teenmegaworld.net|hometoyteens.com)(\/trailers)?\/([^\/]+)\/?$`, XbvrMatchResultPosition: 3, StashRule: `(teenmegaworld.net|hometoyteens.com)(\/trailers)?\/([^\/]+)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["privateteenvideo"] = StashSiteConfig{
+		StashId: "ae6a76f4-dd31-4def-8749-59a2ddedab97",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(teenmegaworld.net|privateteenvideo.com)(\/trailers)?\/([^\/]+)\/?$`, XbvrMatchResultPosition: 3, StashRule: `(teenmegaworld.net|privateteenvideo.com)(\/trailers)?\/([^\/]+)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["18firstsex"] = StashSiteConfig{
+		StashId: "10927988-3a6a-4131-9ee6-c6a04ae2127b",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(teenmegaworld.net|18firstsex.com)(\/trailers)?\/([^\/]+)\/?$`, XbvrMatchResultPosition: 3, StashRule: `(teenmegaworld.net|18firstsex.com)(\/trailers)?\/([^\/]+)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["gag-n-gape"] = StashSiteConfig{
+		StashId: "abc51457-9dff-41ab-8e50-5c1a30a9fb4d",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(teenmegaworld.net|gag-n-gape.com)(\/trailers)?\/([^\/]+)\/?$`, XbvrMatchResultPosition: 3, StashRule: `(teenmegaworld.net|gag-n-gape.com)(\/trailers)?\/([^\/]+)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["soloteengirls"] = StashSiteConfig{
+		StashId: "9a7b237d-ef75-4bd1-b6de-df5d94cfeb0f",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(teenmegaworld.net|soloteengirls.com)(\/trailers)?\/([^\/]+)\/?$`, XbvrMatchResultPosition: 3, StashRule: `(teenmegaworld.net|soloteengirls.com)(\/trailers)?\/([^\/]+)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["old-n-young"] = StashSiteConfig{
+		StashId: "25a8d0dd-0ffb-405d-a12f-0f722f8daa14",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(teenmegaworld.net|old-n-young.com)(\/trailers)?\/([^\/]+)\/?$`, XbvrMatchResultPosition: 3, StashRule: `(teenmegaworld.net|old-n-young.com)(\/trailers)?\/([^\/]+)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["watchmefucked"] = StashSiteConfig{
+		StashId: "65f8b7d1-ab7d-4964-8f12-1da8da6f0aed",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(teenmegaworld.net|watchmefucked.com)(\/trailers)?\/([^\/]+)\/?$`, XbvrMatchResultPosition: 3, StashRule: `(teenmegaworld.net|watchmefucked.com)(\/trailers)?\/([^\/]+)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["wow-orgasms"] = StashSiteConfig{
+		StashId: "2e7857c7-7ce0-4ba6-a1cd-8ce78e0520f8",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(teenmegaworld.net|wow-orgasms.com)(\/trailers)?\/([^\/]+)\/?$`, XbvrMatchResultPosition: 3, StashRule: `(teenmegaworld.net|wow-orgasms.com)(\/trailers)?\/([^\/]+)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["anal-angels"] = StashSiteConfig{
+		StashId: "1cd6cb4f-b652-4323-8ac4-097669f440be",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(teenmegaworld.net|anal-angels.com)(\/trailers)?\/([^\/]+)\/?$`, XbvrMatchResultPosition: 3, StashRule: `(teenmegaworld.net|anal-angels.com)(\/trailers)?\/([^\/]+)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["teensexmovs"] = StashSiteConfig{
+		StashId: "e5ce6adf-d535-4d78-9705-c13759645012",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(teenmegaworld.net|teensexmovs.com)(\/trailers)?\/([^\/]+)\/?$`, XbvrMatchResultPosition: 3, StashRule: `(teenmegaworld.net|teensexmovs.com)(\/trailers)?\/([^\/]+)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["dirty-doctor"] = StashSiteConfig{
+		StashId: "53a25293-0329-4f34-a2a8-98c1cdd7cc7e",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(teenmegaworld.net|dirty-doctor.com)(\/trailers)?\/([^\/]+)\/?$`, XbvrMatchResultPosition: 3, StashRule: `(teenmegaworld.net|dirty-doctor.com)(\/trailers)?\/([^\/]+)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["trickymasseur"] = StashSiteConfig{
+		StashId: "b332d5e0-473b-4628-9be8-2c5b28735acd",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(teenmegaworld.net|trickymasseur.com)(\/trailers)?\/([^\/]+)\/?$`, XbvrMatchResultPosition: 3, StashRule: `(teenmegaworld.net|trickymasseur.com)(\/trailers)?\/([^\/]+)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["dirty-coach"] = StashSiteConfig{
+		StashId: "c6c2ea54-736e-4e76-af56-6f90484eb41d",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(teenmegaworld.net|dirty-coach.com)(\/trailers)?\/([^\/]+)\/?$`, XbvrMatchResultPosition: 3, StashRule: `(teenmegaworld.net|dirty-coach.com)(\/trailers)?\/([^\/]+)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["fuckstudies"] = StashSiteConfig{
+		StashId: "47cefa12-8d79-4620-a9fd-74e862aa4999",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(teenmegaworld.net|fuckstudies.com)(\/trailers)?\/([^\/]+)\/?$`, XbvrMatchResultPosition: 3, StashRule: `(teenmegaworld.net|fuckstudies.com)(\/trailers)?\/([^\/]+)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["beauty-angels"] = StashSiteConfig{
+		StashId: "590c6119-e9ea-4672-8f7d-3fc78ca05649",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(teenmegaworld.net|beauty-angels.com)(\/trailers)?\/([^\/]+)\/?$`, XbvrMatchResultPosition: 3, StashRule: `(teenmegaworld.net|beauty-angels.com)(\/trailers)?\/([^\/]+)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["firstbgg"] = StashSiteConfig{
+		StashId: "05dfab39-5dad-48f1-b665-1a13c263ea4f",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(teenmegaworld.net|firstbgg.com)(\/trailers)?\/([^\/]+)\/?$`, XbvrMatchResultPosition: 3, StashRule: `(teenmegaworld.net|firstbgg.com)(\/trailers)?\/([^\/]+)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["teensexmania"] = StashSiteConfig{
+		StashId: "3c97ef6d-2cb1-452d-a379-e3390751e117",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(teenmegaworld.net|teensexmania.com)(\/trailers)?\/([^\/]+)\/?$`, XbvrMatchResultPosition: 3, StashRule: `(teenmegaworld.net|teensexmania.com)(\/trailers)?\/([^\/]+)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["x-angels"] = StashSiteConfig{
+		StashId: "dd983cd6-3834-4c15-991a-5d23c5acc040",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(teenmegaworld.net|x-angels.com)(\/trailers)?\/([^\/]+)\/?$`, XbvrMatchResultPosition: 3, StashRule: `(teenmegaworld.net|x-angels.com)(\/trailers)?\/([^\/]+)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["creampie-angels"] = StashSiteConfig{
+		StashId: "d1d4f019-ebc0-4575-8ebc-fbb1724598bb",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(teenmegaworld.net|creampie-angels.com)(\/trailers)?\/([^\/]+)\/?$`, XbvrMatchResultPosition: 3, StashRule: `(teenmegaworld.net|creampie-angels.com)(\/trailers)?\/([^\/]+)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["nubilegirlshd"] = StashSiteConfig{
+		StashId: "c7a4fda3-9336-4faa-ad2c-6833e4b43a79",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(teenmegaworld.net|nubilegirlshd.com)(\/trailers)?\/([^\/]+)\/?$`, XbvrMatchResultPosition: 3, StashRule: `(teenmegaworld.net|nubilegirlshd.com)(\/trailers)?\/([^\/]+)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["nylonsx"] = StashSiteConfig{
+		StashId: "6ff8f3ae-4011-464b-8b0b-1a4f8e27a048",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(teenmegaworld.net|nylonsx.com)(\/trailers)?\/([^\/]+)\/?$`, XbvrMatchResultPosition: 3, StashRule: `(teenmegaworld.net|nylonsx.com)(\/trailers)?\/([^\/]+)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["exgfbox"] = StashSiteConfig{
+		StashId: "8d875a93-d397-40b1-8ed0-9f909f65611d",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(teenmegaworld.net|exgfbox.com)(\/trailers)?\/([^\/]+)\/?$`, XbvrMatchResultPosition: 3, StashRule: `(teenmegaworld.net|exgfbox.com)(\/trailers)?\/([^\/]+)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["teenstarsonly"] = StashSiteConfig{
+		StashId: "df2165f9-2bc8-4e15-bd99-4a9f17018ae5",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(teenmegaworld.net|teenstarsonly.com)(\/trailers)?\/([^\/]+)\/?$`, XbvrMatchResultPosition: 3, StashRule: `(teenmegaworld.net|teenstarsonly.com)(\/trailers)?\/([^\/]+)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["squirtingvirgin"] = StashSiteConfig{
+		StashId: "683007fc-5867-4a8d-ab27-c43a07caa132",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(teenmegaworld.net|squirtingvirgin.com)(\/trailers)?\/([^\/]+)\/?$`, XbvrMatchResultPosition: 3, StashRule: `(teenmegaworld.net|squirtingvirgin.com)(\/trailers)?\/([^\/]+)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["teens3some"] = StashSiteConfig{
+		StashId: "3a058279-5e32-440f-9098-88d271ed45c4",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(teenmegaworld.net|teens3some.com)(\/trailers)?\/([^\/]+)\/?$`, XbvrMatchResultPosition: 3, StashRule: `(teenmegaworld.net|teens3some.com)(\/trailers)?\/([^\/]+)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["rawcouples"] = StashSiteConfig{
+		StashId: "49a1f317-c872-4ed1-bd83-9b973374921d",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(teenmegaworld.net|rawcouples.com)(\/trailers)?\/([^\/]+)\/?$`, XbvrMatchResultPosition: 3, StashRule: `(teenmegaworld.net|rawcouples.com)(\/trailers)?\/([^\/]+)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["tmwpov"] = StashSiteConfig{
+		StashId: "0ff4d947-64d5-410b-9df0-e9a95a941ded",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(teenmegaworld.net|tmwpov.com)(\/trailers)?\/([^\/]+)\/?$`, XbvrMatchResultPosition: 3, StashRule: `(teenmegaworld.net|tmwpov.com)(\/trailers)?\/([^\/]+)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["beauty4k"] = StashSiteConfig{
+		StashId: "60d7dec1-80d0-4555-9c15-6aa4b829bbff",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(teenmegaworld.net|beauty4k.com)(\/trailers)?\/([^\/]+)\/?$`, XbvrMatchResultPosition: 3, StashRule: `(teenmegaworld.net|beauty4k.com)(\/trailers)?\/([^\/]+)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["anal-beauty"] = StashSiteConfig{
+		StashId: "fe669b9f-52a5-426b-8c88-a6135d0df884",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(teenmegaworld.net|anal-beauty.com)(\/trailers)?\/([^\/]+)\/?$`, XbvrMatchResultPosition: 3, StashRule: `(teenmegaworld.net|anal-beauty.com)(\/trailers)?\/([^\/]+)\/?$`, StashMatchResultPosition: 3}},
+	}
+
 	scrapeRules.StashSceneMatching["virtualrealporn"] = StashSiteConfig{
 		StashId: "191ba106-00d3-4f01-8c57-0cf0e88a2a50",
 		Rules: []SceneMatchRule{
