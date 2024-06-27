@@ -167,50 +167,117 @@ func matchSceneOnRules(sitename string, config models.ActorScraperConfig) {
 		var data models.StashScene
 		json.Unmarshal([]byte(stashScene.ExternalData), &data)
 	urlLoop:
-		for _, url := range data.URLs {
-			if url.Type == "STUDIO" {
-				for _, rule := range config.StashSceneMatching[sitename].Rules { // for each rule on this site
-					re := regexp.MustCompile(rule.StashRule)
-					match := re.FindStringSubmatch(url.URL)
-					if match != nil {
-						var extrefSite models.ExternalReference
-						db.Where("external_source = ? and external_id = ?", "stashdb studio", data.Studio.ID).Find(&extrefSite)
-						if extrefSite.ID != 0 {
-							var xbvrScene models.Scene
-							switch rule.XbvrField {
-							case "scene_id":
-								for _, scene := range xbrScenes {
-									if strings.HasSuffix(scene.SceneID, match[rule.StashMatchResultPosition]) {
-										xbvrScene = scene
-										break
+		for _, rule := range config.StashSceneMatching[sitename].Rules { // for each rule on this site
+			var xbvrScene models.Scene
+			switch rule.StashField {
+			case "", "url":
+				for _, url := range data.URLs {
+					if url.Type == "STUDIO" {
+						re := regexp.MustCompile(rule.StashRule)
+						match := re.FindStringSubmatch(url.URL)
+						if match != nil {
+							var extrefSite models.ExternalReference
+							db.Where("external_source = ? and external_id = ?", "stashdb studio", data.Studio.ID).Find(&extrefSite)
+							if extrefSite.ID != 0 {
+								switch rule.XbvrField {
+								case "scene_id":
+									for _, scene := range xbrScenes {
+										if strings.HasSuffix(scene.SceneID, match[rule.StashMatchResultPosition]) {
+											xbvrScene = scene
+											break
+										}
 									}
-								}
-							case "scene_url":
-								for _, scene := range xbrScenes {
-									if strings.Contains(strings.ReplaceAll(strings.ReplaceAll(strings.ToLower(scene.SceneURL), "-", " "), "_", " "), strings.ReplaceAll(strings.ReplaceAll(strings.ToLower(match[rule.StashMatchResultPosition]), "-", " "), "_", " ")) {
-										xbvrScene = scene
-										break
+								case "scene_url":
+									for _, scene := range xbrScenes {
+										if strings.Contains(strings.ReplaceAll(strings.ReplaceAll(strings.ToLower(scene.SceneURL), "-", " "), "_", " "), strings.ReplaceAll(strings.ReplaceAll(strings.ToLower(match[rule.StashMatchResultPosition]), "-", " "), "_", " ")) {
+											xbvrScene = scene
+											break
+										}
 									}
+								default:
+									log.Errorf("Unkown xbvr field %s", rule.XbvrField)
 								}
-							default:
-								log.Errorf("Unkown xbvr field %s", rule.XbvrField)
-							}
-
-							if xbvrScene.ID != 0 {
-								xbvrLink := models.ExternalReferenceLink{InternalTable: "scenes", InternalDbId: xbvrScene.ID, InternalNameId: xbvrScene.SceneID,
-									ExternalReferenceID: stashScene.ID, ExternalSource: stashScene.ExternalSource, ExternalId: stashScene.ExternalId, MatchType: 20}
-								stashScene.XbvrLinks = append(stashScene.XbvrLinks, xbvrLink)
-								stashScene.Save()
-								matchPerformerName(data, xbvrScene, 20)
-								break urlLoop
 							}
 						}
 					}
 				}
+			case "title/date":
+				for _, scene := range xbrScenes {
+					if simplystring(data.Title) == simplystring(scene.Title) && data.Date == scene.ReleaseDateText {
+						xbvrLink := models.ExternalReferenceLink{InternalTable: "scenes", InternalDbId: scene.ID, InternalNameId: scene.SceneID,
+							ExternalReferenceID: stashScene.ID, ExternalSource: stashScene.ExternalSource, ExternalId: stashScene.ExternalId, MatchType: 20}
+						stashScene.XbvrLinks = append(stashScene.XbvrLinks, xbvrLink)
+						stashScene.Save()
+						matchPerformerName(data, scene, 20)
+						break urlLoop
+					}
+				}
+			case "title":
+				var match models.Scene
+				matchCnt := 0
+				for _, scene := range xbrScenes {
+					if simplystring(data.Title) == simplystring(scene.Title) {
+						match = scene
+						matchCnt += 1
+					}
+				}
+				//check only one match
+				if matchCnt == 1 {
+					xbvrScene = match
+					break
+				}
+			case "studio_code":
+				matchCnt := 0
+				for _, scene := range xbrScenes {
+					if data.Code != "" && strings.Contains(scene.SceneID, data.Code) {
+						xbvrScene = scene
+						matchCnt += 1
+					}
+				}
 			}
+
+			if xbvrScene.ID != 0 {
+				xbvrLink := models.ExternalReferenceLink{InternalTable: "scenes", InternalDbId: xbvrScene.ID, InternalNameId: xbvrScene.SceneID,
+					ExternalReferenceID: stashScene.ID, ExternalSource: stashScene.ExternalSource, ExternalId: stashScene.ExternalId, MatchType: 20}
+				stashScene.XbvrLinks = append(stashScene.XbvrLinks, xbvrLink)
+				stashScene.Save()
+				matchPerformerName(data, xbvrScene, 20)
+				break urlLoop
+			}
+
 		}
 	}
+}
 
+func simplystring(str string) string {
+	str = strings.TrimSpace(str)
+	str = strings.ReplaceAll(str, " ", "")
+	str = strings.ReplaceAll(str, ".", "")
+	str = strings.ReplaceAll(str, ":", "")
+	str = strings.ReplaceAll(str, "!", "")
+	str = strings.ReplaceAll(str, "?", "")
+	str = strings.ReplaceAll(str, ";", "")
+	str = strings.ReplaceAll(str, ",", "")
+	str = strings.ReplaceAll(str, "#", "")
+	str = strings.ReplaceAll(str, " and ", "&")
+	str = strings.ReplaceAll(str, "@", "")
+	str = strings.ReplaceAll(str, "$", "")
+	str = strings.ReplaceAll(str, "%", "")
+	str = strings.ReplaceAll(str, "*", "")
+	str = strings.ReplaceAll(str, "(", "")
+	str = strings.ReplaceAll(str, ")", "")
+	str = strings.ReplaceAll(str, "[", "")
+	str = strings.ReplaceAll(str, "]", "")
+	str = strings.ReplaceAll(str, "{", "")
+	str = strings.ReplaceAll(str, "}", "")
+	str = strings.ReplaceAll(str, "-", "")
+	str = strings.ReplaceAll(str, "_", "")
+	str = strings.ReplaceAll(str, "+", "")
+	str = strings.ReplaceAll(str, "=", "")
+	str = strings.ReplaceAll(str, "'", "")
+	str = strings.ReplaceAll(str, `""`, "")
+	str = strings.ReplaceAll(str, "`", "")
+	return strings.ToLower(str)
 }
 
 // checks if scenes that have a match, can match the scenes performers
