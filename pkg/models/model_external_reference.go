@@ -90,6 +90,7 @@ type SceneMatchRule struct {
 	XbvrField                string
 	XbvrMatch                string
 	XbvrMatchResultPosition  int
+	StashField               string
 	StashRule                string
 	StashMatchResultPosition int
 }
@@ -1071,6 +1072,7 @@ func (scrapeRules ActorScraperConfig) getCustomRules() {
 				XbvrField:                "Enter xbvr field you are matching to, scene_url or scene_id",
 				XbvrMatch:                "Enter regex express to extract value from field to match on",
 				XbvrMatchResultPosition:  0,
+				StashField:               "Enter the stash field to cmpare, default Url",
 				StashRule:                "enter regex expression to extract watch to match from the stash url",
 				StashMatchResultPosition: 0,
 			}}
