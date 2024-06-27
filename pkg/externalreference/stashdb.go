@@ -157,7 +157,7 @@ func matchSceneOnRules(sitename string, config models.ActorScraperConfig) {
 	}
 
 	var xbrScenes []models.Scene
-	db.Preload("Cast").Where("scraper_id = ?", sitename).Find(&xbrScenes)
+	db.Preload("Cast").Where(`scraper_id = ? or available_on_sites like ?`, sitename, `%"`+strings.ReplaceAll(sitename, "-adulttime", "")+`"%`).Find(&xbrScenes)
 
 	db.Joins("Left JOIN external_reference_links erl on erl.external_reference_id = external_references.id").
 		Where("external_references.external_source = ? and erl.internal_db_id is null and external_data like ?", "stashdb scene", "%"+stashId+"%").
