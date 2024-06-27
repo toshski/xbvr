@@ -78,11 +78,7 @@ func (i ExternalReference) linkScene2Stashdb(req *restful.Request, resp *restful
 		if len(extreflinks) == 0 {
 			stashPerformerId := ""
 			for _, stashPerf := range stashScene.Data.Scene.Performers {
-				if strings.EqualFold(stashPerf.Performer.Name, actor.Name) {
-					stashPerformerId = stashPerf.Performer.ID
-					continue
-				}
-				if strings.EqualFold(stashPerf.As, actor.Name) {
+				if strings.EqualFold(stashPerf.Performer.Name, actor.Name) || strings.EqualFold(stashPerf.As, actor.Name) {
 					stashPerformerId = stashPerf.Performer.ID
 					continue
 				}
@@ -252,12 +248,7 @@ func (i ExternalReference) searchForStashdb(req *restful.Request, resp *restful.
 			for _, actor := range scene.Cast {
 				found := false
 				for _, sp := range stashscene.Performers {
-					if strings.EqualFold(actor.Name, sp.Performer.Name) {
-						found = true
-						continue
-					}
-					// performer as
-					if strings.EqualFold(actor.Name, sp.As) {
+					if strings.EqualFold(actor.Name, sp.Performer.Name) || strings.EqualFold(actor.Name, sp.As) {
 						found = true
 						continue
 					}
@@ -319,7 +310,6 @@ func (i ExternalReference) searchForStashdb(req *restful.Request, resp *restful.
 			`], "modifier":"EQUALS"}
 				}
 			}`
-		log.Infof("%s", fingerprintQuery)
 		stashScenes := scrape.GetScenePage(fingerprintQuery)
 		updateResults(stashScenes, 400, performers, stashStudioIds)
 	}
@@ -337,7 +327,6 @@ func (i ExternalReference) searchForStashdb(req *restful.Request, resp *restful.
 			scene.Title + `\""
 				}
 			}`
-		log.Infof("%s", titleQuery)
 		stashScenes = scrape.GetScenePage(titleQuery)
 		updateResults(stashScenes, 150, performers, stashStudioIds)
 	}
@@ -356,9 +345,7 @@ func (i ExternalReference) searchForStashdb(req *restful.Request, resp *restful.
 				`], "modifier":"INCLUDES_ALL"}
 					}
 				}`
-			log.Infof("%s", performerQuery)
 			stashScenes = scrape.GetScenePage(performerQuery)
-			log.Infof("%s", stashScenes)
 			updateResults(stashScenes, 200, performers, stashStudioIds)
 			if len(stashScenes.Data.QueryScenes.Scenes) == 0 {
 				performerQuery = strings.ReplaceAll(performerQuery, "INCLUDES_ALL", "INCLUDES")
@@ -381,9 +368,7 @@ func (i ExternalReference) searchForStashdb(req *restful.Request, resp *restful.
 				scene.Title + `"
 				}
 			}`
-			log.Infof("%s", titleQuery)
 			stashScenes = scrape.GetScenePage(titleQuery)
-			log.Infof("%s", stashScenes)
 			updateResults(stashScenes, 150, performers, stashStudioIds)
 		}
 	}
