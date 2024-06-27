@@ -319,7 +319,7 @@ func (i ExternalReference) searchForStashdb(req *restful.Request, resp *restful.
 		// Exact Title submatch
 		titleQuery := `
 		{"input":{
-					"studios": { "modifier": "EQUALS", "value": [` + studio + `] },					
+					"parentStudio": ` + studio + `,
 					"page": 1,
 					"per_page": 150,
 					"sort": "UPDATED_AT",
@@ -336,7 +336,7 @@ func (i ExternalReference) searchForStashdb(req *restful.Request, resp *restful.
 		for _, studio := range stashStudioIds {
 			performerQuery := `
 			{"input":{
-						"studios": { "modifier": "EQUALS", "value": [` + studio + `] },
+						"parentStudio": ` + studio + `,
 						"page": 1,
 						"per_page": 150,
 						"sort": "UPDATED_AT",
@@ -360,7 +360,7 @@ func (i ExternalReference) searchForStashdb(req *restful.Request, resp *restful.
 			// No match yet, try match any words from the title, not likely to find, as this returns too many results
 			titleQuery := `
 		{"input":{
-					"studios": { "modifier": "EQUALS", "value": [` + studio + `] },					
+					"parentStudio": ` + studio + `,
 					"page": 1,
 					"per_page": 50,
 					"sort": "UPDATED_AT",
