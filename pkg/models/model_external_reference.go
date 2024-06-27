@@ -1283,7 +1283,7 @@ func (scrapeRules ActorScraperConfig) getSiteUrlMatchingRules() {
 			StashId: "9ae5bb01-a0b6-43c9-8cf3-c35e86337b76",
 			Rules:   []SceneMatchRule{{StashField: "title/date"}, {StashField: "title"}},
 		},
-	}}
+	}
 
 	commonDb.Where(&Site{IsEnabled: true}).Order("id").Find(&sites)
 	for _, site := range sites {
