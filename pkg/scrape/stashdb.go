@@ -250,12 +250,17 @@ func getStudioSceneQueryVariable(studioId string, page int, count int) string {
 // Builds a query variable to get scenes from the Parent Studio
 // Uses the tagId to filter just scenes tag as Virtual Reality
 func getParentSceneQueryVariable(parentId string, tagId string, page int, count int) string {
-	return `
-	{"input":{
+	tag := ""
+	if tagId != "" {
+		tag = `
 		"tags": {					
 			"value": "` + tagId + `",
 			"modifier": "INCLUDES"
 		},
+		`
+	}
+	return `
+	{"input":{` + tag + ` 
 		"parentStudio": "` + parentId + `",				 
 		
 		"page": ` + strconv.Itoa(page) + `,
