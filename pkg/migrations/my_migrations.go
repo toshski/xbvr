@@ -72,9 +72,14 @@ func MyMigrate() {
 			},
 		},
 		{
-			ID: "0011",
+			ID: "0011-Timestamp-Trade_Fields",
 			Migrate: func(tx *gorm.DB) error {
-				return nil
+				type Scene struct {
+					TimestampTradeURL    string `json:"timestampTradeUrl" xbvrbackup:"timestampTradeUrl"`
+					TimestampCuepointURL string `json:"timestampCuepointUrl" xbvrbackup:"timestampCuepointUrl"`
+					TimestampTradeCount  int    `json:"timestampTradeCnt" xbvrbackup:"timestampTradeCnt"`
+				}
+				return tx.AutoMigrate(&Scene{}).Error
 			},
 		},
 		{
