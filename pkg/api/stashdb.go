@@ -131,6 +131,7 @@ func (i ExternalReference) searchForStashdb(req *restful.Request, resp *restful.
 		ImageUrl    string
 		Performers  []StashSearchperformerResult
 		Title       string
+		Studio      string
 		Duration    string
 		Description string
 		Weight      int
@@ -161,8 +162,8 @@ func (i ExternalReference) searchForStashdb(req *restful.Request, resp *restful.
 		resp.WriteHeaderAndEntity(http.StatusOK, response)
 		return
 	}
-	stashStudioId := findStashStudioId(scene.ScraperId)
-	if stashStudioId == "" {
+	stashStudioIds := findStashStudioIds(scene.ScraperId)
+	if len(stashStudioIds) == 0 {
 		var response StashSearchResponse
 		response.Results = results
 		response.Status = "Cannot find Stashdb Studio"
@@ -184,7 +185,7 @@ func (i ExternalReference) searchForStashdb(req *restful.Request, resp *restful.
 	}
 
 	// define a function to update the results found
-	updateResults := func(stashScenes scrape.QueryScenesResult, weightIncrement int, performers []string) {
+	updateResults := func(stashScenes scrape.QueryScenesResult, weightIncrement int, performers []string, studios []string) {
 		for _, stashscene := range stashScenes.Data.QueryScenes.Scenes {
 			// consider adding weight bump for duration and date
 			scoreBump := 0
@@ -210,6 +211,25 @@ func (i ExternalReference) searchForStashdb(req *restful.Request, resp *restful.
 				}
 			}
 
+			// check it is from a studio we expect
+			for _, studio := range studios {
+				if strings.ReplaceAll(studio, `"`, ``) == stashscene.Studio.ID {
+					scoreBump += 20
+				}
+			}
+			for _, sp := range stashscene.Performers {
+				foundId := false
+				for _, xp := range performers {
+					if strings.Contains(xp, sp.Performer.ID) {
+						foundId = true
+					}
+				}
+				if foundId {
+					scoreBump += 5
+				} else {
+					scoreBump -= 5
+				}
+			}
 			// check actor matches using performer stash id
 			for _, sp := range stashscene.Performers {
 				foundId := false
@@ -248,8 +268,9 @@ func (i ExternalReference) searchForStashdb(req *restful.Request, resp *restful.
 			}
 			if mapEntry, exists := results[stashscene.ID]; exists {
 				mapEntry.Weight += weightIncrement + scoreBump
+				results[stashscene.ID] = mapEntry
 			} else {
-				result := StashSearchResult{Url: `https://stashdb.org/scenes/` + stashscene.ID, Weight: weightIncrement + scoreBump, Title: stashscene.Title, Description: stashscene.Details, Date: stashscene.Date}
+				result := StashSearchResult{Url: `https://stashdb.org/scenes/` + stashscene.ID, Weight: weightIncrement + scoreBump, Title: stashscene.Title, Description: stashscene.Details, Date: stashscene.Date, Studio: stashscene.Studio.Name}
 				if len(stashscene.Images) > 0 {
 					result.ImageUrl = stashscene.Images[0].URL
 				}
@@ -265,7 +286,6 @@ func (i ExternalReference) searchForStashdb(req *restful.Request, resp *restful.
 					// Format the time string
 					result.Duration = fmt.Sprintf("%02d:%02d:%02d", hours, minutes, stashscene.Duration)
 				}
-
 				results[stashscene.ID] = result
 			}
 		}
@@ -282,10 +302,6 @@ func (i ExternalReference) searchForStashdb(req *restful.Request, resp *restful.
 		fingerprintList := strings.Join(fingerprints, ",")
 		fingerprintQuery := `
 		{"input":{
-					"studios": {
-						"modifier": "EQUALS",
-						"value": "` + stashStudioId + `"
-					},
 					"page": 1,
 					"per_page": 25,
 					"sort": "UPDATED_AT",
@@ -297,51 +313,73 @@ func (i ExternalReference) searchForStashdb(req *restful.Request, resp *restful.
 		log.Infof("%s", fingerprintQuery)
 		stashScenes := scrape.GetScenePage(fingerprintQuery)
 		log.Infof("%s", stashScenes)
-		updateResults(stashScenes, 200, performers)
+		updateResults(stashScenes, 400, performers, stashStudioIds)
 	}
 
-	performerList := strings.Join(performers, ",")
-	performerQuery := `
-	{"input":{
-				"studios": {
-					"modifier": "EQUALS",
-					"value": "` + stashStudioId + `"
-				},
-				"page": 1,
-				"per_page": 25,
-				"sort": "UPDATED_AT",
-				"performers": {"value": [` +
-		performerList +
-		`], "modifier":"INCLUDES_ALL"}
+	stashScenes := scrape.QueryScenesResult{}
+	for _, studio := range stashStudioIds {
+		// Exact Title submatch
+		titleQuery := `
+		{"input":{
+					"studios": { "modifier": "EQUALS", "value": [` + studio + `] },					
+					"page": 1,
+					"per_page": 25,
+					"sort": "UPDATED_AT",
+					"title": "\"` +
+			scene.Title + `\""
+				}
+			}`
+		log.Infof("%s", titleQuery)
+		stashScenes = scrape.GetScenePage(titleQuery)
+		log.Infof("%s", stashScenes)
+		updateResults(stashScenes, 150, performers, stashStudioIds)
+	}
+
+	if len(performers) > 0 {
+		performerList := strings.Join(performers, ",")
+		for _, studio := range stashStudioIds {
+			performerQuery := `
+			{"input":{
+						"studios": { "modifier": "EQUALS", "value": [` + studio + `] },
+						"page": 1,
+						"per_page": 25,
+						"sort": "UPDATED_AT",
+						"performers": {"value": [` +
+				performerList +
+				`], "modifier":"INCLUDES_ALL"}
+					}
+				}`
+			log.Infof("%s", performerQuery)
+			stashScenes = scrape.GetScenePage(performerQuery)
+			log.Infof("%s", stashScenes)
+			updateResults(stashScenes, 200, performers, stashStudioIds)
+			if len(stashScenes.Data.QueryScenes.Scenes) == 0 {
+				performerQuery = strings.ReplaceAll(performerQuery, "INCLUDES_ALL", "INCLUDES")
+				stashScenes := scrape.GetScenePage(performerQuery)
+				updateResults(stashScenes, 100, performers, stashStudioIds)
 			}
-		}`
-	log.Infof("%s", performerQuery)
-	stashScenes := scrape.GetScenePage(performerQuery)
-	log.Infof("%s", stashScenes)
-	updateResults(stashScenes, 100, performers)
-
-	if len(stashScenes.Data.QueryScenes.Scenes) == 0 {
-		performerQuery = strings.ReplaceAll(performerQuery, "INCLUDES_ALL", "INCLUDES")
-		stashScenes := scrape.GetScenePage(performerQuery)
-		updateResults(stashScenes, 10, performers)
+		}
 	}
-	//stashScene := scrape.GetStashDbScene(stashdbId)
 
-	// var existingRef models.ExternalReference
-	// existingRef.FindExternalId("stashdb scene", stashdbId)
-
-	// jsonData, _ := json.MarshalIndent(stashScene.Data.Scene, "", "  ")
-
-	// // chek if we have the performers, may not in the case of loading scenes from the parent studio
-	// for _, performer := range stashScene.Data.Scene.Performers {
-	// 	scrape.UpdatePerformer(performer.Performer)
-	// }
-
-	// var xbrLink []models.ExternalReferenceLink
-	// xbrLink = append(xbrLink, models.ExternalReferenceLink{InternalTable: "scenes", InternalDbId: scene.ID, InternalNameId: scene.SceneID, ExternalSource: "stashdb scene", ExternalId: stashdbId, MatchType: 5})
-	// ext := models.ExternalReference{ExternalSource: "stashdb scene", ExternalURL: "https://stashdb.org/scenes/" + stashdbId, ExternalId: stashdbId, ExternalDate: stashScene.Data.Scene.Updated, ExternalData: string(jsonData),
-	// 	XbvrLinks: xbrLink}
-	// ext.AddUpdateWithId()
+	if len(results) == 0 {
+		for _, studio := range stashStudioIds {
+			// No match yet, try match any words from the title, not likely to find, as this returns too many results
+			titleQuery := `
+		{"input":{
+					"studios": { "modifier": "EQUALS", "value": [` + studio + `] },					
+					"page": 1,
+					"per_page": 50,
+					"sort": "UPDATED_AT",
+					"title": "` +
+				scene.Title + `"
+				}
+			}`
+			log.Infof("%s", titleQuery)
+			stashScenes = scrape.GetScenePage(titleQuery)
+			log.Infof("%s", stashScenes)
+			updateResults(stashScenes, 150, performers, stashStudioIds)
+		}
+	}
 
 	if len(results) == 0 {
 		warnings = append(warnings, "No Stashdb Scenes Found")
@@ -363,7 +401,8 @@ func StashdbRunAll() {
 
 	}()
 }
-func findStashStudioId(scraper string) string {
+func findStashStudioIds(scraper string) []string {
+	stashIds := map[string]struct{}{}
 	var site models.Site
 	site.GetIfExist(scraper)
 
@@ -372,19 +411,27 @@ func findStashStudioId(scraper string) string {
 	db.Preload("ExternalReference").Where(&models.ExternalReferenceLink{InternalTable: "sites", InternalNameId: scraper, ExternalSource: "stashdb studio"}).Find(&refs)
 
 	for _, site := range refs {
-		return site.ExternalId
+		stashIds[site.ExternalId] = struct{}{}
 	}
 
 	config := models.BuildActorScraperRules()
 	s := config.StashSceneMatching[scraper]
-	log.Infof("%s", s)
-
-	sitename := site.Name
-	if i := strings.Index(sitename, " ("); i != -1 {
-		sitename = sitename[:i]
+	for _, value := range s {
+		stashIds[value.StashId] = struct{}{}
 	}
-	log.Infof("%s", sitename)
-	studio := scrape.FindStashdbStudio(sitename, "name")
-	log.Infof("%s", studio)
-	return studio.Data.Studio.ID
+
+	if len(stashIds) == 0 {
+		// if we don't have any lookup stashdb using the sitename
+		sitename := site.Name
+		if i := strings.Index(sitename, " ("); i != -1 {
+			sitename = sitename[:i]
+		}
+		studio := scrape.FindStashdbStudio(sitename, "name")
+		stashIds[studio.Data.Studio.ID] = struct{}{}
+	}
+	var results []string
+	for key, _ := range stashIds {
+		results = append(results, `"`+key+`"`)
+	}
+	return results
 }
