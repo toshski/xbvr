@@ -230,6 +230,14 @@ func matchSceneOnRules(sitename string, config models.StashSiteConfig) {
 					xbvrScene = match
 					break
 				}
+			case "studio_code":
+				matchCnt := 0
+				for _, scene := range xbrScenes {
+					if data.Code != "" && strings.Contains(scene.SceneID, data.Code) {
+						xbvrScene = scene
+						matchCnt += 1
+					}
+				}
 			}
 
 			if xbvrScene.ID != 0 {
