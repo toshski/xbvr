@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -162,6 +163,43 @@ func (i ExternalReference) searchForStashdb(req *restful.Request, resp *restful.
 		resp.WriteHeaderAndEntity(http.StatusOK, response)
 		return
 	}
+
+	setupStashSearchResult := func(stashScene models.StashScene, weight int) StashSearchResult {
+		//common function to call to setup stash response details
+		result := StashSearchResult{Url: "https://stashdb.org/scenes/" + stashScene.ID, Weight: weight, Title: stashScene.Title, Description: stashScene.Details, Date: stashScene.Date, Studio: stashScene.Studio.Name}
+		if len(stashScene.Images) > 0 {
+			result.ImageUrl = stashScene.Images[0].URL
+		}
+		for _, perf := range stashScene.Performers {
+			result.Performers = append(result.Performers, StashSearchperformerResult{Name: perf.Performer.Name, Url: `https://stashdb.org/performers/` + perf.Performer.ID})
+		}
+		if stashScene.Duration > 0 {
+			hours := stashScene.Duration / 3600 // calculate hours
+			stashScene.Duration %= 3600         // remaining seconds after hours
+			minutes := stashScene.Duration / 60 // calculate minutes
+			stashScene.Duration %= 60           // remaining seconds after minutes
+
+			// Format the time string
+			result.Duration = fmt.Sprintf("%02d:%02d:%02d", hours, minutes, stashScene.Duration)
+		}
+		return result
+	}
+
+	var guidRegex = regexp.MustCompile(`^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$`)
+	idTest := strings.TrimPrefix(strings.TrimSpace(query), "https://stashdb.org/scenes/")
+
+	if guidRegex.MatchString(idTest) {
+		stashScene := scrape.GetStashDbScene(idTest)
+		if stashScene.Data.Scene.ID != "" {
+			results[stashScene.Data.Scene.ID] = setupStashSearchResult(stashScene.Data.Scene, 10000)
+			var response StashSearchResponse
+			response.Results = results
+			response.Status = ""
+			resp.WriteHeaderAndEntity(http.StatusOK, response)
+			return
+		}
+	}
+
 	stashStudioIds := findStashStudioIds(scene.ScraperId)
 	if len(stashStudioIds) == 0 {
 		var response StashSearchResponse
@@ -270,23 +308,7 @@ func (i ExternalReference) searchForStashdb(req *restful.Request, resp *restful.
 				mapEntry.Weight += weightIncrement + scoreBump
 				results[stashscene.ID] = mapEntry
 			} else {
-				result := StashSearchResult{Url: `https://stashdb.org/scenes/` + stashscene.ID, Weight: weightIncrement + scoreBump, Title: stashscene.Title, Description: stashscene.Details, Date: stashscene.Date, Studio: stashscene.Studio.Name}
-				if len(stashscene.Images) > 0 {
-					result.ImageUrl = stashscene.Images[0].URL
-				}
-				for _, perf := range stashscene.Performers {
-					result.Performers = append(result.Performers, StashSearchperformerResult{Name: perf.Performer.Name, Url: `https://stashdb.org/performers/` + perf.Performer.ID})
-				}
-				if stashscene.Duration > 0 {
-					hours := stashscene.Duration / 3600 // calculate hours
-					stashscene.Duration %= 3600         // remaining seconds after hours
-					minutes := stashscene.Duration / 60 // calculate minutes
-					stashscene.Duration %= 60           // remaining seconds after minutes
-
-					// Format the time string
-					result.Duration = fmt.Sprintf("%02d:%02d:%02d", hours, minutes, stashscene.Duration)
-				}
-				results[stashscene.ID] = result
+				results[stashscene.ID] = setupStashSearchResult(stashscene, weightIncrement+scoreBump)
 			}
 		}
 	}
