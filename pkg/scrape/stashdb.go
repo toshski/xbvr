@@ -59,6 +59,12 @@ type FindPerformerResult struct {
 type FindPerformerData struct {
 	Performer models.StashPerformer `json:"findPerformer"`
 }
+type SearchPerformerResult struct {
+	Data SearchPerformerData `json:"data"`
+}
+type SearchPerformerData struct {
+	Performers []models.StashPerformer `json:"searchPerformer"`
+}
 
 type QueryPerformerResult struct {
 	Data QueryPerformerResultTypeData `json:"data"`
@@ -69,6 +75,12 @@ type QueryPerformerResultTypeData struct {
 type QueryPerformerResultType struct {
 	Count      int                     `json:"count"`
 	Performers []models.StashPerformer `json:"performers"`
+}
+type FindPerformerScenesData struct {
+	Performer models.StashPerformer `json:"findPerformer"`
+}
+type FindPerformerScenesResult struct {
+	Data FindPerformerScenesData `json:"data"`
 }
 type Image struct {
 	ID     string `json:"id"`
@@ -438,7 +450,7 @@ func UpdatePerformer(newPerformer models.StashPerformer) {
 	var oldPerformer models.StashPerformer
 	json.Unmarshal([]byte(ext.ExternalData), &oldPerformer)
 	if ext.ID == 0 || newPerformer.Updated.UTC().Sub(oldPerformer.Updated.UTC()).Seconds() > 1 {
-		fullDetails := getStashPerformer(newPerformer.ID).Data.Performer
+		fullDetails := GetStashPerformer(newPerformer.ID).Data.Performer
 		jsonData, _ := json.MarshalIndent(fullDetails, "", "  ")
 		newext := models.ExternalReference{ExternalSource: "stashdb performer", ExternalURL: "https://stashdb.org/performers/" + fullDetails.ID, ExternalId: fullDetails.ID, ExternalDate: fullDetails.Updated, ExternalData: string(jsonData)}
 		if ext.ID != 0 {
@@ -458,7 +470,7 @@ func RefreshPerformer(performerId string) {
 	}
 	var ext models.ExternalReference
 	ext.FindExternalId("stashdb performer", performerId)
-	fullDetails := getStashPerformer(performerId).Data.Performer
+	fullDetails := GetStashPerformer(performerId).Data.Performer
 	if fullDetails.ID == "" {
 		return
 	}
@@ -473,7 +485,7 @@ func RefreshPerformer(performerId string) {
 	}
 }
 
-func getStashPerformer(performer string) FindPerformerResult {
+func GetStashPerformer(performer string) FindPerformerResult {
 
 	query := `
 	query  findPerformer($id: ID!) {
@@ -542,6 +554,111 @@ func getStashPerformer(performer string) FindPerformerResult {
 	}
 	return data
 }
+func SearchStashPerformer(performer string) SearchPerformerResult {
+
+	query := `
+	query SearchAll($term: String!, $limit: Int = 100) 
+		{ searchPerformer(term: $term, limit: $limit) {
+  id
+  name
+  disambiguation
+  aliases
+  gender
+  birth_date
+  age
+  ethnicity
+  country
+  eye_color
+  hair_color
+  height
+  cup_size
+  band_size
+  waist_size
+  hip_size
+  breast_type
+  career_start_year
+  career_end_year
+  images{
+      id
+      url
+      width
+      height
+      }
+  
+  deleted
+  merged_ids
+  created
+  updated
+
+	  }
+	  }
+	`
+
+	// Define the variables needed for your query as a Go map
+	var data SearchPerformerResult
+	variables := `{"term": "` + performer + `"}`
+	resp := CallStashDb(query, variables)
+	err := json.Unmarshal(resp, &data)
+	if err != nil {
+		log.Errorf("Eror extracting actor json")
+	}
+	return data
+}
+
+func GetStashPerformerScenes(performer string) FindPerformerScenesResult {
+
+	query := `
+	query  findPerformer($id: ID!) {
+		findPerformer(id: $id) {
+  id
+  name
+  disambiguation
+  aliases
+  gender
+  birth_date
+  images{
+      id
+      url
+      width
+      height
+      }  
+  deleted
+  created
+  updated
+  scenes {
+  	id
+	title
+	details
+	release_date
+	date
+	updated
+	studio{
+		id
+		name
+		updated
+	}
+	images{
+		url
+		width
+		height
+	}
+	duration
+	deleted
+	}
+}
+ }
+`
+
+	// Define the variables needed for your query as a Go map
+	var data FindPerformerScenesResult
+	variables := `{"id": "` + performer + `"}`
+	resp := CallStashDb(query, variables)
+	err := json.Unmarshal(resp, &data)
+	if err != nil {
+		log.Errorf("Eror extracting actor json")
+	}
+	return data
+}
 
 func CallStashDb(query string, rawVariables string) []byte {
 	var variables map[string]interface{}
@@ -551,6 +668,7 @@ func CallStashDb(query string, rawVariables string) []byte {
 	jsonVariables, _ := json.Marshal(variables)
 
 	// Create an HTTP POST request to send the GraphQL query to the endpoint
+	log.Infof(`{"query":%q,"variables":%s}`, query, jsonVariables)
 	req, err := http.NewRequest("POST", "http://stashdb.org/graphql", bytes.NewBuffer([]byte(fmt.Sprintf(`{"query":%q,"variables":%s}`, query, jsonVariables))))
 	if err != nil {
 		log.Infof("error geting new request in callStashDb %s", err)

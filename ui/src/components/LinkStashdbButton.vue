@@ -11,7 +11,7 @@
 <script>
 export default {
   name: 'LinkStashdbButton',
-  props: { item: Object },  
+  props: { item: Object, objectType: String },  
   data () {
     return {
         isModalActive: false,
@@ -27,9 +27,13 @@ export default {
     }
   },
   methods: {
-    openDialog(scene) {
-        console.log("stash button open")
-      this.$store.commit('overlay/showSearchStashdb', { scene })
+    openDialog(item) {
+        console.log("stash button open", this)
+        if (this.objectType == "scene") {
+      this.$store.commit('overlay/showSearchStashdbScenes', { item })
+        } else {
+this.$store.commit('overlay/showSearchStashdbActors', { item })
+        }
     },
      }
 }
