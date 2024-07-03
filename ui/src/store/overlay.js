@@ -145,7 +145,6 @@ const mutations = {
     state.sceneMatchParams.show = false
   },
   showSearchStashdbScenes (state, payload) {
-    console.log("showSearchStashdbScenes", payload)
     state.searchStashDbScenes.scene = payload.item
     state.searchStashDbScenes.show = true
   },
@@ -154,7 +153,6 @@ const mutations = {
     state.searchStashDbScenes.show = false
   },
   showSearchStashdbActors (state, payload) {
-    console.log("showSearchStashdbActors", payload)
     state.searchStashDbActors.actor = payload.item
     state.searchStashDbActors.show = true
   },
@@ -163,8 +161,6 @@ const mutations = {
     state.searchStashDbActors.show = false
   },
   changeDetailsTab (state, payload) {
-    console.log("ochange tab")
-    console.log(payload)
     state.changeDetailsTab = payload.tab
   },
 }
