@@ -1,5 +1,5 @@
 <template>
-  <b-modal :active="isModalActive"           
+    <b-modal :active="isModalActive"           
            has-modal-card
            trap-focus
            aria-role="dialog"
@@ -7,6 +7,12 @@
            aria-modal
            can-cancel>
     
+    <GlobalEvents
+      :filter="e => !['INPUT', 'TEXTAREA'].includes(e.target.tagName)"
+      @keyup.esc="close"
+      @keydown.k="handleLeftArrow"
+      @keydown.l="handleRightArrow"
+    />
 
     <div class="modal-card" style="height: 80vh; width: 60vw; left: 10vw">
       <header class="modal-card-head">
@@ -20,21 +26,25 @@
             <b-input v-model="queryString" placeholder="Find actor..." @input="debouncedSearch" :loading="isFetching" custom-class="is-large"/>
           </b-field>
     
-        <b-table :data="searchResults" >
+        <b-table :data="searchResults" @click="onRowSelected" >
           <b-table-column field="Name" >
             <template slot-scope="props">
               <div class="media">
                 <div class="media-left">
-                  <b-carousel :autoplay="false" :indicator="false" icon-size="is-small" width="120">
+                  <b-carousel 
+                    :ref="'actorcarousel' + props.index"
+                    :id="'actorcarousel' + props.index"
+                    :autoplay="false" :indicator="false" icon-size="is-small" width="120"
+                  >
                     <b-carousel-item v-for="(image, index) in props.row.ImageUrl" :key="index">
                           <vue-load-image height="50px">
-                            <img slot="image" :src="image && image.length ? getImageURL(image) : '/ui/images/blank_female_profile.png'" width="100"  @mouseover="setShowTooltipImage(image, props.row.Id)" @mouseout="setShowTooltipImage('','-1')"/>
+                            <img slot="image" :src="image && image.length ? getImageURL(image) : '/ui/images/blank_female_profile.png'" width="100"  @mouseover="setShowTooltipImage(image, props.row.Id)" @mouseout="setShowTooltipImage('','')"/>
                             <img slot="preloader" src="/ui/images/blank.png" width="100" />
                             <img slot="error" src="/ui/images/blank.png" width="100" />
                           </vue-load-image>
                     </b-carousel-item>
                   </b-carousel>
-                    <div v-if="tooltipImage!='' && tooltipID==props.row.Id" class="tooltipimg" @mouseout="setShowTooltipImage('','-2')">                      
+                    <div v-if="tooltipImage!='' && tooltipID==props.row.Id" class="tooltipimg" @mouseout="setShowTooltipImage('','')">                      
                           <vue-load-image width="300">
                             <img slot="image" :src="tooltipImage" width="300"  />
                             <img slot="preloader" src="/ui/images/blank.png" width="300" />
@@ -115,6 +125,7 @@ export default {
         tooltipImage: "",
         tooltipID: "",
         actor: "",
+        selectedRow: undefined,
         }        
   },
   created() {
@@ -178,7 +189,26 @@ export default {
       this.tooltipImage=val
       this.tooltipID=id
     },
-  },
+    handleLeftArrow() {
+      let idx=0
+      if (this.selectedRow!=undefined && this.searchResults.length){
+        idx=this.searchResults.findIndex(element => element.Id==this.selectedRow.Id) 
+      }
+      let selectedCarousel = this.$refs['actorcarousel' + idx]
+      selectedCarousel.prev()
+},
+    handleRightArrow() {
+      let idx=0
+      if (this.selectedRow!=undefined && this.searchResults.length){
+        idx=this.searchResults.findIndex(element => element.Id==this.selectedRow.Id) 
+      }
+      let selectedCarousel = this.$refs['actorcarousel' + idx]
+      selectedCarousel.next()
+    },
+    onRowSelected(row) {
+      this.selectedRow= row      
+    },
+},
   computed: {
 
 }
