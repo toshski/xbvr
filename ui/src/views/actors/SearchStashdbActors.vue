@@ -80,10 +80,9 @@
                     <strong>Aliases:</strong>
                     <small> {{ props.row.Aliases.join(', ') }}</small>
                   </div>
-          <div >
-            <span class="smaller-text" v-for="link in props.row.Studios" :key="link.url"><a :href="link.Url" :class="{ 'bold-link': link.Matched }" target="_blank">{{ link.Name }}({{ link.SceneCount }})</a>, </span>
-          </div>
-
+                  <div>                    
+                    <b-tag v-for="link in props.row.Studios" :key="link.url"><a :href="link.Url" :class="{ 'bold-link': link.Matched }" target="_blank">{{ link.Name }}({{ link.SceneCount }})</a></b-tag>
+                  </div>
                 </div>
               </div>
             </template>
