@@ -592,13 +592,16 @@ func (i ExternalReference) searchForStashdbActor(req *restful.Request, resp *res
 			}
 
 			var stashExtLink models.ExternalReferenceLink
+			commonDb, _ := models.GetCommonDB()
 			for _, xbvrScene := range actor.Scenes {
 				for _, stashStudio := range stashPerformer.Studios {
 					xbvrsite := xbvrScene.Site
+					var siteRef models.ExternalReferenceLink
+					commonDb.Where(&models.ExternalReferenceLink{InternalTable: "sites", InternalNameId: xbvrScene.ScraperId, ExternalSource: "stashdb studio"}).First(&siteRef)
 					if strings.Index(xbvrsite, " (") != -1 {
 						xbvrsite = xbvrsite[:strings.Index(xbvrsite, " (")]
 					}
-					if strings.EqualFold(stashStudio.Studio.Name, xbvrsite) {
+					if strings.EqualFold(stashStudio.Studio.Name, xbvrsite) || siteRef.ExternalId == stashStudio.Studio.ID {
 						scoreBump += 5
 						matchedStudios[stashStudio.Studio.ID] = struct{}{}
 					}
