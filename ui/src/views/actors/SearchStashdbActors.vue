@@ -26,19 +26,25 @@
               <div class="media">
                 <div class="media-left">
                   <vue-load-image height="50px">
-                    <img slot="image" :src="props.row.ImageUrl && props.row.ImageUrl.length ? getImageURL(props.row.ImageUrl[0]) : '/ui/images/blank_female_profile.png'" width="100" />
+                    <img slot="image" :src="props.row.ImageUrl && props.row.ImageUrl.length ? getImageURL(props.row.ImageUrl[0]) : '/ui/images/blank_female_profile.png'" width="100"  @mouseover="setShowTooltipImage(props.row.ImageUrl[0])" @mouseout="setShowTooltipImage('')"/>
                     <img slot="preloader" src="/ui/images/blank.png" width="100" />
                     <img slot="error" src="/ui/images/blank.png" width="100" />
                   </vue-load-image>
+                    <div v-if="tooltipImage!='' && tooltipImage==props.row.ImageUrl[0]" class="tooltipimg" @mouseout="setShowTooltipImage('')">
+                      <img :src="tooltipImage" alt="Tooltip Image" width="300px" />
+                    </div>
                   <div v-if="props.row.DOB">
-                    <small>
-                      <strong>Birth Date:</strong> {{ format(parseISO(props.row.DOB), "yyyy-MM-dd") }}
-                    </small>
+                    <span class="smaller-text">
+                      <strong>Birth Date:</strong>
+                    </span>
+                  </div>
+                  <div v-if="props.row.DOB">
+                    <span class="smaller-text">{{ format(parseISO(props.row.DOB), "yyyy-MM-dd") }}</span>
                   </div>
                   <div>
-                    <small>
+                    <span class="smaller-text">
                       <strong>Score:</strong> {{ props.row.Weight }}
-                    </small>
+                    </span>
                   </div>
                   <div>
                     <a class="button is-primary is-small" @click="linktoStashdb(props.row)" :title="'Link Actor with stashdb'">
@@ -52,6 +58,14 @@
                       <a :href="props.row.Url" target="_blank">{{ props.row.Name }} - {{ props.row.Disambiguation }}</a>
                     </strong>
                   </div>
+                  <div>
+                    <strong>Aliases:</strong>
+                    <small> {{ props.row.Aliases.join(', ') }}</small>
+                  </div>
+          <div >
+            <span class="smaller-text" v-for="link in props.row.Studios" :key="link.url"><a :href="link.Url" :class="{ 'bold-link': link.Matched }" target="_blank">{{ link.Name }}({{ link.SceneCount }})</a>, </span>
+          </div>
+
                 </div>
               </div>
             </template>
@@ -90,6 +104,7 @@ export default {
         searchResults: [],
         queryString: "",
         isFetching: false,
+        tooltipImage: "",
         actor: "",
         }        
   },
@@ -150,6 +165,9 @@ export default {
         });
         this.actor = actor
     },
+    setShowTooltipImage(val){
+      this.tooltipImage=val
+    },
   },
   computed: {
 
@@ -167,5 +185,26 @@ export default {
 
 .tab-item {
   height: 40vh;
+}
+.tooltipimg {
+  position: absolute;
+  z-index: 1;
+  width: 350;
+  background-color: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  transform: translateX(60px) translateY(-50px);}
+.tooltipimg img {
+  max-width: 100%;
+  max-height: 100%;
+}
+.smaller-text {
+  font-size: 0.8em; /* or any smaller size you prefer */
+}
+.bold-link {
+  font-weight: bold;
 }
 </style>

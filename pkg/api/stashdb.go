@@ -217,7 +217,7 @@ func (i ExternalReference) searchForStashdbScene(req *restful.Request, resp *res
 	}
 
 	// define a function to update the results found
-	updateResults := func(stashScenes scrape.QueryScenesResult, weightIncrement int, performers []string, studios []string) {
+	scoreResults := func(stashScenes scrape.QueryScenesResult, weightIncrement int, performers []string, studios []string) {
 		for _, stashscene := range stashScenes.Data.QueryScenes.Scenes {
 			// consider adding weight bump for duration and date
 			scoreBump := 0
@@ -329,7 +329,7 @@ func (i ExternalReference) searchForStashdbScene(req *restful.Request, resp *res
 				}
 			}`
 		stashScenes := scrape.GetScenePage(fingerprintQuery)
-		updateResults(stashScenes, 400, performers, stashStudioIds)
+		scoreResults(stashScenes, 400, performers, stashStudioIds)
 	}
 
 	stashScenes := scrape.QueryScenesResult{}
@@ -346,7 +346,7 @@ func (i ExternalReference) searchForStashdbScene(req *restful.Request, resp *res
 				}
 			}`
 		stashScenes = scrape.GetScenePage(titleQuery)
-		updateResults(stashScenes, 150, performers, stashStudioIds)
+		scoreResults(stashScenes, 150, performers, stashStudioIds)
 	}
 
 	if len(performers) > 0 {
@@ -364,11 +364,11 @@ func (i ExternalReference) searchForStashdbScene(req *restful.Request, resp *res
 					}
 				}`
 			stashScenes = scrape.GetScenePage(performerQuery)
-			updateResults(stashScenes, 200, performers, stashStudioIds)
+			scoreResults(stashScenes, 200, performers, stashStudioIds)
 			if len(stashScenes.Data.QueryScenes.Scenes) == 0 {
 				performerQuery = strings.ReplaceAll(performerQuery, "INCLUDES_ALL", "INCLUDES")
 				stashScenes := scrape.GetScenePage(performerQuery)
-				updateResults(stashScenes, 100, performers, stashStudioIds)
+				scoreResults(stashScenes, 100, performers, stashStudioIds)
 			}
 		}
 	}
@@ -387,7 +387,7 @@ func (i ExternalReference) searchForStashdbScene(req *restful.Request, resp *res
 				}
 			}`
 			stashScenes = scrape.GetScenePage(titleQuery)
-			updateResults(stashScenes, 150, performers, stashStudioIds)
+			scoreResults(stashScenes, 150, performers, stashStudioIds)
 			page := 2
 			for i := 101; i < stashScenes.Data.QueryScenes.Count && page <= 5; {
 				titleQuery := `
@@ -401,7 +401,7 @@ func (i ExternalReference) searchForStashdbScene(req *restful.Request, resp *res
 							}
 						}`
 				stashScenes = scrape.GetScenePage(titleQuery)
-				updateResults(stashScenes, 150, performers, stashStudioIds)
+				scoreResults(stashScenes, 150, performers, stashStudioIds)
 				i = i + 100
 				page += 1
 			}
@@ -468,13 +468,23 @@ func (i ExternalReference) linkActor2Stashdb(req *restful.Request, resp *restful
 
 func (i ExternalReference) searchForStashdbActor(req *restful.Request, resp *restful.Response) {
 	query := req.QueryParameter("q")
+	query = strings.TrimSpace(strings.TrimPrefix(query, "aka:"))
 
 	var warnings []string
-	type StashSearchPerformerSceneResult struct {
+	type StashSearchPerformerScenesResult struct {
 		Title    string
 		Id       string
 		Url      string
 		Duration string
+		ImageUrl string
+		Studio   string
+	}
+	type StashSearchPerformerStudioResult struct {
+		Name       string
+		Id         string
+		Url        string
+		SceneCount int
+		Matched    bool
 	}
 	type StashSearchPerformerResult struct {
 		Url            string
@@ -483,9 +493,9 @@ func (i ExternalReference) searchForStashdbActor(req *restful.Request, resp *res
 		Aliases        []string
 		Id             string
 		ImageUrl       []string
-		Scenes         []StashSearchPerformerSceneResult
 		DOB            string
 		Weight         int
+		Studios        []StashSearchPerformerStudioResult
 	}
 	type StashSearchPerformersResponse struct {
 		Status  string
@@ -513,23 +523,24 @@ func (i ExternalReference) searchForStashdbActor(req *restful.Request, resp *res
 		return
 	}
 
+	matchedStudios := map[string]struct{}{}
+
 	setupStashSearchResult := func(stashPerformer models.StashPerformer, weight int) StashSearchPerformerResult {
 		//common function to call to setup stash response details
 		result := StashSearchPerformerResult{Id: stashPerformer.ID, Url: "https://stashdb.org/performers/" + stashPerformer.ID, Weight: weight, Name: stashPerformer.Name, DOB: stashPerformer.BirthDate, Disambiguation: stashPerformer.Disambiguation, Aliases: stashPerformer.Aliases}
 		for _, image := range stashPerformer.Images {
 			result.ImageUrl = append(result.ImageUrl, image.URL)
 		}
-		duration := ""
-		for _, scene := range stashPerformer.Scenes {
-			if scene.Duration > 0 {
-				hours := scene.Duration / 3600 // calculate hours
-				scene.Duration %= 3600         // remaining seconds after hours
-				minutes := scene.Duration / 60 // calculate minutes
-				scene.Duration %= 60           // remaining seconds after minutes
-				duration = fmt.Sprintf("%02d:%02d:%02d", hours, minutes, scene.Duration)
+		for _, studio := range stashPerformer.Studios {
+			_, matched := matchedStudios[studio.Studio.ID]
+			if matched {
+				matched = true
 			}
-			result.Scenes = append(result.Scenes, StashSearchPerformerSceneResult{Title: scene.Title, Id: scene.ID, Url: `https://stashdb.org/scenes/` + scene.ID, Duration: duration})
+			result.Studios = append(result.Studios, StashSearchPerformerStudioResult{Name: studio.Studio.Name, Id: studio.Studio.ID, Url: `https://stashdb.org/performers/` + stashPerformer.ID + `?studios=` + studio.Studio.ID, SceneCount: studio.SceneCount, Matched: matched})
 		}
+		sort.Slice(result.Studios, func(i, j int) bool {
+			return result.Studios[i].Name < result.Studios[j].Name
+		})
 		return result
 	}
 
@@ -537,12 +548,12 @@ func (i ExternalReference) searchForStashdbActor(req *restful.Request, resp *res
 	idTest := strings.TrimPrefix(strings.TrimSpace(query), "https://stashdb.org/performers/")
 
 	if guidRegex.MatchString(idTest) {
-		stashScene := scrape.GetStashPerformer(idTest)
-		if stashScene.Data.Performer.ID != "" {
-			results[stashScene.Data.Performer.ID] = setupStashSearchResult(stashScene.Data.Performer, 10000)
+		stashPerformer := scrape.GetStashPerformerFull(idTest)
+		if stashPerformer.Data.Performer.ID != "" {
+			results[stashPerformer.Data.Performer.ID] = setupStashSearchResult(stashPerformer.Data.Performer, 10000)
 			//  need to get studios
 			var response StashSearchPerformersResponse
-			response.Results = []StashSearchPerformerResult{results[stashScene.Data.Performer.ID]}
+			response.Results = []StashSearchPerformerResult{results[stashPerformer.Data.Performer.ID]}
 			response.Status = ""
 			resp.WriteHeaderAndEntity(http.StatusOK, response)
 			return
@@ -553,7 +564,7 @@ func (i ExternalReference) searchForStashdbActor(req *restful.Request, resp *res
 		query = actor.Name
 	}
 	// define a function to update the results found
-	updateResults := func(stashPerformers []models.StashPerformer, weightIncrement int) {
+	scoreResults := func(stashPerformers []models.StashPerformer, weightIncrement int) {
 		for _, stashPerformer := range stashPerformers {
 			// consider adding weight bump for duration and date
 			scoreBump := 0
@@ -580,6 +591,30 @@ func (i ExternalReference) searchForStashdbActor(req *restful.Request, resp *res
 				scoreBump += 10
 			}
 
+			var stashExtLink models.ExternalReferenceLink
+			for _, xbvrScene := range actor.Scenes {
+				for _, stashStudio := range stashPerformer.Studios {
+					xbvrsite := xbvrScene.Site
+					if strings.Index(xbvrsite, " (") != -1 {
+						xbvrsite = xbvrsite[:strings.Index(xbvrsite, " (")]
+					}
+					if strings.EqualFold(stashStudio.Studio.Name, xbvrsite) {
+						scoreBump += 5
+						matchedStudios[stashStudio.Studio.ID] = struct{}{}
+					}
+				}
+				// check if we have a linked scene with this performer
+				links := stashExtLink.FindByExternalSource("scenes", xbvrScene.ID, "stashdb scene")
+				if len(links) == 0 {
+					continue
+				}
+				for _, link := range links {
+					if strings.Contains(link.ExternalReference.ExternalData, stashPerformer.ID) {
+						scoreBump += 50
+					}
+				}
+			}
+
 			if mapEntry, exists := results[stashPerformer.ID]; exists {
 				mapEntry.Weight += weightIncrement + scoreBump
 				results[stashPerformer.ID] = mapEntry
@@ -591,7 +626,7 @@ func (i ExternalReference) searchForStashdbActor(req *restful.Request, resp *res
 
 	stashPerformers := scrape.SearchPerformerResult{}
 	stashPerformers = scrape.SearchStashPerformer(query)
-	updateResults(stashPerformers.Data.Performers, 150)
+	scoreResults(stashPerformers.Data.Performers, 150)
 
 	if len(results) == 0 {
 		warnings = append(warnings, "No Stashdb Performers Found")
