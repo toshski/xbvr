@@ -165,6 +165,16 @@ func NewSensations(wg *sync.WaitGroup, updateSite bool, knownScenes []string, ou
 
 		// Create the file
 		fileName := common.MyFilesDir + `\NewSensations` + r.Request.URL.Path
+		// Check if the directory exists
+		dir := filepath.Dir(fileName)
+		if _, err := os.Stat(dir); os.IsNotExist(err) {
+			// Create the directory
+			err := os.MkdirAll(dir, os.ModePerm)
+			if err != nil {
+				log.Fatal("Error creating directory: ", err)
+				return
+			}
+		}
 		file, err := os.Create(fileName)
 		if err != nil {
 			log.Fatal("Could not create file:", err)
