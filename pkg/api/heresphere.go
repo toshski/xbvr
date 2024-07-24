@@ -586,6 +586,8 @@ func getHeresphereSceneData(sceneID string, req *restful.Request, scanOnly bool)
 
 	akaCnt := 0
 	maleAkaCnt := 0
+	maleCnt := 0
+	otherCnt := 0
 	for i := range scene.Cast {
 		if scene.Cast[i].Favourite {
 			addFeatureTag("Actor Favourite")
@@ -604,11 +606,14 @@ func getHeresphereSceneData(sceneID string, req *restful.Request, scanOnly bool)
 			})
 		} else {
 			if strings.ToLower(scene.Cast[i].Gender) == "male" {
+				maleCnt++
 				addMaleTag("Male:" + scene.Cast[i].Name)
 			} else {
+				otherCnt++
 				addTalentTag("Talent:" + scene.Cast[i].Name)
 			}
 		}
+
 		var extreflinks []models.ExternalReferenceLink
 		db.Preload("ExternalReference").Where(&models.ExternalReferenceLink{InternalTable: "actors", InternalDbId: scene.Cast[i].ID, ExternalSource: "stashdb performer"}).Find(&extreflinks)
 		for _, link := range extreflinks {
@@ -625,20 +630,21 @@ func getHeresphereSceneData(sceneID string, req *restful.Request, scanOnly bool)
 			}
 		}
 	}
-	if (len(scene.Cast) - akaCnt) > 5 {
-		addFeatureTag("Cast: 6+")
-	} else if (len(scene.Cast) - akaCnt) > 0 {
-		addFeatureTag(fmt.Sprintf("Cast: %d", (len(scene.Cast) - akaCnt)))
-	}
-	if (len(talentTags)) > 5 {
-		addFeatureTag("Female: 6+")
-	} else if (len(talentTags) - akaCnt) > 0 {
-		addFeatureTag(fmt.Sprintf("Female: %d", (len(talentTags) - akaCnt)))
-	}
-	if (len(maleTags) - maleAkaCnt) > 5 {
+	if (maleCnt) > 5 {
 		addFeatureTag("Male: 6+")
-	} else if (len(scene.Cast) - maleAkaCnt) > 0 {
-		addFeatureTag(fmt.Sprintf("Male: %d", (len(maleTags) - maleAkaCnt)))
+	} else if (maleCnt) > 0 {
+		addFeatureTag(fmt.Sprintf("Male: %d", maleCnt))
+	}
+
+	if (maleCnt + otherCnt) > 5 {
+		addFeatureTag("Cast: 6+")
+	} else if (maleCnt + otherCnt) > 0 {
+		addFeatureTag(fmt.Sprintf("Cast: %d", (maleCnt + otherCnt)))
+	}
+	if (otherCnt) > 5 {
+		addFeatureTag("Female: 6+")
+	} else if (otherCnt) > 0 {
+		addFeatureTag(fmt.Sprintf("Female: %d", otherCnt))
 	}
 
 	for i := range scene.Tags {
