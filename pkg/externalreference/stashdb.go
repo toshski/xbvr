@@ -52,13 +52,15 @@ func ApplySceneRules() {
 	config := models.BuildActorScraperRules()
 
 	for sitename, configSite := range config.StashSceneMatching {
-		if len(configSite.Rules) > 0 {
-			if configSite.StashId == "" {
-				var ext models.ExternalReference
-				ext.FindExternalId("stashdb studio", sitename)
-				configSite.StashId = ext.ExternalId
+		for _, stashRules := range configSite {
+			if len(stashRules.Rules) > 0 {
+				if stashRules.StashId == "" {
+					var ext models.ExternalReference
+					ext.FindExternalId("stashdb studio", sitename)
+					stashRules.StashId = ext.ExternalId
+				}
+				matchSceneOnRules(sitename, stashRules)
 			}
-			matchSceneOnRules(sitename, config)
 		}
 	}
 
@@ -136,22 +138,22 @@ func simplifyUrl(url string) string {
 }
 
 // if an unmatched scene has a trailing number try to match on the  xbvr scene_id for that studio
-func matchSceneOnRules(sitename string, config models.ActorScraperConfig) {
+func matchSceneOnRules(sitename string, config models.StashSiteConfig) {
 
 	db, _ := models.GetDB()
 	defer db.Close()
 
-	if config.StashSceneMatching[sitename].StashId == "" {
+	if config.StashId == "" {
 		var ext models.ExternalReference
 		ext.FindExternalId("stashdb studios", sitename)
-		site := config.StashSceneMatching[sitename]
+		site := config
 		site.StashId = ext.ExternalId
-		config.StashSceneMatching[sitename] = site
+		config = site
 	}
 
-	log.Infof("Matching on rules for %s Stashdb Id: %s", sitename, config.StashSceneMatching[sitename].StashId)
+	log.Infof("Matching on rules for %s Stashdb Id: %s", sitename, config.StashId)
 	var stashScenes []models.ExternalReference
-	stashId := config.StashSceneMatching[sitename].StashId
+	stashId := config.StashId
 	if stashId == "" {
 		return
 	}
@@ -167,7 +169,7 @@ func matchSceneOnRules(sitename string, config models.ActorScraperConfig) {
 		var data models.StashScene
 		json.Unmarshal([]byte(stashScene.ExternalData), &data)
 	urlLoop:
-		for _, rule := range config.StashSceneMatching[sitename].Rules { // for each rule on this site
+		for _, rule := range config.Rules { // for each rule on this site
 			var xbvrScene models.Scene
 			switch rule.StashField {
 			case "", "url":
