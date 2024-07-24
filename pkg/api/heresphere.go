@@ -326,13 +326,13 @@ func (i HeresphereResource) getHeresphereScene(req *restful.Request, resp *restf
 		ProcessHeresphereUpdates(&scene, requestData, videoFiles[0])
 	}
 
-	video := getHeresphereSceneData(sceneID, req)
+	video := getHeresphereSceneData(sceneID, req, false)
 	if video.Access == 0 { // an error occurred
 		return
 	}
 	resp.WriteHeaderAndEntity(http.StatusOK, video)
 }
-func getHeresphereSceneData(sceneID string, req *restful.Request) HeresphereVideo {
+func getHeresphereSceneData(sceneID string, req *restful.Request, scanOnly bool) HeresphereVideo {
 	dnt := ""
 	if !config.Config.Interfaces.DeoVR.TrackWatchTime {
 		dnt = "?dnt=true"
@@ -412,7 +412,7 @@ func getHeresphereSceneData(sceneID string, req *restful.Request) HeresphereVide
 		videoLength = file.VideoDuration
 	}
 
-	if len(videoFiles) == 0 && config.Config.Web.SceneTrailerlist {
+	if len(videoFiles) == 0 && config.Config.Web.SceneTrailerlist && !scanOnly {
 		switch scene.TrailerType {
 		case "heresphere":
 			heresphereScene := LoadHeresphereScene(scene.TrailerSource)
@@ -1167,9 +1167,9 @@ func (i HeresphereResource) getHeresphereLibrary(req *restful.Request, resp *res
 		for scene_id, url := range sceneListMap {
 			cnt++
 
-			log.Infof("processing %v", cnt)
-			sceneDetail := getHeresphereSceneData(scene_id, req)
-			log.Infof("processed %v", cnt)
+			//			log.Infof("processing %v", cnt)
+			sceneDetail := getHeresphereSceneData(scene_id, req, scanOnly)
+			//			log.Infof("processed %v", cnt)
 			if sceneDetail.Access != 0 {
 				scanScene := HeresphereSceneScan{Link: url,
 					Title:                sceneDetail.Title,
