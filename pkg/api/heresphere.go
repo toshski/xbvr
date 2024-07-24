@@ -112,6 +112,22 @@ type HereSphereAuthRequest struct {
 	DeleteFiles *bool            `json:"deleteFile"`
 }
 
+type HeresphereLibraryScan struct {
+	Access   int                   `json:"access"`
+	ScanData []HeresphereSceneScan `json:"scanData"`
+}
+
+type HeresphereSceneScan struct {
+	Link                 string          `json:"link"`
+	Title                string          `json:"title"`
+	DateReleased         string          `json:"dateReleased"`
+	DateAdded            string          `json:"dateAdded"`
+	DurationMilliseconds uint            `json:"duration"`
+	Rating               float64         `json:"rating,omitempty"`
+	IsFavorite           bool            `json:"isFavorite"`
+	Tags                 []HeresphereTag `json:"tags,omitempty"`
+}
+
 var RequestBody []byte
 
 func HeresphereAuthFilter(req *restful.Request, resp *restful.Response, chain *restful.FilterChain) {
@@ -185,6 +201,12 @@ func (i HeresphereResource) WebService() *restful.WebService {
 	ws.Route(ws.POST("file/{file-id}").Filter(HeresphereAuthFilter).To(i.getHeresphereFile).
 		Metadata(restfulspec.KeyOpenAPITags, tags).
 		Writes(DeoScene{}))
+	ws.Route(ws.POST("scanx").Filter(HeresphereAuthFilter).To(i.getHeresphereLibrary).
+		Metadata(restfulspec.KeyOpenAPITags, tags).
+		Writes(DeoScene{}))
+	ws.Route(ws.GET("scanx").Filter(HeresphereAuthFilter).To(i.getHeresphereLibrary).
+		Metadata(restfulspec.KeyOpenAPITags, tags).
+		Writes(DeoScene{}))
 	return ws
 }
 
@@ -192,7 +214,7 @@ func (i HeresphereResource) getHeresphereFile(req *restful.Request, resp *restfu
 	if !config.Config.Interfaces.DeoVR.Enabled {
 		return
 	}
-
+	log.Info("getHeresphereFile called")
 	var requestData HereSphereAuthRequest
 	if err := json.Unmarshal(RequestBody, &requestData); err != nil {
 		log.Warnf("Error decoding heresphere api POST request: %v %s", err, req.Request.RequestURI)
@@ -257,7 +279,6 @@ func (i HeresphereResource) getHeresphereScene(req *restful.Request, resp *restf
 	if !config.Config.Interfaces.DeoVR.Enabled {
 		return
 	}
-
 	var requestData HereSphereAuthRequest
 
 	if err := json.Unmarshal(RequestBody, &requestData); err != nil {
@@ -269,10 +290,7 @@ func (i HeresphereResource) getHeresphereScene(req *restful.Request, resp *restf
 		return
 	}
 
-	dnt := ""
-	if !config.Config.Interfaces.DeoVR.TrackWatchTime {
-		dnt = "?dnt=true"
-	}
+	log.Infof("getHeresphereScene called %s", sceneID)
 
 	db, _ := models.GetDB()
 	defer db.Close()
@@ -294,7 +312,6 @@ func (i HeresphereResource) getHeresphereScene(req *restful.Request, resp *restf
 			Preload("Files").
 			Where("id = ?", sceneID).First(&scene)
 	}
-
 	var videoFiles []models.File
 	videoFiles, err = scene.GetVideoFilesSorted(config.Config.Interfaces.Players.VideoSortSeq)
 	if err != nil {
@@ -306,6 +323,46 @@ func (i HeresphereResource) getHeresphereScene(req *restful.Request, resp *restf
 		ProcessHeresphereUpdates(&scene, requestData, models.File{})
 	} else {
 		ProcessHeresphereUpdates(&scene, requestData, videoFiles[0])
+	}
+
+	video := getHeresphereSceneData(sceneID, req)
+	if video.Access == 0 { // an error occurred
+		return
+	}
+	resp.WriteHeaderAndEntity(http.StatusOK, video)
+}
+func getHeresphereSceneData(sceneID string, req *restful.Request) HeresphereVideo {
+	dnt := ""
+	if !config.Config.Interfaces.DeoVR.TrackWatchTime {
+		dnt = "?dnt=true"
+	}
+
+	db, _ := models.GetDB()
+	defer db.Close()
+
+	var scene models.Scene
+	err := db.Preload("Cast").
+		Preload("Tags").
+		Preload("Cuepoints", "track is not null").
+		Preload("Files").
+		Where("id = ?", sceneID).First(&scene).Error
+	if err != nil {
+		log.Error(err)
+		return HeresphereVideo{}
+	}
+	if len(scene.Cuepoints) == 0 {
+		db.Preload("Cast").
+			Preload("Tags").
+			Preload("Cuepoints", "track is null").
+			Preload("Files").
+			Where("id = ?", sceneID).First(&scene)
+	}
+
+	var videoFiles []models.File
+	videoFiles, err = scene.GetVideoFilesSorted(config.Config.Interfaces.Players.VideoSortSeq)
+	if err != nil {
+		log.Error(err)
+		return HeresphereVideo{}
 	}
 
 	features := make(map[string]bool, 30)
@@ -554,7 +611,7 @@ func (i HeresphereResource) getHeresphereScene(req *restful.Request, resp *restf
 	scriptFiles, err = scene.GetScriptFilesSorted(config.Config.Interfaces.Players.ScriptSortSeq)
 	if err != nil {
 		log.Error(err)
-		return
+		return HeresphereVideo{}
 	}
 
 	for _, file := range scriptFiles {
@@ -577,7 +634,7 @@ func (i HeresphereResource) getHeresphereScene(req *restful.Request, resp *restf
 	subtitlesFiles, err = scene.GetSubtitlesFilesSorted(config.Config.Interfaces.Players.SubtitleSortSeq)
 	if err != nil {
 		log.Error(err)
-		return
+		return HeresphereVideo{}
 	}
 
 	getLanguage := func(path string) string {
@@ -613,7 +670,7 @@ func (i HeresphereResource) getHeresphereScene(req *restful.Request, resp *restf
 	hspFiles, err = scene.GetHSPFiles()
 	if err != nil {
 		log.Error(err)
-		return
+		return HeresphereVideo{}
 	}
 
 	if len(hspFiles) > 0 {
@@ -758,7 +815,7 @@ func (i HeresphereResource) getHeresphereScene(req *restful.Request, resp *restf
 		video.ThumbnailVideo = fmt.Sprintf("%v://%v/api/dms/preview/%v", getProto(req), req.Request.Host, scene.SceneID)
 	}
 
-	resp.WriteHeaderAndEntity(http.StatusOK, video)
+	return video
 }
 
 func copyVideoSourceResponse(sources models.VideoSourceResponse, media []HeresphereMedia) []HeresphereMedia {
@@ -1017,11 +1074,17 @@ func (i HeresphereResource) getHeresphereLibrary(req *restful.Request, resp *res
 	if !config.Config.Interfaces.DeoVR.Enabled {
 		return
 	}
-
 	db, _ := models.GetDB()
 	defer db.Close()
 
+	scanOnly := false
+	sceneListMap := make(map[string]string)
+	if strings.Contains(req.Request.RequestURI, "heresphere/scan") {
+		log.Infof("scanHeresphereLibrary called")
+		scanOnly = true
+	}
 	var sceneLists []HeresphereListScenes
+	var scanSceneList []HeresphereSceneScan
 
 	var savedPlaylists []models.Playlist
 	db.Where("is_deo_enabled = ?", true).Order("ordering asc").Find(&savedPlaylists)
@@ -1036,6 +1099,7 @@ func (i HeresphereResource) getHeresphereLibrary(req *restful.Request, resp *res
 			list := models.QuerySceneIDs(r)
 
 			for i := range list {
+				sceneListMap[list[i]] = fmt.Sprintf("%v://%v/heresphere/%v", getProto(req), req.Request.Host, list[i])
 				list[i] = fmt.Sprintf("%v://%v/heresphere/%v", getProto(req), req.Request.Host, list[i])
 			}
 
@@ -1084,6 +1148,8 @@ func (i HeresphereResource) getHeresphereLibrary(req *restful.Request, resp *res
 				if !downloadTag {
 					url := fmt.Sprintf("%v://%v/heresphere/%v", getProto(req), req.Request.Host, trailerlist[i].ID)
 					list = append(list, url)
+					id := fmt.Sprintf("%v", trailerlist[i].ID)
+					sceneListMap[id] = url
 				}
 			}
 
@@ -1095,10 +1161,36 @@ func (i HeresphereResource) getHeresphereLibrary(req *restful.Request, resp *res
 		}
 	}
 
-	resp.WriteHeaderAndEntity(http.StatusOK, HeresphereLibrary{
-		Access:  1,
-		Library: sceneLists,
-	})
+	if scanOnly {
+		cnt := 0
+		for scene_id, url := range sceneListMap {
+			cnt++
+
+			log.Infof("processing %v", cnt)
+			sceneDetail := getHeresphereSceneData(scene_id, req)
+			log.Infof("processed %v", cnt)
+			if sceneDetail.Access != 0 {
+				scanScene := HeresphereSceneScan{Link: url,
+					Title:                sceneDetail.Title,
+					DateReleased:         sceneDetail.DateReleased,
+					DateAdded:            sceneDetail.DateReleased,
+					DurationMilliseconds: sceneDetail.DurationMilliseconds,
+					Rating:               sceneDetail.Rating,
+					IsFavorite:           sceneDetail.IsFavorite,
+					Tags:                 sceneDetail.Tags}
+				scanSceneList = append(scanSceneList, scanScene)
+			}
+		}
+		resp.WriteHeaderAndEntity(http.StatusOK, HeresphereLibraryScan{
+			Access:   1,
+			ScanData: scanSceneList,
+		})
+	} else {
+		resp.WriteHeaderAndEntity(http.StatusOK, HeresphereLibrary{
+			Access:  1,
+			Library: sceneLists,
+		})
+	}
 }
 
 func findTrack(indexpos int, cuepointCount int, name string, trackAssignments *[]string, scene models.Scene) (int, bool) {
