@@ -1092,6 +1092,9 @@ func (scrapeRules ActorScraperConfig) getCustomRules() {
 				scrapeRules.GenericActorScrapingConfig[key] = rule
 			}
 		}
+		for key, matchrule := range customScrapeRules.StashSceneMatching {
+			scrapeRules.StashSceneMatching[key] = matchrule
+		}
 	}
 }
 
