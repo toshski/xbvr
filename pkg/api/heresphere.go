@@ -299,7 +299,7 @@ func (i HeresphereResource) getHeresphereScene(req *restful.Request, resp *restf
 	defer db.Close()
 
 	var scene models.Scene
-	err := db.Preload("Cast", "gender != 'MALE'").
+	err := db.Preload("Cast").
 		Preload("Tags").
 		Preload("Cuepoints", "track is not null").
 		Preload("Files").
@@ -309,7 +309,7 @@ func (i HeresphereResource) getHeresphereScene(req *restful.Request, resp *restf
 		return
 	}
 	if len(scene.Cuepoints) == 0 {
-		db.Preload("Cast", "gender != 'MALE'").
+		db.Preload("Cast").
 			Preload("Tags").
 			Preload("Cuepoints", "track is null").
 			Preload("Files").
@@ -344,7 +344,7 @@ func getHeresphereSceneData(sceneID string, req *restful.Request, scanOnly bool)
 	defer db.Close()
 
 	var scene models.Scene
-	err := db.Preload("Cast", "gender != 'MALE'").
+	err := db.Preload("Cast").
 		Preload("Tags").
 		Preload("Cuepoints", "track is not null").
 		Preload("Files").
@@ -354,7 +354,7 @@ func getHeresphereSceneData(sceneID string, req *restful.Request, scanOnly bool)
 		return HeresphereVideo{}
 	}
 	if len(scene.Cuepoints) == 0 {
-		db.Preload("Cast", "gender != 'MALE'").
+		db.Preload("Cast").
 			Preload("Tags").
 			Preload("Cuepoints", "track is null").
 			Preload("Files").
@@ -379,6 +379,12 @@ func getHeresphereSceneData(sceneID string, req *restful.Request, scanOnly bool)
 	addTalentTag := func(talent string) {
 		if !talentTags[talent] {
 			talentTags[talent] = true
+		}
+	}
+	maleTags := make(map[string]bool, 30)
+	addMaleTag := func(talent string) {
+		if !maleTags[talent] {
+			maleTags[talent] = true
 		}
 	}
 
@@ -579,6 +585,7 @@ func getHeresphereSceneData(sceneID string, req *restful.Request, scanOnly bool)
 	})
 
 	akaCnt := 0
+	maleAkaCnt := 0
 	for i := range scene.Cast {
 		if scene.Cast[i].Favourite {
 			addFeatureTag("Actor Favourite")
@@ -587,12 +594,20 @@ func getHeresphereSceneData(sceneID string, req *restful.Request, scanOnly bool)
 			addFeatureTag("Actor Watchlist")
 		}
 		if strings.HasPrefix(scene.Cast[i].Name, "aka:") {
-			akaCnt++
+			if strings.ToLower(scene.Cast[i].Gender) == "male" {
+				maleAkaCnt++
+			} else {
+				akaCnt++
+			}
 			tags = append(tags, HeresphereTag{
 				Name: strings.Replace(scene.Cast[i].Name, ",", "/", -1),
 			})
 		} else {
-			addTalentTag("Talent:" + scene.Cast[i].Name)
+			if strings.ToLower(scene.Cast[i].Gender) == "male" {
+				addMaleTag("Male:" + scene.Cast[i].Name)
+			} else {
+				addTalentTag("Talent:" + scene.Cast[i].Name)
+			}
 		}
 		var extreflinks []models.ExternalReferenceLink
 		db.Preload("ExternalReference").Where(&models.ExternalReferenceLink{InternalTable: "actors", InternalDbId: scene.Cast[i].ID, ExternalSource: "stashdb performer"}).Find(&extreflinks)
@@ -603,13 +618,27 @@ func getHeresphereSceneData(sceneID string, req *restful.Request, scanOnly bool)
 			if stashPerf.Disambiguation != "" {
 				tagName += " (" + stashPerf.Disambiguation + ")"
 			}
-			addTalentTag("Stash Actor:" + tagName)
+			if strings.ToLower(stashPerf.Gender) == "male" {
+				addMaleTag("Stash Actor:" + tagName)
+			} else {
+				addTalentTag("Stash Actor:" + tagName)
+			}
 		}
 	}
 	if (len(scene.Cast) - akaCnt) > 5 {
 		addFeatureTag("Cast: 6+")
 	} else if (len(scene.Cast) - akaCnt) > 0 {
 		addFeatureTag(fmt.Sprintf("Cast: %d", (len(scene.Cast) - akaCnt)))
+	}
+	if (len(talentTags)) > 5 {
+		addFeatureTag("Female: 6+")
+	} else if (len(talentTags) - akaCnt) > 0 {
+		addFeatureTag(fmt.Sprintf("Female: %d", (len(talentTags) - akaCnt)))
+	}
+	if (len(maleTags) - maleAkaCnt) > 5 {
+		addFeatureTag("Male: 6+")
+	} else if (len(scene.Cast) - maleAkaCnt) > 0 {
+		addFeatureTag(fmt.Sprintf("Male: %d", (len(maleTags) - maleAkaCnt)))
 	}
 
 	for i := range scene.Tags {
@@ -798,6 +827,11 @@ func getHeresphereSceneData(sceneID string, req *restful.Request, scanOnly bool)
 		}
 	}
 
+	for t := range maleTags {
+		tags = append(tags, HeresphereTag{
+			Name: t,
+		})
+	}
 	for f := range features {
 		tags = append(tags, HeresphereTag{
 			Name: "Feature:" + f,
@@ -902,10 +936,13 @@ func ProcessHeresphereUpdates(scene *models.Scene, requestData HereSphereAuthReq
 				case "action:actor favourite":
 					if len(scene.Cast) > 0 {
 						var actor models.Actor
-						actor.GetIfExistByPK(scene.Cast[0].ID)
-						actor.Favourite = true
-						actor.Save()
-						scene.Cast[0] = actor
+						pos := findFemalePos(*scene, 1)
+						if pos >= 0 {
+							actor.GetIfExistByPK(scene.Cast[pos].ID)
+							actor.Favourite = true
+							actor.Save()
+							scene.Cast[0] = actor
+						}
 					}
 				case "action:actor 1 favourite", "action:actor 2 favourite", "action:actor 3 favourite", "action:actor 4 favourite", "action:actor 5 favourite":
 					re := regexp.MustCompile(`\d+`)
@@ -914,19 +951,25 @@ func ProcessHeresphereUpdates(scene *models.Scene, requestData HereSphereAuthReq
 						cnt, _ := strconv.Atoi(matches[0])
 						if len(scene.Cast) >= cnt {
 							var actor models.Actor
-							actor.GetIfExistByPK(scene.Cast[cnt-1].ID)
-							actor.Favourite = true
-							actor.Save()
-							scene.Cast[cnt-1] = actor
+							pos := findFemalePos(*scene, cnt)
+							if pos >= 0 {
+								actor.GetIfExistByPK(scene.Cast[pos].ID)
+								actor.Favourite = true
+								actor.Save()
+								scene.Cast[cnt-1] = actor
+							}
 						}
 					}
 				case "action:actor watchlist":
 					if len(scene.Cast) > 0 {
 						var actor models.Actor
-						actor.GetIfExistByPK(scene.Cast[0].ID)
-						actor.Watchlist = true
-						actor.Save()
-						scene.Cast[0] = actor
+						pos := findFemalePos(*scene, 1)
+						if pos >= 0 {
+							actor.GetIfExistByPK(scene.Cast[0].ID)
+							actor.Watchlist = true
+							actor.Save()
+							scene.Cast[0] = actor
+						}
 					}
 				case "action:actor 1 watchlist", "action:actor 2 watchlist", "action:actor 3 watchlist", "action:actor 4 watchlist", "action:actor 5 watchlist":
 					re := regexp.MustCompile(`\d+`)
@@ -935,10 +978,13 @@ func ProcessHeresphereUpdates(scene *models.Scene, requestData HereSphereAuthReq
 						cnt, _ := strconv.Atoi(matches[0])
 						if len(scene.Cast) >= cnt {
 							var actor models.Actor
-							actor.GetIfExistByPK(scene.Cast[cnt-1].ID)
-							actor.Watchlist = true
-							actor.Save()
-							scene.Cast[cnt-1] = actor
+							pos := findFemalePos(*scene, cnt)
+							if pos >= 0 {
+								actor.GetIfExistByPK(scene.Cast[pos].ID)
+								actor.Watchlist = true
+								actor.Save()
+								scene.Cast[cnt-1] = actor
+							}
 						}
 					}
 				}
@@ -1276,4 +1322,16 @@ func getTrackAssignment(name string, trackAssignments *[]string) int {
 	}
 	*trackAssignments = append(*trackAssignments, name)
 	return len(*trackAssignments)
+}
+func findFemalePos(scene models.Scene, pos int) int {
+	cnt := 0
+	for castPos, cast := range scene.Cast {
+		if strings.ToLower(cast.Gender) != "male" {
+			cnt++
+			if cnt == pos {
+				return castPos
+			}
+		}
+	}
+	return -1
 }
