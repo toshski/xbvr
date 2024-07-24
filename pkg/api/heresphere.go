@@ -103,13 +103,14 @@ type HereSphereAlphaPackedSettings struct {
 }
 
 type HereSphereAuthRequest struct {
-	Username    string           `json:"username"`
-	Password    string           `json:"password"`
-	Rating      *float64         `json:"rating"`
-	IsFavorite  *bool            `json:"isFavorite"`
-	Hsp         *string          `json:"hsp"`
-	Tags        *[]HeresphereTag `json:"tags"`
-	DeleteFiles *bool            `json:"deleteFile"`
+	Username         string           `json:"username"`
+	Password         string           `json:"password"`
+	Rating           *float64         `json:"rating"`
+	IsFavorite       *bool            `json:"isFavorite"`
+	Hsp              *string          `json:"hsp"`
+	Tags             *[]HeresphereTag `json:"tags"`
+	DeleteFiles      *bool            `json:"deleteFile"`
+	NeedsMediaSource bool             `json:"needsMediaSource"`
 }
 
 type HeresphereLibraryScan struct {
@@ -326,7 +327,7 @@ func (i HeresphereResource) getHeresphereScene(req *restful.Request, resp *restf
 		ProcessHeresphereUpdates(&scene, requestData, videoFiles[0])
 	}
 
-	video := getHeresphereSceneData(sceneID, req, false)
+	video := getHeresphereSceneData(sceneID, req, !requestData.NeedsMediaSource)
 	if video.Access == 0 { // an error occurred
 		return
 	}
