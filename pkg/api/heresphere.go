@@ -126,6 +126,7 @@ type HeresphereSceneScan struct {
 	Rating               float64         `json:"rating,omitempty"`
 	IsFavorite           bool            `json:"isFavorite"`
 	Tags                 []HeresphereTag `json:"tags,omitempty"`
+	ThumbnailVideo       string          `json:"thumbnailVideo,omitempty"`
 }
 
 var RequestBody []byte
@@ -201,10 +202,10 @@ func (i HeresphereResource) WebService() *restful.WebService {
 	ws.Route(ws.POST("file/{file-id}").Filter(HeresphereAuthFilter).To(i.getHeresphereFile).
 		Metadata(restfulspec.KeyOpenAPITags, tags).
 		Writes(DeoScene{}))
-	ws.Route(ws.POST("scanx").Filter(HeresphereAuthFilter).To(i.getHeresphereLibrary).
+	ws.Route(ws.POST("scan").Filter(HeresphereAuthFilter).To(i.getHeresphereLibrary).
 		Metadata(restfulspec.KeyOpenAPITags, tags).
 		Writes(DeoScene{}))
-	ws.Route(ws.GET("scanx").Filter(HeresphereAuthFilter).To(i.getHeresphereLibrary).
+	ws.Route(ws.GET("scan").Filter(HeresphereAuthFilter).To(i.getHeresphereLibrary).
 		Metadata(restfulspec.KeyOpenAPITags, tags).
 		Writes(DeoScene{}))
 	return ws
@@ -1177,7 +1178,9 @@ func (i HeresphereResource) getHeresphereLibrary(req *restful.Request, resp *res
 					DurationMilliseconds: sceneDetail.DurationMilliseconds,
 					Rating:               sceneDetail.Rating,
 					IsFavorite:           sceneDetail.IsFavorite,
-					Tags:                 sceneDetail.Tags}
+					Tags:                 sceneDetail.Tags,
+					ThumbnailVideo:       sceneDetail.ThumbnailVideo,
+				}
 				scanSceneList = append(scanSceneList, scanScene)
 			}
 		}
