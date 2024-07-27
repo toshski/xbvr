@@ -946,6 +946,68 @@ func (scrapeRules ActorScraperConfig) buildGenericActorScraperRules() {
 	scrapeRules.GenericActorScrapingConfig["naughtyamericavr scrape"] = siteDetails
 
 	siteDetails = GenericScraperRuleSet{}
+	siteDetails.Domain = "nubiles-porn.com"
+	siteDetails.SiteRules = append(siteDetails.SiteRules, GenericActorScraperRule{XbvrField: "biography", Selector: `p.model-bio`})
+	siteDetails.SiteRules = append(siteDetails.SiteRules, GenericActorScraperRule{XbvrField: "image_url", Selector: `img.model-profile-pic`, ResultType: "attr", Attribute: "src", PostProcessing: []PostProcessing{{Function: "RemoveQueryParams"}}})
+
+	siteDetails.SiteRules = append(siteDetails.SiteRules, GenericActorScraperRule{XbvrField: "height", Selector: `p.model-profile-subheading:contains("Height") + p`,
+		PostProcessing: []PostProcessing{{Function: "Feet+Inches to cm", Params: []string{`(\d+)\'(\d+)`, "1", "2"}}}})
+
+	siteDetails.SiteRules = append(siteDetails.SiteRules, GenericActorScraperRule{XbvrField: "band_size", Selector: `p.model-profile-subheading:contains("Figure") + p`, PostProcessing: []PostProcessing{{Function: "RegexString", Params: []string{`(\d+)([A-Za-z]*)-(\d+)-(\d+)`, "1"}}}})
+	siteDetails.SiteRules = append(siteDetails.SiteRules, GenericActorScraperRule{XbvrField: "cup_size", Selector: `p.model-profile-subheading:contains("Figure") + p`, PostProcessing: []PostProcessing{{Function: "RegexString", Params: []string{`(\d+)([A-Za-z]*)-(\d+)-(\d+)`, "2"}}}})
+	siteDetails.SiteRules = append(siteDetails.SiteRules, GenericActorScraperRule{XbvrField: "waist_size", Selector: `p.model-profile-subheading:contains("Figure") + p`, PostProcessing: []PostProcessing{{Function: "RegexString", Params: []string{`(\d+)([A-Za-z]*)-(\d+)-(\d+)`, "3"}}}})
+	siteDetails.SiteRules = append(siteDetails.SiteRules, GenericActorScraperRule{XbvrField: "hip_size", Selector: `p.model-profile-subheading:contains("Figure") + p`, PostProcessing: []PostProcessing{{Function: "RegexString", Params: []string{`(\d+)([A-Za-z]*)-(\d+)-(\d+)`, "4"}}}})
+	siteDetails.SiteRules = append(siteDetails.SiteRules, GenericActorScraperRule{XbvrField: "nationality", Selector: `p.model-profile-subheading:contains("Location") + p`, PostProcessing: []PostProcessing{{Function: "Lookup Country"}}})
+	scrapeRules.GenericActorScrapingConfig["nubiles-porn scrape"] = siteDetails
+
+	siteDetails.Domain = "nubiles.net"
+	scrapeRules.GenericActorScrapingConfig["nubiles-net scrape"] = siteDetails
+	siteDetails.Domain = "badteenspunished.com"
+	scrapeRules.GenericActorScrapingConfig["badteenspunished scrape"] = siteDetails
+	siteDetails.Domain = "bountyhunterporn.com"
+	scrapeRules.GenericActorScrapingConfig["bountyhunterporn scrape"] = siteDetails
+	siteDetails.Domain = "caughtmycoach.com"
+	scrapeRules.GenericActorScrapingConfig["caughtmycoach scrape"] = siteDetails
+	siteDetails.Domain = "cheatingsis.com"
+	scrapeRules.GenericActorScrapingConfig["cheatingsis scrape"] = siteDetails
+	siteDetails.Domain = "cumswappingsis.com"
+	scrapeRules.GenericActorScrapingConfig["cumswappingsis scrape"] = siteDetails
+	siteDetails.Domain = "driverxxx.com"
+	scrapeRules.GenericActorScrapingConfig["driverxxx scrape"] = siteDetails
+	siteDetails.Domain = "daddyslilangel.com"
+	scrapeRules.GenericActorScrapingConfig["daddyslilangel scrape"] = siteDetails
+	siteDetails.Domain = "teacherfucksteens.com"
+	scrapeRules.GenericActorScrapingConfig["teacherfucksteens scrape"] = siteDetails
+	siteDetails.Domain = "nubiles-casting.com"
+	scrapeRules.GenericActorScrapingConfig["nubiles-casting scrape"] = siteDetails
+	siteDetails.Domain = "petiteballerinasfucked.com"
+	scrapeRules.GenericActorScrapingConfig["petiteballerinasfucked scrape"] = siteDetails
+	siteDetails.Domain = "stepsiblingscaught.com"
+	scrapeRules.GenericActorScrapingConfig["stepsiblingscaught scrape"] = siteDetails
+	siteDetails.Domain = "princesscum.com"
+	scrapeRules.GenericActorScrapingConfig["princesscum scrape"] = siteDetails
+	siteDetails.Domain = "petitehdporn.com"
+	scrapeRules.GenericActorScrapingConfig["petitehdporn scrape"] = siteDetails
+	siteDetails.Domain = "nubilesunscripted.com"
+	scrapeRules.GenericActorScrapingConfig["nubilesunscripted scrape"] = siteDetails
+	siteDetails.Domain = "myfamilypies.com"
+	scrapeRules.GenericActorScrapingConfig["myfamilypies scrape"] = siteDetails
+	siteDetails.Domain = "nubileset.com"
+	scrapeRules.GenericActorScrapingConfig["nubileset scrape"] = siteDetails
+	siteDetails.Domain = "momsteachsex.com"
+	scrapeRules.GenericActorScrapingConfig["momsteachsex scrape"] = siteDetails
+	siteDetails.Domain = "familyswap.xxx"
+	scrapeRules.GenericActorScrapingConfig["familyswap scrape"] = siteDetails
+	siteDetails.Domain = "detentiongirls.com"
+	scrapeRules.GenericActorScrapingConfig["detentiongirls scrape"] = siteDetails
+	siteDetails.Domain = "youngermommy.com"
+	scrapeRules.GenericActorScrapingConfig["youngermommy scrape"] = siteDetails
+	siteDetails.Domain = "smashed.xxx"
+	scrapeRules.GenericActorScrapingConfig["smashed scrape"] = siteDetails
+	siteDetails.Domain = "lilsis.com"
+	scrapeRules.GenericActorScrapingConfig["lilsis scrape"] = siteDetails
+
+	siteDetails = GenericScraperRuleSet{}
 	siteDetails.Domain = "sexbabesvr.com"
 	siteDetails.SiteRules = append(siteDetails.SiteRules, GenericActorScraperRule{XbvrField: "image_url", Selector: `img.cover-picture`, ResultType: "attr", Attribute: "src"})
 	siteDetails.SiteRules = append(siteDetails.SiteRules, GenericActorScraperRule{XbvrField: "nationality", Selector: `h3:contains("Country") + span`, PostProcessing: []PostProcessing{{Function: "Lookup Country"}}})
@@ -1137,6 +1199,183 @@ func (scrapeRules ActorScraperConfig) getSiteUrlMatchingRules() {
 	scrapeRules.StashSceneMatching["porncornvr"] = []StashSiteConfig{StashSiteConfig{StashId: "9ecb1d29-64e8-4336-9bd2-5dda53341e29"}}
 
 	scrapeRules.StashSceneMatching["wetvr"] = []StashSiteConfig{StashSiteConfig{StashId: "981887d6-da48-4dfc-88d1-7ed13a2754f2"}}
+
+	scrapeRules.StashSceneMatching["nubiles-porn"] = StashSiteConfig{
+		StashId: "ca6eb6cf-b1f4-4ead-ad3a-e3d0d18de258",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching["nubiles-net"] = StashSiteConfig{
+		StashId: "7e4dc83a-5fe6-490b-a421-3e289f5e5d7d",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching["badteenspunished"] = StashSiteConfig{
+		StashId: "b05b6376-2019-4c7d-856e-17bbf40480b3",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching["bountyhunterporn"] = StashSiteConfig{
+		StashId: "da054fab-253a-4630-a480-045862699696",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching["caughtmycoach"] = StashSiteConfig{
+		StashId: "afeb9752-d451-453b-9e78-df84972ac7fa",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching["cheatingsis"] = StashSiteConfig{
+		StashId: "a1742003-0dde-4b69-9052-88b67bf1b001",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching["cumswappingsis"] = StashSiteConfig{
+		StashId: "31643c64-6da3-46d6-8507-69e34c601b48",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching["driverxxx"] = StashSiteConfig{
+		StashId: "ba3fec8a-fcc0-4513-bd1b-d462cb750c0c",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching["daddyslilangel"] = StashSiteConfig{
+		StashId: "86f205b2-adee-4996-b303-aa11e8413b4b",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching["teacherfucksteens"] = StashSiteConfig{
+		StashId: "6302403d-e3f7-4bdf-bdaa-77b0a969010c",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching["nubiles-casting"] = StashSiteConfig{
+		StashId: "fb6d1fc1-c003-4f2d-97f4-c44176bbd87f",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching["petiteballerinasfucked"] = StashSiteConfig{
+		StashId: "42145491-440a-4c43-91e5-89c2594dd1be",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching["stepsiblingscaught"] = StashSiteConfig{
+		StashId: "3b88b263-ac4f-4fc6-8031-38daa05d452d",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching["princesscum"] = StashSiteConfig{
+		StashId: "33cfbe40-6d8e-41c3-9d09-0d64a4f69add",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching["petitehdporn"] = StashSiteConfig{
+		StashId: "51db34a6-3d0f-4052-99bd-49fa7601240a",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching["nubilesunscripted"] = StashSiteConfig{
+		StashId: "7e9db38a-57a9-478f-b191-d4fcbe310710",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching["myfamilypies"] = StashSiteConfig{
+		StashId: "1f8e88b5-6589-47c2-87b6-ad398ef71cdf",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching["nubileset"] = StashSiteConfig{
+		StashId: "57f8a10e-86f0-42ee-b486-09b43ca2a194",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching["momsteachsex"] = StashSiteConfig{
+		StashId: "a4e60afb-5da2-490f-a553-0d2d36adb527",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching[""] = StashSiteConfig{
+		StashId: "44ea17a3-c0b8-40f8-8dc0-465fc3abb052",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching["familyswap"] = StashSiteConfig{
+		StashId: "44ea17a3-c0b8-40f8-8dc0-465fc3abb052",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching["detentiongirls"] = StashSiteConfig{
+		StashId: "2b7a36ed-cd0f-43d5-95ad-354bfc37469d",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching["youngermommy"] = StashSiteConfig{
+		StashId: "f8a92133-292f-4882-a65f-6ae0d44da8e1",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching["smashed"] = StashSiteConfig{
+		StashId: "b137c40b-8c55-42c1-9bdd-df90a4955017",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching["lilsis"] = StashSiteConfig{
+		StashId: "570b024d-0c2c-4193-8801-a887cec7ea68",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching[""] = StashSiteConfig{
+		StashId: "",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching[""] = StashSiteConfig{
+		StashId: "",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching[""] = StashSiteConfig{
+		StashId: "",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching[""] = StashSiteConfig{
+		StashId: "",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching[""] = StashSiteConfig{
+		StashId: "",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching[""] = StashSiteConfig{
+		StashId: "",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching[""] = StashSiteConfig{
+		StashId: "",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching[""] = StashSiteConfig{
+		StashId: "",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching[""] = StashSiteConfig{
+		StashId: "",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching[""] = StashSiteConfig{
+		StashId: "",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching[""] = StashSiteConfig{
+		StashId: "",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching[""] = StashSiteConfig{
+		StashId: "",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching[""] = StashSiteConfig{
+		StashId: "",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching[""] = StashSiteConfig{
+		StashId: "",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching[""] = StashSiteConfig{
+		StashId: "",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching[""] = StashSiteConfig{
+		StashId: "",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching[""] = StashSiteConfig{
+		StashId: "",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+	scrapeRules.StashSceneMatching[""] = StashSiteConfig{
+		StashId: "",
+		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `\/video\/watch\/(\d*)`, XbvrMatchResultPosition: 1, StashRule: `\/video\/watch\/(\d*)`, StashMatchResultPosition: 1}},
+	}
+
+	scrapeRules.StashSceneMatching[""] = StashSiteConfig{StashId: "9ecb1d29-64e8-4336-9bd2-5dda53341e29"}
+
+	//	scrapeRules.StashSceneMatching["nubiles-net"] = StashSiteConfig{StashId: "7e4dc83a-5fe6-490b-a421-3e289f5e5d7d", ParentId: "c5f4f1d2-bf00-4e7a-9fc1-3d4e171dd246"}
 
 	// setup special rules to match scenes in xbvr and stashdb, rather than assuming scene_urls match
 	scrapeRules.StashSceneMatching["wankzvr"] = []StashSiteConfig{StashSiteConfig{

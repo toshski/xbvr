@@ -63,15 +63,18 @@ func GenericActorScrapers() {
 			`
 	case "sqlite3":
 		sqlcmd = `
+
 		with actorlist as (
 			SELECT actors.id, json_extract(json_each.value, '$.url') as url, json_extract(json_each.value, '$.type') as linktype
 			FROM actors, json_each(urls)
 			WHERE urls like '% scrape%' and  json_type(urls) = 'array'
 			and json_extract(json_each.value, '$.type') like '% scrape'
 		)
-		select actorlist.id, url, linktype from actorlist
-		left join external_reference_links erl on erl.internal_db_id = actorlist.id and external_source = linktype
-		where erl.id is null and linktype like '% scrape'
+		select actorlist.id, url, linktype, erl.id, linktype  from actorlist
+		left join external_reference_links erl on erl.internal_db_id = actorlist.id and erl.external_source = linktype
+		left join external_references er on er.id=erl.external_reference_id
+		where (erl.id is null or er.external_data = '{}') and linktype like '% scrape'		
+
 			`
 	}
 
