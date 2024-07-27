@@ -382,6 +382,7 @@ func (i HeresphereResource) getHeresphereScene(req *restful.Request, resp *restf
 			}
 		case "scrape_html":
 			sources := ScrapeHtml(scene.TrailerSource)
+			log.Infof("*** Calling scrape_html for %s", scene.TrailerSource)
 			media = copyVideoSourceResponse(sources, media)
 		case "scrape_json":
 			sources := ScrapeJson(scene.TrailerSource)
@@ -680,6 +681,11 @@ func (i HeresphereResource) getHeresphereScene(req *restful.Request, resp *restf
 		projection = "fisheye"
 	}
 
+	if scene.SceneType == "2D" {
+		addFeatureTag("Flat video")
+		projection = "perspective"
+		stereo = "mono"
+	}
 	title := scene.Title
 	thumbnailURL := getProto(req) + "://" + req.Request.Host + "/img/700x/" + strings.Replace(scene.CoverURL, "://", ":/", -1)
 

@@ -161,9 +161,16 @@ func matchSceneOnRules(sitename string, config models.StashSiteConfig) {
 	var xbrScenes []models.Scene
 	db.Preload("Cast").Where("scraper_id = ?", sitename).Find(&xbrScenes)
 
-	db.Joins("Left JOIN external_reference_links erl on erl.external_reference_id = external_references.id").
-		Where("external_references.external_source = ? and erl.internal_db_id is null and external_data like ?", "stashdb scene", "%"+stashId+"%").
-		Find(&stashScenes)
+	if config.StashSceneMatching[sitename].StashId != "" {
+		db.Debug().Joins("Left JOIN external_reference_links erl on erl.external_reference_id = external_references.id").
+			Where("external_references.external_source = ? and erl.internal_db_id is null and (external_data like ? or external_data like ?)", "stashdb scene", "%"+stashId+"%", "%"+config.StashSceneMatching[sitename].ParentId+"%").
+			Find(&stashScenes)
+
+	} else {
+		db.Joins("Left JOIN external_reference_links erl on erl.external_reference_id = external_references.id").
+			Where("external_references.external_source = ? and erl.internal_db_id is null and external_data like ?", "stashdb scene", "%"+stashId+"%").
+			Find(&stashScenes)
+	}
 
 	for _, stashScene := range stashScenes {
 		var data models.StashScene
