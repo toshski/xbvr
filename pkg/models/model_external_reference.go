@@ -944,6 +944,172 @@ func (scrapeRules ActorScraperConfig) buildGenericActorScraperRules() {
 	siteDetails.SiteRules = append(siteDetails.SiteRules, GenericActorScraperRule{XbvrField: "biography", Selector: `p.bio_about_text`})
 	siteDetails.SiteRules = append(siteDetails.SiteRules, GenericActorScraperRule{XbvrField: "image_url", Selector: `img.performer-pic`, ResultType: "attr", Attribute: "data-src", PostProcessing: []PostProcessing{{Function: "AbsoluteUrl"}}})
 	scrapeRules.GenericActorScrapingConfig["naughtyamericavr scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["diary-of-a-milf scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["my-naughty-latin-maid scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["naughty-flipside scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["big-cock-bully scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["my-sister-s-hot-friend scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["anal-college scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["asian-1-on-1 scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["la-sluts scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["i-have-a-wife scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["teens-love-cream scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["slut-step-mom scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["my-dad-s-hot-girlfriend scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["naughty-country-girls scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["naughty-athletics scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["my-wife-is-my-pornstar scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["diary-of-a-nanny scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["sleazy-stepdad scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["show-my-bf scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["fast-times scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["2-chicks-same-time scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["housewife-1-on-1 scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["dirty-wives-club scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["ass-masterpiece scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["big-cock-hero scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["mom-s-money scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["my-first-sex-teacher scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["lesbian-girl-on-girl scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["naughty-office scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["naughty-rich-girls scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["watch-your-mom scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["watch-your-wife scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["wives-on-vacation scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["latin-adultery scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["socal-coeds scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["latina-stepmom scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["open-family scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["neighbor-affair scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["my-girl-loves-anal scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["seduced-by-a-cougar scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["slut-stepsister scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["naughty-bookworms scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["the-passenger scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["milf-sugar-babes-classic scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["naughty-weddings scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["my-daughter-s-hot-friend scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["naughty-america scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["mrs-creampie scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["college-sugar-babes scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["milf-sugar-babes scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["perfect-fucking-strangers scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["after-school scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["summer-vacation scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["the-office scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["classroom scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["the-dressing-room scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["party-girls scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["t-a scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["the-dorm-room scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["the-spa scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["my-girlfriend scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["the-gym scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["my-naughty-massage scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["fuck-my-ass scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["super-sluts scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["spring-break scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["live-naughty-student scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["live-naughty-secretary scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["live-party-girl scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["live-gym-cam scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["live-naughty-teacher scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["live-naughty-milf scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["live-naughty-nurse scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["true-sex-stories scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["thundercock scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["real-pornstars-vr scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["my-girlfriend-s-busty-friend scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["my-wife-s-hot-friend scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["my-friend-s-hot-girl scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["tonight-s-fuck scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["my-friend-s-hot-mom scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["fans scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["pse-porn-star-experience scrape"] = siteDetails
+	siteDetails.Domain = "www.naughtyamerica.com"
+	scrapeRules.GenericActorScrapingConfig["american-daydreams scrape"] = siteDetails
 
 	siteDetails = GenericScraperRuleSet{}
 	siteDetails.Domain = "sexbabesvr.com"
@@ -1145,8 +1311,426 @@ func (scrapeRules ActorScraperConfig) getSiteUrlMatchingRules() {
 	}}
 	scrapeRules.StashSceneMatching["naughtyamericavr"] = []StashSiteConfig{StashSiteConfig{
 		StashId: "049c167b-0cf3-4965-aae5-f5150122a928", ParentId: "2be8463b-0505-479e-a07d-5abc7a6edd54", TagIdFilter: "6458e5cf-4f65-400b-9067-582141e2a329",
-		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
 	}}
+
+	scrapeRules.StashSceneMatching["diary-of-a-milf"] = StashSiteConfig{
+		StashId: "29ac3310-c6c7-4682-94ff-d177c8296474",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["my-naughty-latin-maid"] = StashSiteConfig{
+		StashId: "00e64364-e12e-437b-b5be-a01ac0908efd",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["naughty-flipside"] = StashSiteConfig{
+		StashId: "96b05bc0-8d1a-45b1-ba35-cb2df5689f2e",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["big-cock-bully"] = StashSiteConfig{
+		StashId: "d2451a9f-6bbc-408a-a309-5d9572a3cb08",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["my-sister's-hot-friend"] = StashSiteConfig{
+		StashId: "737bda5a-04f4-490b-8b98-094fde3479a2",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["anal-college"] = StashSiteConfig{
+		StashId: "36a4fe2f-91d1-4d38-9d6a-617a9dbd14a3",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["asian-1-on-1"] = StashSiteConfig{
+		StashId: "f4dcdfe1-d9ce-4c19-b656-f50ddd76e15e",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["la-sluts"] = StashSiteConfig{
+		StashId: "d3f546e0-c59a-45b5-899e-a2e4162c56cc",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["i-have-a-wife"] = StashSiteConfig{
+		StashId: "be2ed7eb-2501-4c02-9c1c-5b3b4545e891",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["teens-love-cream"] = StashSiteConfig{
+		StashId: "467dbe89-747e-4698-92bd-055b636e3c51",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["slut-step-mom"] = StashSiteConfig{
+		StashId: "f97ee9e4-97a7-4c6f-b6d3-11ddf30b6388",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["my-dad's-hot-girlfriend"] = StashSiteConfig{
+		StashId: "dc04ce00-6040-4faf-ae26-08de24355593",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["naughty-country-girls"] = StashSiteConfig{
+		StashId: "21a2af88-17e4-4cf7-8f38-c6ca96648fb0",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["naughty-athletics"] = StashSiteConfig{
+		StashId: "2530f291-a223-4f3b-975d-f02cc864049e",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["my-wife-is-my-pornstar"] = StashSiteConfig{
+		StashId: "e4afd9ea-62d1-44fe-9f8c-88afc5895970",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["diary-of-a-nanny"] = StashSiteConfig{
+		StashId: "c1e0cad8-5404-42c5-82f8-e43bb649133d",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["sleazy-stepdad"] = StashSiteConfig{
+		StashId: "165a72b4-b857-470e-a87f-bcc726030d01",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["show-my-bf"] = StashSiteConfig{
+		StashId: "4bfcaa7f-0e52-470d-b908-1553c9ec3a26",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["fast-times"] = StashSiteConfig{
+		StashId: "59bd774f-0709-4bbd-9033-96627031a73c",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["2-chicks-same-time"] = StashSiteConfig{
+		StashId: "2de55825-f617-405e-81e8-2b87d4ff9d5e",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["housewife-1-on-1"] = StashSiteConfig{
+		StashId: "4b39ad26-0dc1-4d1f-8bf9-8c565b2f78ee",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["dirty-wives-club"] = StashSiteConfig{
+		StashId: "f773a842-e6d3-4581-943c-f018104566d4",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["ass-masterpiece"] = StashSiteConfig{
+		StashId: "cceeb3ad-da2e-4394-9090-b9e05c996b5f",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["big-cock-hero"] = StashSiteConfig{
+		StashId: "7ac0ff7e-86ae-42cf-80b8-bb35ea0459b8",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["mom's-money"] = StashSiteConfig{
+		StashId: "f228135a-b51d-4884-9a44-58d3f2db285c",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["my-first-sex-teacher"] = StashSiteConfig{
+		StashId: "755845ff-f57f-4a7f-9093-057d0f82bc7c",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["lesbian-girl-on-girl"] = StashSiteConfig{
+		StashId: "f9a8ae3d-be78-4916-b1eb-e83fa64102c2",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["naughty-office"] = StashSiteConfig{
+		StashId: "dc201516-bf01-43f0-bc7a-2f816f8237e7",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["naughty-rich-girls"] = StashSiteConfig{
+		StashId: "65692f12-0308-43f5-8d26-59a6eaaf7a92",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["watch-your-mom"] = StashSiteConfig{
+		StashId: "96f4fdd6-cb3d-4743-8e5e-cb798f9bd38b",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["watch-your-wife"] = StashSiteConfig{
+		StashId: "e3fab37c-03c6-4613-a49b-b83b5b85bfd3",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["wives-on-vacation"] = StashSiteConfig{
+		StashId: "b94a380c-0336-4fee-9678-8fb04308bc3b",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["latin-adultery"] = StashSiteConfig{
+		StashId: "5d511c1d-d1bb-4aa5-bc81-a45bde63ad05",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["socal-coeds"] = StashSiteConfig{
+		StashId: "b6db34a7-674c-4716-8b6f-b3ee86473a19",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["latina-stepmom"] = StashSiteConfig{
+		StashId: "ef41afac-a8d7-4012-9a96-05561fa92304",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["open-family"] = StashSiteConfig{
+		StashId: "a50c7b87-8734-420a-bbe8-814b0e717ad2",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["neighbor-affair"] = StashSiteConfig{
+		StashId: "925b43c8-3dbf-449f-8e9f-de9b6d48b864",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["my-girl-loves-anal"] = StashSiteConfig{
+		StashId: "4f4df258-413a-49a1-9fe6-11820b3eb964",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["seduced-by-a-cougar"] = StashSiteConfig{
+		StashId: "1f1e4894-1665-48de-b7d7-a5341ddcd4b2",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["slut-stepsister"] = StashSiteConfig{
+		StashId: "13b2037d-8730-460d-8b81-00cd672194dd",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["naughty-bookworms"] = StashSiteConfig{
+		StashId: "35ebb4af-53e0-46a4-a07d-c25cac218804",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["the-passenger"] = StashSiteConfig{
+		StashId: "8a617a54-767b-4d00-85bb-8e0b2e5b140a",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["milf-sugar-babes-classic"] = StashSiteConfig{
+		StashId: "e5248638-1b07-4ad7-b6dc-63e5816df620",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["naughty-weddings"] = StashSiteConfig{
+		StashId: "b428a35c-1d4e-4d2c-9ae9-66908d72afb1",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["my-daughter's-hot-friend"] = StashSiteConfig{
+		StashId: "c6003a17-8d28-4eb6-a622-e3b055c3b4d8",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["naughty-america"] = StashSiteConfig{
+		StashId: "6284a6de-e7e4-478d-8457-de37d7c590a6",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["mrs.-creampie"] = StashSiteConfig{
+		StashId: "cba574ac-60eb-491c-98fa-203a1952d613",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["college-sugar-babes"] = StashSiteConfig{
+		StashId: "7567c71d-fdd4-4618-85c5-2addf800bd9d",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["milf-sugar-babes"] = StashSiteConfig{
+		StashId: "dad3dd6d-f417-4571-bdb7-8ac0ac02abce",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["perfect-fucking-strangers"] = StashSiteConfig{
+		StashId: "f0351b2a-f69d-41e9-b8f5-d9f1ac0effd4",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["after-school"] = StashSiteConfig{
+		StashId: "a09a40e7-7abb-40ce-95c7-07c11cc5d1f4",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["summer-vacation"] = StashSiteConfig{
+		StashId: "cd07e1ce-c279-4f37-874e-eeff0fc53f04",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["the-office"] = StashSiteConfig{
+		StashId: "9ce93889-66a4-4326-b1b7-79b55dd0c8a3",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["classroom"] = StashSiteConfig{
+		StashId: "fd7e55bf-fc73-41da-8dce-3258a16cb097",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["the-dressing-room"] = StashSiteConfig{
+		StashId: "8888fd9f-97be-42a1-9b64-e70b3eaa994a",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["party-girls"] = StashSiteConfig{
+		StashId: "db47323d-6ad7-4d7f-9998-25b704118ff9",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["t&a"] = StashSiteConfig{
+		StashId: "d0d91104-be9d-4288-aecd-f876fd4813da",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["the-dorm-room"] = StashSiteConfig{
+		StashId: "40397393-5f95-4416-a6fc-96379b1d74e8",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["the-spa"] = StashSiteConfig{
+		StashId: "2b718fb2-e778-45f0-b3c6-29afa41e13bf",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["my-girlfriend"] = StashSiteConfig{
+		StashId: "eb9d2101-549a-45ba-af9d-4f06cb4d4294",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["the-gym"] = StashSiteConfig{
+		StashId: "f43a88dc-c1f9-4bc3-9915-3f5adad9a0a8",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["my-naughty-massage"] = StashSiteConfig{
+		StashId: "8707c34a-b24a-4d7f-84d5-e77c8f5a36a6",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["fuck-my-ass"] = StashSiteConfig{
+		StashId: "85976d0d-3352-4596-82ab-f84bc5738555",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["super-sluts"] = StashSiteConfig{
+		StashId: "b7c82db6-6ca1-489e-ab44-48a5b8d62954",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["spring-break"] = StashSiteConfig{
+		StashId: "e77e0eb0-a458-4c60-b0d9-fe963b4ace9b",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["live-naughty-student"] = StashSiteConfig{
+		StashId: "62cbd71f-fb51-4c45-8d90-4a613305b67e",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["live-naughty-secretary"] = StashSiteConfig{
+		StashId: "46d9811e-a525-4488-a102-cb89d9eda4bf",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["live-party-girl"] = StashSiteConfig{
+		StashId: "49b52f06-4d64-4e66-9ea1-3b8cf15a7992",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["live-gym-cam"] = StashSiteConfig{
+		StashId: "2495e1e8-3476-4286-847b-5efc696cd235",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["live-naughty-teacher"] = StashSiteConfig{
+		StashId: "fb8f5bf1-c5b9-4420-8fc5-a2f61233aaf2",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["live-naughty-milf"] = StashSiteConfig{
+		StashId: "72b60bca-7e57-45e3-8d81-f146741c690f",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["live-naughty-nurse"] = StashSiteConfig{
+		StashId: "7b029768-6883-4052-a520-5fc7414803e7",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["true-sex-stories"] = StashSiteConfig{
+		StashId: "cff201f4-c395-4d2c-a494-d404119ec0bd",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["thundercock"] = StashSiteConfig{
+		StashId: "f405f909-d3db-4df3-9f99-0500d769f527",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["real-pornstars-vr"] = StashSiteConfig{
+		StashId: "7b5cc27b-8295-4976-b23c-46823050a678",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["my-girlfriend's-busty-friend"] = StashSiteConfig{
+		StashId: "536f9817-fed5-4a39-990b-4a6deabab633",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["my-wife's-hot-friend"] = StashSiteConfig{
+		StashId: "1f80c085-4c4d-4db1-b5ba-bc5122ac2c15",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["my-friend's-hot-girl"] = StashSiteConfig{
+		StashId: "2217778e-eeda-4be0-95e2-c73fe864c9bb",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["tonight's-fuck"] = StashSiteConfig{
+		StashId: "92295996-ce39-4053-adbe-44d26b1f44e0",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["my-friend's-hot-mom"] = StashSiteConfig{
+		StashId: "4c45b42d-dc81-484d-ae3f-cf87263d558f",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["fans"] = StashSiteConfig{
+		StashId: "0bf8bbce-6b4d-4ba8-9998-196189e65a90",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["pse-porn-star-experience"] = StashSiteConfig{
+		StashId: "c439594c-ac03-4391-8b5f-67d71d19875f",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+	scrapeRules.StashSceneMatching["american-daydreams"] = StashSiteConfig{
+		StashId: "1d514eb6-2225-436b-ae09-fda5fb11f5e3",
+		Rules: []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3},
+			{XbvrField: "scene_url", XbvrMatch: `oldid(-\d+)`, XbvrMatchResultPosition: 1, StashRule: `(naughtyamerica).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
+	}
+
 	scrapeRules.StashSceneMatching["povr-originals"] = []StashSiteConfig{StashSiteConfig{
 		StashId: "b95c0ee4-2e95-46cf-aa67-45c82bdcd5fc",
 		Rules:   []SceneMatchRule{{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(povr|wankzvr).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 3}},
