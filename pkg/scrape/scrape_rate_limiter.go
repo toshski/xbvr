@@ -63,6 +63,7 @@ func WaitBeforeVisit(rateLimiter string, visitFunc func(string) error, pageURL s
 			limiter.lastRequest = time.Time{}
 		}
 	}
+
 }
 func ScraperRateLimiterCheckErrors(domain string, err error) {
 	if err != nil {
