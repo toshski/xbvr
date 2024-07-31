@@ -834,7 +834,7 @@ func RestoreBundle(request RequestRestore) {
 		var err error
 		tlog.Infof("Restoring data ...")
 
-		json.UnmarshalFromString(request.UploadData, &bundleData)
+		err = json.UnmarshalFromString(request.UploadData, &bundleData)
 
 		if err == nil {
 			if bundleData.BundleVersion != "2.1" {
