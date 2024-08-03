@@ -486,11 +486,15 @@ func (i ExternalReference) searchForStashdbActor(req *restful.Request, resp *res
 		SceneCount int
 		Matched    bool
 	}
+	type StashSearchPerformerAliasResult struct {
+		Alias   string
+		Matched bool
+	}
 	type StashSearchPerformerResult struct {
 		Url            string
 		Name           string
 		Disambiguation string
-		Aliases        []string
+		Aliases        []StashSearchPerformerAliasResult
 		Id             string
 		ImageUrl       []string
 		DOB            string
@@ -524,10 +528,11 @@ func (i ExternalReference) searchForStashdbActor(req *restful.Request, resp *res
 	}
 
 	matchedStudios := map[string]struct{}{}
+	matchedAlias := map[string]struct{}{}
 
 	setupStashSearchResult := func(stashPerformer models.StashPerformer, weight int) StashSearchPerformerResult {
 		//common function to call to setup stash response details
-		result := StashSearchPerformerResult{Id: stashPerformer.ID, Url: "https://stashdb.org/performers/" + stashPerformer.ID, Weight: weight, Name: stashPerformer.Name, DOB: stashPerformer.BirthDate, Disambiguation: stashPerformer.Disambiguation, Aliases: stashPerformer.Aliases}
+		result := StashSearchPerformerResult{Id: stashPerformer.ID, Url: "https://stashdb.org/performers/" + stashPerformer.ID, Weight: weight, Name: stashPerformer.Name, DOB: stashPerformer.BirthDate, Disambiguation: stashPerformer.Disambiguation}
 		for _, image := range stashPerformer.Images {
 			result.ImageUrl = append(result.ImageUrl, image.URL)
 		}
@@ -538,6 +543,14 @@ func (i ExternalReference) searchForStashdbActor(req *restful.Request, resp *res
 			}
 			result.Studios = append(result.Studios, StashSearchPerformerStudioResult{Name: studio.Studio.Name, Id: studio.Studio.ID, Url: `https://stashdb.org/performers/` + stashPerformer.ID + `?studios=` + studio.Studio.ID, SceneCount: studio.SceneCount, Matched: matched})
 		}
+		for _, alias := range stashPerformer.Aliases {
+			_, matched := matchedAlias[strings.ToLower(alias)]
+			if matched {
+				matched = true
+			}
+			result.Aliases = append(result.Aliases, StashSearchPerformerAliasResult{Alias: alias, Matched: matched})
+		}
+
 		sort.Slice(result.Studios, func(i, j int) bool {
 			return result.Studios[i].Name < result.Studios[j].Name
 		})
@@ -577,11 +590,13 @@ func (i ExternalReference) searchForStashdbActor(req *restful.Request, resp *res
 			}
 			for _, alias := range stashPerformer.Aliases {
 				lcaseAlias := strings.ToLower(alias)
-				if lcaseAlias == lcaseActorName {
+				if strings.EqualFold(lcaseAlias, lcaseActorName) || strings.EqualFold(lcaseAlias, strings.ToLower(query)) {
 					scoreBump += 50
+					matchedAlias[strings.ToLower(alias)] = struct{}{}
 				} else {
-					if strings.Contains(lcaseAlias, lcaseActorName) || strings.Contains(lcaseActorName, lcaseAlias) {
+					if strings.Contains(lcaseAlias, lcaseActorName) || strings.Contains(lcaseActorName, lcaseAlias) || strings.Contains(lcaseAlias, strings.ToLower(query)) {
 						scoreBump += 20
+						matchedAlias[strings.ToLower(alias)] = struct{}{}
 					}
 				}
 			}

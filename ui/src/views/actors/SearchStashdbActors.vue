@@ -78,10 +78,10 @@
                   </div>
                   <div>
                     <strong>Aliases:</strong>
-                    <small> {{ props.row.Aliases.join(', ') }}</small>
+                    <b-tag v-for="alias in props.row.Aliases" :key="alias.Alias" :class="{ 'is-primary': alias.Matched }"  style="margin-right: 2px;"> {{ alias.Alias }}</b-tag>
                   </div>
                   <div>                    
-                    <b-tag v-for="link in props.row.Studios" :key="link.url"><a :href="link.Url" :class="{ 'bold-link': link.Matched }" target="_blank">{{ link.Name }}({{ link.SceneCount }})</a></b-tag>
+                    <b-tag v-for="link in props.row.Studios" :key="link.url"><a :href="link.Url" :class="{ 'bold-tag': link.Matched }" target="_blank" style="margin-right: 2px;">{{ link.Name }}({{ link.SceneCount }})</a></b-tag>
                   </div>
                 </div>
               </div>
@@ -243,7 +243,7 @@ export default {
 .smaller-text {
   font-size: 0.8em; /* or any smaller size you prefer */
 }
-.bold-link {
+.bold-tag {
   font-weight: bold;
 }
 </style>
