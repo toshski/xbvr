@@ -44,6 +44,7 @@ type StashPerformer struct {
 	MergedIds       []string                `json:"merged_ids"`
 	Created         string                  `json:"created"`
 	Updated         time.Time               `json:"updated"`
+	Scenes          []StashScene            `json:"scenes"`
 }
 
 type StashBodyModification struct {

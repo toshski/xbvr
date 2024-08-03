@@ -13,7 +13,8 @@
     <EditScene v-if="showEdit" />
     <ActorDetails v-if="showActorDetails"/>
     <EditActor v-if="showActorEdit" />
-    <SearchStashdb v-if="showSearchStashdb" />
+    <SearchStashdbScenes v-if="showSearchStashdbScenes" />
+    <SearchStashdbActors v-if="showSearchStashdbActors" />
 
     <QuickFind/>
 
@@ -31,10 +32,11 @@ import Details from './views/scenes/Details'
 import EditScene from './views/scenes/EditScene'
 import ActorDetails from './views/actors/ActorDetails'
 import EditActor from './views/actors/EditActor'
-import SearchStashdb from './views/scenes/SearchStashdb'
+import SearchStashdbScenes from './views/scenes/SearchStashdbScenes'
+import SearchStashdbActors from './views/actors/SearchStashdbActors'
 
 export default {
-  components: { Navbar, Socket, QuickFind, GlobalEvents, Details, EditScene, ActorDetails, EditActor, SearchStashdb },
+  components: { Navbar, Socket, QuickFind, GlobalEvents, Details, EditScene, ActorDetails, EditActor, SearchStashdbScenes,SearchStashdbActors },
   computed: {
     showOverlay () {
       return this.$store.state.overlay.details.show
@@ -48,8 +50,11 @@ export default {
     showActorEdit() {
       return this.$store.state.overlay.actoredit.show
     },
-    showSearchStashdb() {
-      return this.$store.state.overlay.searchStashDb.show
+    showSearchStashdbScenes() {
+      return this.$store.state.overlay.searchStashDbScenes.show
+    },
+    showSearchStashdbActors() {
+      return this.$store.state.overlay.searchStashDbActors.show
     },
   }
 }

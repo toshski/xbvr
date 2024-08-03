@@ -112,26 +112,18 @@ func (i ExternalReference) linkScene2Stashdb(req *restful.Request, resp *restful
 	resp.WriteHeaderAndEntity(http.StatusOK, scene)
 }
 
-func (i ExternalReference) searchForStashdb(req *restful.Request, resp *restful.Response) {
-	// add title search, exact
-	// return aa query string
-	// parse a query, return error message
-	// allow for an id or url
-
+func (i ExternalReference) searchForStashdbScene(req *restful.Request, resp *restful.Response) {
 	query := req.QueryParameter("q")
-	if query != "" && query != "undefined" {
-		log.Infof(query)
-	}
 
 	var warnings []string
-	type StashSearchperformerResult struct {
+	type StashSearchScenePerformerResult struct {
 		Name string
 		Url  string
 	}
-	type StashSearchResult struct {
+	type StashSearchSceneResult struct {
 		Url         string
 		ImageUrl    string
-		Performers  []StashSearchperformerResult
+		Performers  []StashSearchScenePerformerResult
 		Title       string
 		Studio      string
 		Duration    string
@@ -140,11 +132,11 @@ func (i ExternalReference) searchForStashdb(req *restful.Request, resp *restful.
 		Date        string
 		Id          string
 	}
-	type StashSearchResponse struct {
+	type StashSearchSceneResponse struct {
 		Status  string
-		Results map[string]StashSearchResult
+		Results []StashSearchSceneResult
 	}
-	results := make(map[string]StashSearchResult)
+	results := make(map[string]StashSearchSceneResult)
 
 	sceneId := req.PathParameter("scene-id")
 	var scene models.Scene
@@ -159,21 +151,21 @@ func (i ExternalReference) searchForStashdb(req *restful.Request, resp *restful.
 		scene.GetIfExistByPK(uint(id))
 	}
 	if scene.ID == 0 {
-		var response StashSearchResponse
-		response.Results = results
+		var response StashSearchSceneResponse
+		response.Results = []StashSearchSceneResult{}
 		response.Status = "XBVR Scene not found"
 		resp.WriteHeaderAndEntity(http.StatusOK, response)
 		return
 	}
 
-	setupStashSearchResult := func(stashScene models.StashScene, weight int) StashSearchResult {
+	setupStashSearchResult := func(stashScene models.StashScene, weight int) StashSearchSceneResult {
 		//common function to call to setup stash response details
-		result := StashSearchResult{Id: stashScene.ID, Url: "https://stashdb.org/scenes/" + stashScene.ID, Weight: weight, Title: stashScene.Title, Description: stashScene.Details, Date: stashScene.Date, Studio: stashScene.Studio.Name}
+		result := StashSearchSceneResult{Id: stashScene.ID, Url: "https://stashdb.org/scenes/" + stashScene.ID, Weight: weight, Title: stashScene.Title, Description: stashScene.Details, Date: stashScene.Date, Studio: stashScene.Studio.Name}
 		if len(stashScene.Images) > 0 {
 			result.ImageUrl = stashScene.Images[0].URL
 		}
 		for _, perf := range stashScene.Performers {
-			result.Performers = append(result.Performers, StashSearchperformerResult{Name: perf.Performer.Name, Url: `https://stashdb.org/performers/` + perf.Performer.ID})
+			result.Performers = append(result.Performers, StashSearchScenePerformerResult{Name: perf.Performer.Name, Url: `https://stashdb.org/performers/` + perf.Performer.ID})
 		}
 		if stashScene.Duration > 0 {
 			hours := stashScene.Duration / 3600 // calculate hours
@@ -194,8 +186,8 @@ func (i ExternalReference) searchForStashdb(req *restful.Request, resp *restful.
 		stashScene := scrape.GetStashDbScene(idTest)
 		if stashScene.Data.Scene.ID != "" {
 			results[stashScene.Data.Scene.ID] = setupStashSearchResult(stashScene.Data.Scene, 10000)
-			var response StashSearchResponse
-			response.Results = results
+			var response StashSearchSceneResponse
+			response.Results = []StashSearchSceneResult{results[stashScene.Data.Scene.ID]}
 			response.Status = ""
 			resp.WriteHeaderAndEntity(http.StatusOK, response)
 			return
@@ -204,8 +196,8 @@ func (i ExternalReference) searchForStashdb(req *restful.Request, resp *restful.
 
 	stashStudioIds := findStashStudioIds(scene.ScraperId)
 	if len(stashStudioIds) == 0 {
-		var response StashSearchResponse
-		response.Results = results
+		var response StashSearchSceneResponse
+		response.Results = []StashSearchSceneResult{}
 		response.Status = "Cannot find Stashdb Studio"
 		resp.WriteHeaderAndEntity(http.StatusOK, response)
 		return
@@ -419,30 +411,209 @@ func (i ExternalReference) searchForStashdb(req *restful.Request, resp *restful.
 	if len(results) == 0 {
 		warnings = append(warnings, "No Stashdb Scenes Found")
 	}
-	if len(results) > 100 {
-		// sort and limit the number of results
-
-		// Convert map to a slice of key-value pairs
-		pairs := make([]StashSearchResult, 0, len(results))
-		for _, v := range results {
-			pairs = append(pairs, v)
-		}
-		// Sort the slice by weight in descending order
-		sort.Slice(pairs, func(i, j int) bool {
-			return pairs[i].Weight > pairs[j].Weight
-		})
-		// Take the first 100 entries (or less if there are fewer than 100 entries)
-		top100 := pairs[:min(len(pairs), 100)]
-		results = make(map[string]StashSearchResult)
-		for _, item := range top100 {
-			results[item.Id] = item
-		}
+	// sort and limit the number of results
+	// Convert map to a slice of key-value pairs
+	pairs := make([]StashSearchSceneResult, 0, len(results))
+	for _, v := range results {
+		pairs = append(pairs, v)
 	}
-	var response StashSearchResponse
-	response.Results = results
+	// Sort the slice by weight in descending order
+	sort.Slice(pairs, func(i, j int) bool {
+		return pairs[i].Weight > pairs[j].Weight
+	})
+	// Take the first 100 entries (or less if there are fewer than 100 entries)
+	top100 := pairs[:min(len(pairs), 100)]
+	var response StashSearchSceneResponse
+	response.Results = top100
 	response.Status = strings.Join(warnings, ", ")
 	resp.WriteHeaderAndEntity(http.StatusOK, response)
 }
+
+func (i ExternalReference) linkActor2Stashdb(req *restful.Request, resp *restful.Response) {
+	actorId := req.PathParameter("actor-id")
+	stashPerformerId := req.PathParameter("stashdb-id")
+	stashPerformerId = strings.TrimPrefix(stashPerformerId, "https://stashdb.org/performers/")
+	var actor models.Actor
+
+	db, _ := models.GetDB()
+	defer db.Close()
+
+	id, _ := strconv.Atoi(actorId)
+	if id == 0 {
+		actor.GetIfExist(actorId)
+	} else {
+		actor.GetIfExistByPK(uint(id))
+	}
+	if actor.ID == 0 {
+		return
+	}
+
+	scrape.RefreshPerformer(stashPerformerId)
+	var actorRef models.ExternalReference
+	actorRef.FindExternalId("stashdb performer", stashPerformerId)
+	var performer models.StashPerformer
+	json.Unmarshal([]byte(actorRef.ExternalData), &performer)
+
+	xbvrLink := models.ExternalReferenceLink{InternalTable: "actors", InternalDbId: actor.ID, InternalNameId: actor.Name, MatchType: 90,
+		ExternalReferenceID: actorRef.ID, ExternalSource: actorRef.ExternalSource, ExternalId: actorRef.ExternalId}
+	actorRef.XbvrLinks = append(actorRef.XbvrLinks, xbvrLink)
+	actorRef.AddUpdateWithId()
+
+	externalreference.UpdateXbvrActor(performer, actor.ID)
+
+	// reread the actor to return updated data
+	actor.GetIfExistByPK(actor.ID)
+	resp.WriteHeaderAndEntity(http.StatusOK, actor)
+}
+
+func (i ExternalReference) searchForStashdbActor(req *restful.Request, resp *restful.Response) {
+	query := req.QueryParameter("q")
+
+	var warnings []string
+	type StashSearchPerformerSceneResult struct {
+		Title    string
+		Id       string
+		Url      string
+		Duration string
+	}
+	type StashSearchPerformerResult struct {
+		Url            string
+		Name           string
+		Disambiguation string
+		Aliases        []string
+		Id             string
+		ImageUrl       []string
+		Scenes         []StashSearchPerformerSceneResult
+		DOB            string
+		Weight         int
+	}
+	type StashSearchPerformersResponse struct {
+		Status  string
+		Results []StashSearchPerformerResult
+	}
+	results := make(map[string]StashSearchPerformerResult)
+
+	actorId := req.PathParameter("actor-id")
+	var actor models.Actor
+
+	db, _ := models.GetDB()
+	defer db.Close()
+
+	id, _ := strconv.Atoi(req.PathParameter("actor-id"))
+	if id == 0 {
+		actor.GetIfExist(actorId)
+	} else {
+		actor.GetIfExistByPK(uint(id))
+	}
+	if actor.ID == 0 {
+		var response StashSearchPerformersResponse
+		response.Results = []StashSearchPerformerResult{}
+		response.Status = "XBVR Actor not found"
+		resp.WriteHeaderAndEntity(http.StatusOK, response)
+		return
+	}
+
+	setupStashSearchResult := func(stashPerformer models.StashPerformer, weight int) StashSearchPerformerResult {
+		//common function to call to setup stash response details
+		result := StashSearchPerformerResult{Id: stashPerformer.ID, Url: "https://stashdb.org/performers/" + stashPerformer.ID, Weight: weight, Name: stashPerformer.Name, DOB: stashPerformer.BirthDate, Disambiguation: stashPerformer.Disambiguation, Aliases: stashPerformer.Aliases}
+		for _, image := range stashPerformer.Images {
+			result.ImageUrl = append(result.ImageUrl, image.URL)
+		}
+		duration := ""
+		for _, scene := range stashPerformer.Scenes {
+			if scene.Duration > 0 {
+				hours := scene.Duration / 3600 // calculate hours
+				scene.Duration %= 3600         // remaining seconds after hours
+				minutes := scene.Duration / 60 // calculate minutes
+				scene.Duration %= 60           // remaining seconds after minutes
+				duration = fmt.Sprintf("%02d:%02d:%02d", hours, minutes, scene.Duration)
+			}
+			result.Scenes = append(result.Scenes, StashSearchPerformerSceneResult{Title: scene.Title, Id: scene.ID, Url: `https://stashdb.org/scenes/` + scene.ID, Duration: duration})
+		}
+		return result
+	}
+
+	var guidRegex = regexp.MustCompile(`^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$`)
+	idTest := strings.TrimPrefix(strings.TrimSpace(query), "https://stashdb.org/performers/")
+
+	if guidRegex.MatchString(idTest) {
+		stashScene := scrape.GetStashPerformer(idTest)
+		if stashScene.Data.Performer.ID != "" {
+			results[stashScene.Data.Performer.ID] = setupStashSearchResult(stashScene.Data.Performer, 10000)
+			//  need to get studios
+			var response StashSearchPerformersResponse
+			response.Results = []StashSearchPerformerResult{}
+			response.Status = ""
+			resp.WriteHeaderAndEntity(http.StatusOK, response)
+			return
+		}
+	}
+
+	if strings.TrimSpace(query) == "" {
+		query = actor.Name
+	}
+	// define a function to update the results found
+	updateResults := func(stashPerformers []models.StashPerformer, weightIncrement int) {
+		for _, stashPerformer := range stashPerformers {
+			// consider adding weight bump for duration and date
+			scoreBump := 0
+			lcaseActorName := strings.ToLower(actor.Name)
+			if stashPerformer.Name == actor.Name {
+				scoreBump += 200
+			}
+			if strings.Contains(strings.ToLower(stashPerformer.Name), lcaseActorName) {
+				scoreBump += 30
+			}
+			for _, alias := range stashPerformer.Aliases {
+				lcaseAlias := strings.ToLower(alias)
+				if lcaseAlias == lcaseActorName {
+					scoreBump += 50
+				} else {
+					if strings.Contains(lcaseAlias, lcaseActorName) || strings.Contains(lcaseActorName, lcaseAlias) {
+						scoreBump += 20
+					}
+				}
+			}
+			// dob checks
+
+			if actor.Gender != "" && strings.EqualFold(actor.Gender, stashPerformer.Gender) {
+				scoreBump += 10
+			}
+
+			if mapEntry, exists := results[stashPerformer.ID]; exists {
+				mapEntry.Weight += weightIncrement + scoreBump
+				results[stashPerformer.ID] = mapEntry
+			} else {
+				results[stashPerformer.ID] = setupStashSearchResult(stashPerformer, weightIncrement+scoreBump)
+			}
+		}
+	}
+
+	stashPerformers := scrape.SearchPerformerResult{}
+	stashPerformers = scrape.SearchStashPerformer(query)
+	updateResults(stashPerformers.Data.Performers, 150)
+
+	if len(results) == 0 {
+		warnings = append(warnings, "No Stashdb Performers Found")
+	}
+	// Sort the results by the weight score and limit to 100
+	// Convert map to a slice of key-value pairs
+	pairs := make([]StashSearchPerformerResult, 0, len(results))
+	for _, v := range results {
+		pairs = append(pairs, v)
+	}
+	// Sort the slice by weight in descending order
+	sort.Slice(pairs, func(i, j int) bool {
+		return pairs[i].Weight > pairs[j].Weight
+	})
+	// Take the first 100 entries (or less if there are fewer than 100 entries)
+	top100 := pairs[:min(len(pairs), 100)]
+	var response StashSearchPerformersResponse
+	response.Results = top100
+	response.Status = strings.Join(warnings, ", ")
+	resp.WriteHeaderAndEntity(http.StatusOK, response)
+}
+
 func StashdbRunAll() {
 	go func() {
 		scrape.StashDb()
