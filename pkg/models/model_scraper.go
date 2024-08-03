@@ -48,6 +48,7 @@ type ScrapedScene struct {
 
 	ActorDetails map[string]ActorDetails `json:"actor_details"`
 	MasterSiteId string                  `json:"master_site_id"`
+	Cuepoints    []ScrapedCuepoint       `json:"cuepoints"`
 }
 
 type ActorDetails struct {
@@ -64,6 +65,10 @@ type TrailerScrape struct {
 	ContentPath    string `json:"content_path"`     // points to the content url uses jsonpath syntax
 	EncodingPath   string `json:"encoding_path"`    // optional, points to the encoding for the source using jsonpath syntax, eg h264, h265
 	QualityPath    string `json:"quality_path"`     // points to the quality using jsonpath syntax, eg 1440p, 5k
+}
+type ScrapedCuepoint struct {
+	Name      string  `json:"scene_url"`
+	TimeStart float64 `json:"time_start"`
 }
 
 func (s *ScrapedScene) ToJSON() ([]byte, error) {

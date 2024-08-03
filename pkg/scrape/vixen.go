@@ -124,10 +124,15 @@ func Vixen(wg *sync.WaitGroup, updateSite bool, knownScenes []string, out chan<-
 		})
 
 		// Tags
-		categories := GetCateegories(sceneId, scraperID)
-		for _, category := range categories {
+		results := GetCateegoriesAndChapters(sceneId, scraperID)
+		for _, category := range results.categories {
 			sc.Tags = append(sc.Tags, category)
 		}
+		var cuepoints []models.ScrapedCuepoint
+		for _, cuepoint := range results.chapters {
+			cuepoints = append(cuepoints, models.ScrapedCuepoint{Name: cuepoint.title, TimeStart: float64(cuepoint.seconds)})
+		}
+		sc.Cuepoints = cuepoints
 
 		// trailer details
 		sc.TrailerType = scraperID
@@ -219,9 +224,19 @@ func fileExists(path string) bool {
 	return !os.IsNotExist(err)
 }
 
-func GetCateegories(sceneId string, scraper string) []string {
+type chapter struct {
+	title   string
+	seconds int
+}
+type categoriesAndChapters struct {
+	categories []string
+	chapters   []chapter
+}
+
+func GetCateegoriesAndChapters(sceneId string, scraper string) categoriesAndChapters {
 	var categories []string
-	query := fmt.Sprintf(`{"query":"query getRelatedVideos($videoSlug: ID!) { findOneVideo(input: {videoId: $videoSlug, site: BLACKEDRAW}) { id: uuid videoId slug categories {name} __typename } } ","operationName":"getRelatedVideos","variables":{"videoSlug":%s}}`, sceneId)
+	var cueppoints []chapter
+	query := fmt.Sprintf(`{"query":"query getRelatedVideos($videoSlug: ID!) { findOneVideo(input: {videoId: $videoSlug}) { id: uuid videoId slug categories {name} chapters { video { title seconds } }}  } ","operationName":"getRelatedVideos","variables":{"videoSlug":%s}}`, sceneId)
 	sceneJson := string(callVixenGraphql(query, scraper))
 
 	if gjson.Get(sceneJson, "data.findOneVideo").Exists() {
@@ -231,8 +246,16 @@ func GetCateegories(sceneId string, scraper string) []string {
 			categories = append(categories, category.String())
 			return true // return true to continue iterating
 		})
+		chaptersJson := gjson.Get(sceneJson, "data.findOneVideo.chapters.video")
+		chaptersJson.ForEach(func(key, value gjson.Result) bool {
+			cuepointTitle := value.Get("title").String()
+			seconds := value.Get("seconds").Int()
+			cueppoints = append(cueppoints, chapter{title: cuepointTitle, seconds: int(seconds)})
+			return true // return true to continue iterating
+		})
 	}
-	return categories
+	results := categoriesAndChapters{categories: categories, chapters: cueppoints}
+	return results
 }
 
 func ProcessVixenWatchRequest(sceneId string, scraper string) models.VideoSourceResponse {
