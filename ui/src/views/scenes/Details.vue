@@ -125,6 +125,7 @@
                       <watched-button :item="item" v-if="!displayingAlternateSource"/>
                       <edit-button :item="item"/>
                       <refresh-button :item="item" v-if="!displayingAlternateSource"/>
+                      <link-stashdb-button :item="item" v-if="!this.stashLinkExists"/>
                     </div>
                   </div>
                 </div>
@@ -397,6 +398,7 @@ import VueLoadImage from 'vue-load-image'
 import GlobalEvents from 'vue-global-events'
 import StarRating from 'vue-star-rating'
 import FavouriteButton from '../../components/FavouriteButton'
+import LinkStashdbButton from '../../components/LinkStashdbButton'
 import WatchlistButton from '../../components/WatchlistButton'
 import WishlistButton from '../../components/WishlistButton'
 import WatchedButton from '../../components/WatchedButton'
@@ -407,7 +409,7 @@ import HiddenButton from '../../components/HiddenButton'
 
 export default {
   name: 'Details',
-  components: { VueLoadImage, GlobalEvents, StarRating, WatchlistButton, FavouriteButton, WishlistButton, WatchedButton, EditButton, RefreshButton, TrailerlistButton, HiddenButton },
+  components: { VueLoadImage, GlobalEvents, StarRating, WatchlistButton, FavouriteButton, LinkStashdbButton, WishlistButton, WatchedButton, EditButton, RefreshButton, TrailerlistButton, HiddenButton },
   data () {
     return {
       index: 1,
@@ -435,6 +437,7 @@ export default {
       castimages: [],
       searchfields: [],
       alternateSources: [],
+      stashLinkExists: false,
       waitingForQuickFind: false,
     }
   },
@@ -557,6 +560,7 @@ export default {
       return false
     },
     async getAlternateSceneSources() {
+      this.stashLinkExists = false
       this.alternateSources = [];
       if (this.displayingAlternateSource) return 0
       try {
@@ -567,6 +571,9 @@ export default {
         response.forEach(altsrc => {
           if (altsrc.external_source.startsWith("alternate scene ")) {
             this.alternateSources.push(altsrc)
+          }
+          if (altsrc.external_source.includes('stashdb')) {
+            this.stashLinkExists = true
           }
         });
         return this.alternateSources.length;
