@@ -120,10 +120,14 @@ func processAuthorLink(row outputList, siteRules map[string]models.GenericScrape
 	defer wg.Done()
 	var actor models.Actor
 	actor.GetIfExistByPK(row.Id)
-	for source, rule := range siteRules {
-		// this handles examples like 'vrphub-vrhush scrape' needing to match 'vrphub scrape'
-		if strings.HasPrefix(row.Linktype, strings.TrimSuffix(source, " scrape")) {
-			applyRules(row.Url, row.Linktype, rule, &actor, false)
+	if strings.HasSuffix(row.Linktype, "adulttime scrape") {
+		ScrapeAdulttimeActor(row.Id, row.Url, row.Linktype)
+	} else {
+		for source, rule := range siteRules {
+			// this handles examples like 'vrphub-vrhush scrape' needing to match 'vrphub scrape'
+			if strings.HasPrefix(row.Linktype, strings.TrimSuffix(source, " scrape")) {
+				applyRules(row.Url, row.Linktype, rule, &actor, false)
+			}
 		}
 	}
 	// Release the semaphore
