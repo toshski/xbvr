@@ -17,7 +17,6 @@ import (
 	"github.com/dustin/go-humanize"
 	restfulspec "github.com/emicklei/go-restful-openapi/v2"
 	"github.com/emicklei/go-restful/v3"
-	"github.com/markphelps/optional"
 	"github.com/tidwall/gjson"
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/text/language"
@@ -25,6 +24,7 @@ import (
 
 	"github.com/xbapps/xbvr/pkg/config"
 	"github.com/xbapps/xbvr/pkg/models"
+	"github.com/xbapps/xbvr/pkg/scrape"
 	"github.com/xbapps/xbvr/pkg/tasks"
 )
 
@@ -353,11 +353,14 @@ func (i HeresphereResource) getHeresphereScene(req *restful.Request, resp *restf
 		videoLength = file.VideoDuration
 	}
 
-	if len(videoFiles) == 0 && config.Config.Web.SceneTrailerlist {
+	if config.Config.Web.SceneTrailerlist {
 		switch scene.TrailerType {
 		case "heresphere":
 			heresphereScene := LoadHeresphereScene(scene.TrailerSource)
 			media = append(media, heresphereScene.Media...)
+		case "newsensations":
+			sources := scrape.EnqueueNSWatchRequest(scene.TrailerSource)
+			media = copyVideoSourceResponse(sources, media)
 		case "slr", "deovr":
 			deovrScene := LoadDeovrScene(scene.TrailerSource)
 			var hsp HeresphereMedia
@@ -682,6 +685,9 @@ func (i HeresphereResource) getHeresphereScene(req *restful.Request, resp *restf
 
 	title := scene.Title
 	thumbnailURL := getProto(req) + "://" + req.Request.Host + "/img/700x/" + strings.Replace(scene.CoverURL, "://", ":/", -1)
+	if strings.HasPrefix(scene.CoverURL, "/myfiles") {
+		thumbnailURL = getProto(req) + "://" + req.Request.Host + "/img/700x/" + getProto(req) + ":/" + req.Request.Host + scene.CoverURL
+	}
 
 	if scene.IsScripted {
 		title = scene.GetFunscriptTitle()
@@ -978,8 +984,6 @@ func (i HeresphereResource) getHeresphereLibrary(req *restful.Request, resp *res
 		var r models.RequestSceneList
 
 		if err := json.Unmarshal([]byte(savedPlaylists[i].SearchParams), &r); err == nil {
-			r.IsAccessible = optional.NewBool(true)
-			r.IsAvailable = optional.NewBool(true)
 
 			list := models.QuerySceneIDs(r)
 

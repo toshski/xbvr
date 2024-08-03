@@ -96,8 +96,10 @@ func matchOnSceneUrl() {
 			if url.Type == "STUDIO" {
 				var xbvrScene models.Scene
 				for _, scene := range unmatchedXbvrScenes {
-					sceneurl := removeQueryFromURL(scene.SceneURL)
-					tmpurl := removeQueryFromURL(url.URL)
+					// sceneurl := removeQueryFromURL(scene.SceneURL)
+					// tmpurl := removeQueryFromURL(url.URL)
+					sceneurl := scene.SceneURL
+					tmpurl := url.URL
 					sceneurl = simplifyUrl(sceneurl)
 					tmpurl = simplifyUrl(tmpurl)
 					if strings.EqualFold(sceneurl, tmpurl) {

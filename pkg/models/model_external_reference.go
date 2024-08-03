@@ -1206,6 +1206,84 @@ func (scrapeRules ActorScraperConfig) getSiteUrlMatchingRules() {
 		StashId: "3a9883f6-9642-4be1-9a65-d8d13eadbdf0",
 		Rules:   []SceneMatchRule{{XbvrField: "scene_url", XbvrMatch: `(lethalhardcorevr.com).*\/(\d{6,8})\/.*`, XbvrMatchResultPosition: 2, StashRule: `(lethalhardcorevr.com).*\/(\d{6,8})\/.*`, StashMatchResultPosition: 2}},
 	}}
+	scrapeRules.StashSceneMatching["newsensations"] = []StashSiteConfig{
+		StashSiteConfig{
+			StashId: "3e8fb21e-1c95-44f6-839c-8f24ae7d48f9",
+			Rules:   []SceneMatchRule{{StashField: "title/date"}, {StashField: "title"}},
+		},
+		StashSiteConfig{ // Girl Girl XXX
+			StashId: "3e9fc243-57ce-429d-89c4-ba96cd63d415",
+			Rules:   []SceneMatchRule{{StashField: "title/date"}, {StashField: "title"}},
+		},
+		StashSiteConfig{ // Hot Wife XXX
+			StashId: "e99e0db2-086c-445f-a031-9025ef3edb1a",
+			Rules:   []SceneMatchRule{{StashField: "title/date"}, {StashField: "title"}},
+		},
+		StashSiteConfig{ // FamilyXXX
+			StashId: "f3a845db-1968-4e43-af24-4a57cbbe4bc2",
+			Rules:   []SceneMatchRule{{StashField: "title/date"}, {StashField: "title"}},
+		},
+		StashSiteConfig{ //Digital Sin
+			StashId: "1a6c64c5-dde7-477c-addb-c3d1381cf593",
+			Rules:   []SceneMatchRule{{StashField: "title/date"}, {StashField: "title"}},
+		},
+		StashSiteConfig{ // Ashlynn Brooke
+			StashId: "5a3f1f11-d0f2-410c-bfbb-eb2083c13898",
+			Rules:   []SceneMatchRule{{StashField: "title/date"}, {StashField: "title"}},
+		},
+		StashSiteConfig{ // Shane Diesel XXX
+			StashId: "66d57e6c-ade4-408e-babb-dd3f6bc80e14",
+			Rules:   []SceneMatchRule{{StashField: "title/date"}, {StashField: "title"}},
+		},
+		StashSiteConfig{ // Tabu Tales
+			StashId: "7f70e6e6-bb8a-4dd3-8b3b-2a996109be62",
+			Rules:   []SceneMatchRule{{StashField: "title/date"}, {StashField: "title"}},
+		},
+		StashSiteConfig{ // Tales From The Edge
+			StashId: "c05e2623-0a97-406b-aa97-ab1e3f144583",
+			Rules:   []SceneMatchRule{{StashField: "title/date"}, {StashField: "title"}},
+		},
+		StashSiteConfig{ // Parody Pass
+			StashId: "21fe79a9-1f9e-4c1b-b337-86dfc8244229",
+			Rules:   []SceneMatchRule{{StashField: "title/date"}, {StashField: "title"}},
+		},
+		StashSiteConfig{ // Fresh Outta High School
+			StashId: "41af2017-5ab1-49ff-9f64-9a7f60c2b1ee",
+			Rules:   []SceneMatchRule{{StashField: "title/date"}, {StashField: "title"}},
+		},
+		StashSiteConfig{ // Heavy Handfuls
+			StashId: "61867e3c-bf8f-4ddd-9f13-f3670dfd6a36",
+			Rules:   []SceneMatchRule{{StashField: "title/date"}, {StashField: "title"}},
+		},
+		StashSiteConfig{ // Jizz Bomb
+			StashId: "e90bad47-d6fe-45af-8bd0-5101bdb22ae2",
+			Rules:   []SceneMatchRule{{StashField: "title/date"}, {StashField: "title"}},
+		},
+		StashSiteConfig{ // Unlimited MILFs
+			StashId: "9f5c4d26-ea86-4eca-9a29-9c6a5c01d698",
+			Rules:   []SceneMatchRule{{StashField: "title/date"}, {StashField: "title"}},
+		},
+		StashSiteConfig{ // Stretched Out Snatch!
+			StashId: "67a5cb93-2abd-4179-a44a-395eeefcdae0",
+			Rules:   []SceneMatchRule{{StashField: "title/date"}, {StashField: "title"}},
+		},
+		// StashSiteConfig{ // POV Fantasy
+		// 	StashId: "20e48981-b5b5-40d2-9d76-3a65daa107dd",
+		// 	Rules:   []SceneMatchRule{{StashField: "title/date"},{StashField: "title"}},
+		// },
+		// StashSiteConfig{ // Sadie West
+		// 	StashId: "4f389486-80d0-4bb0-8a14-bbac9c92e9b8",
+		// 	Rules:   []SceneMatchRule{{StashField: "title/date"},{StashField: "title"}},
+		// },
+		// StashSiteConfig{ //
+		// 	StashId: "",
+		// 	Rules:   []SceneMatchRule{{StashField: "title/date"},{StashField: "title"}},
+		// },
+		StashSiteConfig{ // The Lesbian Experience
+			StashId: "9ae5bb01-a0b6-43c9-8cf3-c35e86337b76",
+			Rules:   []SceneMatchRule{{StashField: "title/date"}, {StashField: "title"}},
+		},
+	}
 
 	commonDb.Where(&Site{IsEnabled: true}).Order("id").Find(&sites)
 	for _, site := range sites {
