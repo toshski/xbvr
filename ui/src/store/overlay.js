@@ -40,9 +40,13 @@ const state = {
     show:false,
     site: '',
   },
-  searchStashDb: {
+  searchStashDbScenes: {
     show: false,
     scene: null
+  },
+  searchStashDbActors: {
+    show: false,
+    actor: null
   },
   changeDetailsTab: -1,
 }
@@ -140,15 +144,23 @@ const mutations = {
   hideSceneMatchParams (state, payload) {
     state.sceneMatchParams.show = false
   },
-  showSearchStashdb (state, payload) {
-    console.log("overlay showSearchStashdb")
-    state.searchStashDb.scene = payload.scene
-    state.searchStashDb.show = true
+  showSearchStashdbScenes (state, payload) {
+    console.log("showSearchStashdbScenes", payload)
+    state.searchStashDbScenes.scene = payload.item
+    state.searchStashDbScenes.show = true
   },
-  hideSearchStashdb (state) {
-    console.log("overlay hideSearchStashdb")
-    state.searchStashDb.scene = null
-    state.searchStashDb.show = false
+  hideSearchStashdbScenes (state) {
+    state.searchStashDbScenes.scene = null
+    state.searchStashDbScenes.show = false
+  },
+  showSearchStashdbActors (state, payload) {
+    console.log("showSearchStashdbActors", payload)
+    state.searchStashDbActors.actor = payload.item
+    state.searchStashDbActors.show = true
+  },
+  hideSearchStashdbActors (state) {
+    state.searchStashDbActors.actor = null
+    state.searchStashDbActors.show = false
   },
   changeDetailsTab (state, payload) {
     console.log("ochange tab")

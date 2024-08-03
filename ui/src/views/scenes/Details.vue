@@ -12,7 +12,7 @@
       @keydown.shift.w="$store.commit('sceneList/toggleSceneList', {scene_id: item.scene_id, list: 'watched'})"
       @keydown.t="$store.commit('sceneList/toggleSceneList', {scene_id: item.scene_id, list: 'trailerlist'})"
       @keydown.e="$store.commit('overlay/editDetails', {scene: item})"
-      @keydown.s="$store.commit('overlay/showSearchStashdb', {scene: item})"
+      @keydown.s="$store.commit('overlay/showSearchStashdbScenes', {scene: item})"
       @keydown.g="toggleGallery"
       @keydown.48="setRating(0)"
     />
@@ -128,7 +128,7 @@
                       <refresh-button :item="item" v-if="!displayingAlternateSource"/>
                       <rescrape-button :item="item" v-if="!displayingAlternateSource"/>
                       <!-- <link-stashdb-button :item="item" v-if="!this.stashLinkExists"/> -->
-                      <link-stashdb-button :item="item" />
+                      <link-stashdb-button :item="item" objectType="scene" />
                     </div>
                   </div>
                 </div>
