@@ -78,12 +78,16 @@ func (i ExternalReference) linkScene2Stashdb(req *restful.Request, resp *restful
 		if len(extreflinks) == 0 {
 			stashPerformerId := ""
 			for _, stashPerf := range stashScene.Data.Scene.Performers {
-				if stashPerf.Performer.Name == actor.Name {
+				if strings.EqualFold(stashPerf.Performer.Name, actor.Name) {
+					stashPerformerId = stashPerf.Performer.ID
+					continue
+				}
+				if strings.EqualFold(stashPerf.As, actor.Name) {
 					stashPerformerId = stashPerf.Performer.ID
 					continue
 				}
 				for _, alias := range stashPerf.Performer.Aliases {
-					if alias == actor.Name {
+					if strings.EqualFold(alias, actor.Name) {
 						stashPerformerId = stashPerf.Performer.ID
 					}
 				}
@@ -248,13 +252,18 @@ func (i ExternalReference) searchForStashdb(req *restful.Request, resp *restful.
 			for _, actor := range scene.Cast {
 				found := false
 				for _, sp := range stashscene.Performers {
-					if actor.Name == sp.Performer.Name {
+					if strings.EqualFold(actor.Name, sp.Performer.Name) {
+						found = true
+						continue
+					}
+					// performer as
+					if strings.EqualFold(actor.Name, sp.As) {
 						found = true
 						continue
 					}
 					// try aliases
 					for _, alias := range sp.Performer.Aliases {
-						if alias == actor.Name {
+						if strings.EqualFold(alias, actor.Name) {
 							found = true
 							continue
 						}
@@ -303,7 +312,7 @@ func (i ExternalReference) searchForStashdb(req *restful.Request, resp *restful.
 		fingerprintQuery := `
 		{"input":{
 					"page": 1,
-					"per_page": 25,
+					"per_page": 150,
 					"sort": "UPDATED_AT",
 					"fingerprints": {"value": [` +
 			fingerprintList +
@@ -312,7 +321,6 @@ func (i ExternalReference) searchForStashdb(req *restful.Request, resp *restful.
 			}`
 		log.Infof("%s", fingerprintQuery)
 		stashScenes := scrape.GetScenePage(fingerprintQuery)
-		log.Infof("%s", stashScenes)
 		updateResults(stashScenes, 400, performers, stashStudioIds)
 	}
 
@@ -323,7 +331,7 @@ func (i ExternalReference) searchForStashdb(req *restful.Request, resp *restful.
 		{"input":{
 					"studios": { "modifier": "EQUALS", "value": [` + studio + `] },					
 					"page": 1,
-					"per_page": 25,
+					"per_page": 150,
 					"sort": "UPDATED_AT",
 					"title": "\"` +
 			scene.Title + `\""
@@ -331,7 +339,6 @@ func (i ExternalReference) searchForStashdb(req *restful.Request, resp *restful.
 			}`
 		log.Infof("%s", titleQuery)
 		stashScenes = scrape.GetScenePage(titleQuery)
-		log.Infof("%s", stashScenes)
 		updateResults(stashScenes, 150, performers, stashStudioIds)
 	}
 
@@ -342,7 +349,7 @@ func (i ExternalReference) searchForStashdb(req *restful.Request, resp *restful.
 			{"input":{
 						"studios": { "modifier": "EQUALS", "value": [` + studio + `] },
 						"page": 1,
-						"per_page": 25,
+						"per_page": 150,
 						"sort": "UPDATED_AT",
 						"performers": {"value": [` +
 				performerList +
