@@ -22,7 +22,54 @@
       <div class="modal-card-body">
             <div >
                 <!-- <div><span class="has-text-danger is-small">warnindgS</span></div>                 -->
-                <b-field>                    
+                  <b-field label="Find actor...">
+      <b-input
+        v-model="queryString"
+        placeholder="Find actor..."
+        @input="debouncedSearch"
+        :loading="isFetching"
+        custom-class="is-large"
+      ></b-input>
+    </b-field>
+    
+    <b-table :data="searchResults" >
+      <b-table-column field="Name" >
+        <template slot-scope="props">
+          <div class="media">
+            <div class="media-left">
+              <vue-load-image height="50px">
+                <img slot="image" :src="props.row.ImageUrl && props.row.ImageUrl.length ? getImageURL(props.row.ImageUrl[0]) : '/ui/images/blank_female_profile.png'" width="100" />
+                <img slot="preloader" src="/ui/images/blank.png" width="100" />
+                <img slot="error" src="/ui/images/blank.png" width="100" />
+              </vue-load-image>
+              <div v-if="props.row.DOB">
+                <small>
+                  <strong>Birth Date:</strong> {{ format(parseISO(props.row.DOB), "yyyy-MM-dd") }}
+                </small>
+              </div>
+              <div>
+                <small>
+                  <strong>Score:</strong> {{ props.row.Weight }}
+                </small>
+              </div>
+              <div>
+                <a class="button is-primary is-small" @click="linktoStashdb(props.row)" :title="'Link Actor with stashdb'">
+                  <b-icon pack="mdi" :icon="'link-variant-plus'" size="is-small" />
+                </a>
+              </div>
+            </div>
+            <div class="media-content">
+              <div class="truncate">
+                <strong>
+                  <a :href="props.row.Url" target="_blank">{{ props.row.Name }} - {{ props.row.Disambiguation }}</a>
+                </strong>
+              </div>
+            </div>
+          </div>
+        </template>
+      </b-table-column>
+    </b-table>
+                    <b-field v-if="false">                                      
                     <b-autocomplete
                         ref="autocompleteInput"
                         :data="searchResults"
@@ -83,6 +130,15 @@ import ky from 'ky'
 import VueLoadImage from 'vue-load-image'
 import { format, parseISO } from 'date-fns'
 
+function debounce(func, wait) {
+  let timeout;
+  return function(...args) {
+    const context = this;
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(context, args), wait);
+  };
+}
+
 export default {
   name: 'SearchStashdbActors',
   components: {  GlobalEvents, VueLoadImage },
@@ -97,12 +153,17 @@ export default {
         actor: "",
         }        
   },
+  created() {
+    this.debouncedSearch = debounce(this.searchStashdb, 750); // 750ms delay
+  },
   mounted () {
     const item = Object.assign({}, this.$store.state.overlay.searchStashDbActors.actor)    
     console.log("insearch stash")
     console.log(item)
     this.actor = item
-    this.openDialog(item)    
+    this.openDialog(item)
+    this.queryString=this.actor.name
+    this.query=this.actor.name
   },
   methods: {
     format,
@@ -147,6 +208,7 @@ export default {
         })
     },    
     getImageURL (u) {        
+      console.log("getimage",u)
       if (u != undefined && u.startsWith('http')) {
         return '/img/120x/' + u.replace('://', ':/')
       } else {
@@ -167,6 +229,9 @@ export default {
         });
         this.actor = actor
     },
+    dump(p) {
+console.log("********** dump",p)
+    }
   },
   computed: {
 
