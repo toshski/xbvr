@@ -126,7 +126,8 @@
                       <watched-button :item="item" v-if="!displayingAlternateSource"/>
                       <edit-button :item="item"/>
                       <refresh-button :item="item" v-if="!displayingAlternateSource"/>
-                      <link-stashdb-button :item="item" v-if="!this.stashLinkExists"/>
+                      <!-- <link-stashdb-button :item="item" v-if="!this.stashLinkExists"/> -->
+                      <link-stashdb-button :item="item" />
                     </div>
                   </div>
                 </div>
