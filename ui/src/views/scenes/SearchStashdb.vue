@@ -15,7 +15,7 @@
 
     <div class="modal-card" id="test" style="height: 65vh; width: 40vw; left: -20vw">
       <header class="modal-card-head">
-        <p class="modal-card-title">Search Stashdb 3</p>
+        <p class="modal-card-title">Search Stashdb</p>
         <button class="delete" @click="close" aria-label="close"></button>
       </header>
 
@@ -36,7 +36,6 @@
                         custom-class="is-large"
                         max-height="450">
 
-                                <div >warning 2</div>
                         <template slot-scope="props" >
                             <div class="media">
                                 <div class="media-left">
@@ -55,7 +54,7 @@
                                   </div>
                                 </div>
                                 <div class="media-content">
-                                    <div class="truncate"><strong><a :href="props.option.Url"  target="_blank">{{ props.option.Title }}</a></strong></div>                                    
+                                    <div class="truncate"><strong><a :href="props.option.Url"  target="_blank">{{ props.option.Studio }} - {{ props.option.Title }}</a></strong></div>                                    
                                     <div><small style="white-space: normal; display: block;">{{props.option.Description}}</small></div>
                                     <div style="margin-top:0.5em">                                        
                                         <small style="white-space: normal; display: block;">
