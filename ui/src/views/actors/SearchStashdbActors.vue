@@ -25,13 +25,21 @@
             <template slot-scope="props">
               <div class="media">
                 <div class="media-left">
-                  <vue-load-image height="50px">
-                    <img slot="image" :src="props.row.ImageUrl && props.row.ImageUrl.length ? getImageURL(props.row.ImageUrl[0]) : '/ui/images/blank_female_profile.png'" width="100"  @mouseover="setShowTooltipImage(props.row.ImageUrl[0])" @mouseout="setShowTooltipImage('')"/>
-                    <img slot="preloader" src="/ui/images/blank.png" width="100" />
-                    <img slot="error" src="/ui/images/blank.png" width="100" />
-                  </vue-load-image>
-                    <div v-if="tooltipImage!='' && tooltipImage==props.row.ImageUrl[0]" class="tooltipimg" @mouseout="setShowTooltipImage('')">
-                      <img :src="tooltipImage" alt="Tooltip Image" width="300px" />
+                  <b-carousel :autoplay="false" :indicator="false" icon-size="is-small" width="120">
+                    <b-carousel-item v-for="(image, index) in props.row.ImageUrl" :key="index">
+                          <vue-load-image height="50px">
+                            <img slot="image" :src="image && image.length ? getImageURL(image) : '/ui/images/blank_female_profile.png'" width="100"  @mouseover="setShowTooltipImage(image, props.row.Id)" @mouseout="setShowTooltipImage('','-1')"/>
+                            <img slot="preloader" src="/ui/images/blank.png" width="100" />
+                            <img slot="error" src="/ui/images/blank.png" width="100" />
+                          </vue-load-image>
+                    </b-carousel-item>
+                  </b-carousel>
+                    <div v-if="tooltipImage!='' && tooltipID==props.row.Id" class="tooltipimg" @mouseout="setShowTooltipImage('','-2')">                      
+                          <vue-load-image width="300">
+                            <img slot="image" :src="tooltipImage" width="300"  />
+                            <img slot="preloader" src="/ui/images/blank.png" width="300" />
+                            <img slot="error" src="/ui/images/blank.png" width="300" />
+                          </vue-load-image>
                     </div>
                   <div v-if="props.row.DOB">
                     <span class="smaller-text">
@@ -105,6 +113,7 @@ export default {
         queryString: "",
         isFetching: false,
         tooltipImage: "",
+        tooltipID: "",
         actor: "",
         }        
   },
@@ -165,8 +174,9 @@ export default {
         });
         this.actor = actor
     },
-    setShowTooltipImage(val){
+    setShowTooltipImage(val, id){
       this.tooltipImage=val
+      this.tooltipID=id
     },
   },
   computed: {
