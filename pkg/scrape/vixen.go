@@ -242,7 +242,7 @@ func GetCateegoriesAndChapters(sceneId string, scraper string) categoriesAndChap
 	var categories []string
 	var cueppoints []chapter
 	query := fmt.Sprintf(`{"query":"query getRelatedVideos($videoSlug: ID!) { findOneVideo(input: {videoId: $videoSlug}) { id: uuid videoId slug categories {name} chapters { video { title seconds } }}  } ","operationName":"getRelatedVideos","variables":{"videoSlug":%s}}`, sceneId)
-	sceneJson := string(callVixenGraphql(query, scraper, false))
+	sceneJson := string(callVixenGraphql(query, scraper, true))
 
 	if gjson.Get(sceneJson, "data.findOneVideo").Exists() {
 		videoJson := gjson.Get(sceneJson, "data.findOneVideo.categories")
