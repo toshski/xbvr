@@ -167,8 +167,8 @@ export default {
         this.scene = scene
     },
     getOverlayPosition(){
-      console.log(this.$store.state.overlay.searchStashDb.scene)
-      if (this.$store.state.overlay.searchStashDb.scene.synopsis == "") {
+      console.log(this.$store.state.overlay.searchStashDbScenes.scene)
+      if (this.$store.state.overlay.searchStashDbScenes.scene.synopsis == "") {
         console.log("height: 65vh; top: 30vh; width: 40vw; left: 40vw;")
         return "height: 65vh; width: 40vw; left: 20vw; top: 20vh;"
       } else {
