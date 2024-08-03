@@ -12,6 +12,7 @@
       @keydown.shift.w="$store.commit('sceneList/toggleSceneList', {scene_id: item.scene_id, list: 'watched'})"
       @keydown.t="$store.commit('sceneList/toggleSceneList', {scene_id: item.scene_id, list: 'trailerlist'})"
       @keydown.e="$store.commit('overlay/editDetails', {scene: item})"
+      @keydown.s="$store.commit('overlay/showSearchStashdb', {scene: item})"
       @keydown.g="toggleGallery"
       @keydown.48="setRating(0)"
     />
@@ -585,6 +586,9 @@ export default {
         return 0; // Return 0 or handle error as needed
       }
     },
+    changeDetailsTab() {      
+      return this.$store.state.overlay.changeDetailsTab
+    },
     quickFindOverlayState() {
       return this.$store.state.overlay.quickFind.show
     },
@@ -630,6 +634,13 @@ watch:{
       }
     }
   },
+  changeDetailsTab(newVal, oldVal){
+    if (newVal == -1 ) {
+      return
+    }
+    this.activeTab = newVal
+    this.$store.commit('overlay/changeDetailsTab', { tab: -1 })
+  }
 },
   methods: {
     setupPlayer () {
