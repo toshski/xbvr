@@ -175,6 +175,9 @@ export default {
       if (this.scrapeUrl.toLowerCase().includes("czechvrnetwork.com")) {
         site = "czechvr-single_scene"
       }
+      if (this.scrapeUrl.toLowerCase().includes("adulttime.com")) {
+        site = "adulttime-single_scene"
+      }
       if (this.scrapeUrl.toLowerCase().includes("povr.com")) {
         site = "povr-single_scene"
       }
