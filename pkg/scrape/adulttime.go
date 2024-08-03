@@ -13,6 +13,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/mozillazg/go-slugify"
 	"github.com/thoas/go-funk"
+	"github.com/tidwall/gjson"
 	"github.com/xbapps/xbvr/pkg/config"
 	"github.com/xbapps/xbvr/pkg/models"
 )
@@ -82,12 +83,13 @@ func Adulttime(wg *sync.WaitGroup, updateSite bool, knownScenes []string, out ch
 			}
 		}
 	} else {
-		scenes := getAdulttimeScenes(scraperID, "", "", limitScraping, masterSiteId, commonDb, additionalScraperInfo)
-		for _, scene := range scenes {
-			if checkIfWeWantScene(scene.HomepageURL) {
-				out <- scene
-			}
-		}
+		getAdulttimeScenes(scraperID, "", "", limitScraping, masterSiteId, commonDb, additionalScraperInfo, out)
+		// scenes := getAdulttimeScenes(scraperID, "", "", limitScraping, masterSiteId, commonDb, additionalScraperInfo, out)
+		// for _, scene := range scenes {
+		// 	if checkIfWeWantScene(scene.HomepageURL) {
+		// 		out <- scene
+		// 	}
+		// }
 	}
 
 	if updateSite {
@@ -253,19 +255,68 @@ func addAdulttimeScraper(id string, name string, avatarURL string, adulttimeURL 
 	}
 }
 
-func getAdulttimeScenes(scraperId string, parentId string, tagId string, limitScraping bool, masterSiteId string, commonDb *gorm.DB, additionalScraperInfo AdditionAdulttimeScraperDetail) []models.ScrapedScene {
-	const count = 25
+func getAdulttimeScenes(scraperId string, parentId string, tagId string, limitScraping bool, masterSiteId string, commonDb *gorm.DB, additionalScraperInfo AdditionAdulttimeScraperDetail, out chan<- models.ScrapedScene) []models.ScrapedScene {
 	page := 0
 	var scenes []models.ScrapedScene
+	var siteJson gjson.Result
+	if strings.HasPrefix(scraperId, "atl") {
+		siteJson = gjson.ParseBytes(callAdultimeSiteApi("at"+strings.TrimSuffix(strings.TrimPrefix(scraperId, "atl"), "-adulttime"), scraperId))
+	} else {
+		siteJson = gjson.ParseBytes(callAdultimeSiteApi(strings.TrimSuffix(scraperId, "-adulttime"), scraperId))
+	}
+	if siteJson.Get("results.0.nbHits").Int() != 1 {
+		log.Warnf("Expectedd only one entry %s", scraperId)
+		return scenes
+	}
+	facetFilter := siteJson.Get("results.0.hits.0.defaultFiltersAlgolia.scenes.hierarchicalFacetsRefinements").String()
+	if facetFilter == "" {
+		facetFilter = siteJson.Get("results.0.hits.0.defaultFiltersAlgolia.scenes.disjunctiveFacetsRefinements.serie_name").String()
+		if facetFilter != "" {
+			facetFilter = strings.TrimPrefix(facetFilter, `["`)
+			facetFilter = strings.TrimSuffix(facetFilter, `"]`)
+			facetFilter = "serie_name:" + facetFilter
+		} else {
+			facetFilter = siteJson.Get("results.0.hits.0.defaultFiltersAlgolia.scenes.disjunctiveFacetsRefinements.sitename").String()
+			if facetFilter != "" {
+				facetFilter = strings.TrimPrefix(facetFilter, `["`)
+				facetFilter = strings.TrimSuffix(facetFilter, `"]`)
+				facetFilter = "sitename:" + facetFilter
+			}
+		}
+	} else {
+		facetFilter = strings.TrimPrefix(facetFilter, `{"network.lvl0":["`)
+		facetFilter = strings.TrimSuffix(facetFilter, `"]}`)
+		if strings.Contains(facetFilter, " > ") {
+			facetFilter = `network.lvl1:` + facetFilter
+		} else {
+			facetFilter = `network.lvl0:` + facetFilter
+		}
+	}
+	if facetFilter == "" {
+		facetFilter = "sitename:" + strings.TrimSuffix(scraperId, "-adulttime")
+	}
+	searchCriteria := ""
+	if facetFilter != "" {
+		searchCriteria = facetFilter
+	} else {
+		log.Warnf("no facets defaultinig to sitename %s", scraperId)
+	}
 
-	searchCriteria := `sitename:` + strings.ReplaceAll(scraperId, "-adulttime", "")
 	if additionalScraperInfo.SearchCriteria != "" {
 		searchCriteria = additionalScraperInfo.SearchCriteria
 	}
 	data := callAdultimeSceneApi(scraperId, page, searchCriteria)
+	if len(data.Results) == 0 {
+		log.Warnf("Invalid Query failed  %s", scraperId)
+		return scenes
+	}
+	if len(data.Results[0].Hits) == 0 {
+		log.Warnf("no scenes found  %s", scraperId)
+	}
 	for _, sceneHit := range data.Results[0].Hits {
 		if checkIfWeWantScene(strconv.Itoa(sceneHit.ClipID)) {
 			sc := processAdulttimeScrapedScene(sceneHit, scraperId, masterSiteId, commonDb, additionalScraperInfo)
+			out <- sc
 			scenes = append(scenes, sc)
 		}
 	}
@@ -274,7 +325,6 @@ func getAdulttimeScenes(scraperId string, parentId string, tagId string, limitSc
 		(page+1) < data.Results[0].NbPages {
 		page += 1
 
-		searchCriteria := `sitename:` + strings.ReplaceAll(scraperId, "-adulttime", "")
 		if additionalScraperInfo.SearchCriteria != "" {
 			searchCriteria = additionalScraperInfo.SearchCriteria
 		}
@@ -283,6 +333,7 @@ func getAdulttimeScenes(scraperId string, parentId string, tagId string, limitSc
 		for _, sceneHit := range data.Results[0].Hits {
 			if checkIfWeWantScene(strconv.Itoa(sceneHit.ClipID)) {
 				sc := processAdulttimeScrapedScene(sceneHit, scraperId, masterSiteId, commonDb, additionalScraperInfo)
+				out <- sc
 				scenes = append(scenes, sc)
 			}
 		}
@@ -311,16 +362,14 @@ func callAdultimeSceneApi(scraperId string, page int, searchCriteria string) Adu
 		"requests": [{
 			"indexName": "all_scenes_latest_desc",
 			"params": "query=&hitsPerPage=60&page=` + strconv.Itoa(page) + `",
-			"facetFilters": ["upcoming:0", "` + searchCriteria + `"]}]
+			"facetFilters": ["upcoming:0", "segment:adulttime", "` + searchCriteria + `"]}]
 	}`)
-	// log.Info("------------------------------------")
 	// log.Info(`{
-	// 	"requests": [{
-	// 		"indexName": "all_scenes_latest_desc",
-	// 		"params": "query=&hitsPerPage=60&page=` + strconv.Itoa(page) + `",
-	// 		"facetFilters": ["upcoming:0", "` + searchCriteria + `"]}]
-	// }`)
-
+	//  	"requests": [{
+	//  		"indexName": "all_scenes_latest_desc",
+	//  		"params": "query=&hitsPerPage=60&page=` + strconv.Itoa(page) + `",
+	//  		"facetFilters": ["upcoming:0", "segment:adulttime", "` + searchCriteria + `"]}]
+	//  }`)
 	client := &http.Client{}
 	req, err := http.NewRequest(method, url, payload)
 	req.Header.Add("content-type", "application/json")
@@ -439,6 +488,50 @@ func scrapeAdultimePhotosets(photosetId string) AdulttimePhotosetRoot {
 		json.Unmarshal(body, &data)
 	}
 	return data
+}
+
+func callAdultimeSiteApi(site string, scraperId string) []byte {
+	url := "https://tsmkfa364q-dsn.algolia.net/1/indexes/*/queries?x-algolia-agent=Algolia%20for%20vanilla%20JavaScript%203.27.1%3BJS%20Helper%202.26.0&x-algolia-application-id=TSMKFA364Q&x-algolia-api-key=" + "baaf072fe117f721cc9afeb90905889c"
+	method := "POST"
+
+	payload := strings.NewReader(`{
+    "requests": [
+        {
+            "indexName": "all_channels",
+            "params": "query=&hitsPerPage=10&page=0",
+            "facetFilters": "segment:adulttime, slug:` + site + `"
+	    } 
+	] 
+	}`)
+	// log.Info(`{
+	// "requests": [
+	//     {
+	//         "indexName": "all_channels",
+	//         "params": "query=&hitsPerPage=10&page=0",
+	//         "facetFilters": "segment:adulttime, slug:` + site + `"
+	// } ] }`)
+	client := &http.Client{}
+	req, err := http.NewRequest(method, url, payload)
+	req.Header.Add("content-type", "application/json")
+	req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0")
+	req.Header.Add("Referer", "https://www.adulttime.com/")
+
+	res, err := client.Do(req)
+	if err == nil {
+		defer res.Body.Close()
+		body, _ := ioutil.ReadAll(res.Body)
+		var s models.Site
+		j := string(body)
+		searchparams := gjson.Get(j, "results.0.hits.0.defaultFiltersAlgolia.scenes").String()
+		s.GetIfExist(scraperId)
+		if s.ID == "" {
+			log.Warnf("Could not update site data %s", site)
+		}
+		s.Adulttime = searchparams
+		s.Save()
+		return body
+	}
+	return nil
 }
 
 type AdulttimeSceneRoot struct {
