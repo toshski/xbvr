@@ -2,6 +2,8 @@ package scrape
 
 import (
 	"bytes"
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -12,6 +14,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/gocolly/colly/v2"
 	"github.com/mozillazg/go-slugify"
@@ -21,6 +24,8 @@ import (
 	"github.com/xbapps/xbvr/pkg/common"
 	"github.com/xbapps/xbvr/pkg/models"
 )
+
+var vixenToken string
 
 func Vixen(wg *sync.WaitGroup, updateSite bool, knownScenes []string, out chan<- models.ScrapedScene, singleSceneURL string, singeScrapeAdditionalInfo string, scraper string, name string, limitScraping bool) error {
 	defer wg.Done()
@@ -237,7 +242,7 @@ func GetCateegoriesAndChapters(sceneId string, scraper string) categoriesAndChap
 	var categories []string
 	var cueppoints []chapter
 	query := fmt.Sprintf(`{"query":"query getRelatedVideos($videoSlug: ID!) { findOneVideo(input: {videoId: $videoSlug}) { id: uuid videoId slug categories {name} chapters { video { title seconds } }}  } ","operationName":"getRelatedVideos","variables":{"videoSlug":%s}}`, sceneId)
-	sceneJson := string(callVixenGraphql(query, scraper))
+	sceneJson := string(callVixenGraphql(query, scraper, false))
 
 	if gjson.Get(sceneJson, "data.findOneVideo").Exists() {
 		videoJson := gjson.Get(sceneJson, "data.findOneVideo.categories")
@@ -264,8 +269,9 @@ func ProcessVixenWatchRequest(sceneId string, scraper string) models.VideoSource
 	}
 	log.Infof("Geting Video Tokens for %s: %s", scraper, sceneId)
 
-	query := fmt.Sprintf(`{"query":"query getToken($videoId: ID!, $device: Device!) { generateVideoToken(input: {videoId: $videoId, device: $device}) { p270 {token} p360 {token} p480 {token} p480l {token} p720 {token} p1080 {token} p2160 {token} hls {token} } } ","operationName":"getToken","variables":{"videoId":"%s","device":"trailer"}}`, sceneId)
-	sceneJson := string(callVixenGraphql(query, scraper))
+	query := fmt.Sprintf(`{"query":"query getToken($videoId: ID!, $device: Device!) { generateVideoToken(input: {videoId: $videoId, device: $device}) { p270 {token} p360 {token} p480 {token} p480l {token} p720 {token} p1080 {token} p2160 {token} hls {token} } } ","operationName":"getToken","variables":{"videoId":"%s","device":"desktop"}}`, sceneId)
+	query = fmt.Sprintf(`{"operationName":"getToken","variables":{"videoId":"%s","device":"desktop"},"query":"query getToken($videoId: ID!, $device: Device!) { generateVideoToken(input: {videoId: $videoId, device: $device}) { p270 { token } p360 { token } p480 { token } p480l { token } p720 { token } p1080 { token } p2160 { token } hls { token } } } "}`, sceneId)
+	sceneJson := string(callVixenGraphql(query, scraper, true))
 
 	if gjson.Get(sceneJson, "data").Exists() {
 		generateVideoToken := gjson.Get(sceneJson, "data.generateVideoToken")
@@ -281,13 +287,27 @@ func ProcessVixenWatchRequest(sceneId string, scraper string) models.VideoSource
 	return trailers
 }
 
-func callVixenGraphql(query string, scraper string) []byte {
+func callVixenGraphql(query string, scraper string, members bool) []byte {
 	// Create an HTTP POST request to send the GraphQL query to the endpoint
-	req, err := http.NewRequest("POST", "https://www."+scraper+".com/graphql", bytes.NewBuffer([]byte(query)))
+	domainHead := "www."
+	if members {
+		domainHead = "members."
+	}
+	req, err := http.NewRequest("POST", "https://"+domainHead+"vixenplus.com/graphql", bytes.NewBuffer([]byte(query)))
 	if err != nil {
 		log.Infof("error geting new request in %s: %s", scraper, err)
 	}
 
+	if members {
+		storedCookies := getCookies()
+		//		req.AddCookie(&http.Cookie{Name: `access_token`, Value: storedCookies.AccessToken})
+		//		req.AddCookie(&http.Cookie{Name: `refresh_token`, Value: storedCookies.RefreshTooken})
+		//		req.AddCookie(&http.Cookie{Name: `sid`, Value: storedCookies.SID})
+		//		req.AddCookie(&http.Cookie{Name: `vuid`, Value: storedCookies.VUID})
+		if !checkTokenExpiry(storedCookies.AccessToken) {
+			req.Header.Add("Authorization", "Bearer "+storedCookies.AccessToken)
+		}
+	}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Connection", "keep-alive")
@@ -311,4 +331,56 @@ func callVixenGraphql(query string, scraper string) []byte {
 		return bodyBytes
 	}
 	return callClient()
+}
+
+type vixenConfig struct {
+	AccessToken   string `json:"accessToken"`
+	RefreshTooken string `json:"refreshToken"`
+	SID           string `json:"sid"`
+	VUID          string `json:"vuid"`
+}
+
+func getCookies() vixenConfig {
+	db, _ := models.GetCommonDB()
+
+	config := vixenConfig{}
+	var vixenConfig models.KV
+	vixenConfig.Key = "vixen"
+	db.Find(&vixenConfig)
+	json.Unmarshal([]byte(vixenConfig.Value), &config)
+	return config
+}
+
+func checkTokenExpiry(jwtToken string) bool {
+	// Split the token into its parts
+	parts := strings.Split(jwtToken, ".")
+	if len(parts) != 3 {
+		return true
+	}
+
+	// Base64 decode the payload
+	payload, err := base64.RawURLEncoding.DecodeString(parts[1])
+	if err != nil {
+		return true
+	}
+	// Unmarshal the JSON payload
+	var claims map[string]interface{}
+	if err := json.Unmarshal(payload, &claims); err != nil {
+		return true
+	}
+
+	// Extract and print the expiry time
+	if exp, ok := claims["exp"].(float64); ok {
+		expiryTime := time.Unix(int64(exp), 0)
+		fmt.Printf("Token expires at: %s\n", expiryTime)
+
+		// Check if the token is still valid
+		if time.Now().Before(expiryTime) {
+			return false
+		} else {
+			return true
+		}
+	} else {
+		return true // exp not found
+	}
 }
