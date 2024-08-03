@@ -824,6 +824,8 @@ func queryScenes(db *gorm.DB, r RequestSceneList) (*gorm.DB, *gorm.DB) {
 			where = "has_video_preview = 1"
 		case "Has Subscription":
 			where = "is_subscribed = 1"
+		case "7 Day Load":
+			where = "exists (select 1 from files where files.scene_id = scenes.id and (files.created_time > DATE_SUB(NOW(), INTERVAL 7 DAY)  and files.`type` = 'video'))"
 		case "Rating":
 			where = "scenes.star_rating = " + value
 		case "No Actor/Cast":
