@@ -478,6 +478,14 @@ func SceneCreateUpdateFromExternal(db *gorm.DB, ext ScrapedScene) error {
 		db.Delete(&extref)
 	}
 
+	for _, cuepoint := range ext.Cuepoints {
+		var newCuepoint SceneCuepoint
+		db.Where("scene_id = ? and name = ? and time_start = ?", o.ID, cuepoint.Name, cuepoint.TimeStart).Find(&newCuepoint)
+		newCuepoint.SceneID = o.ID
+		newCuepoint.Name = cuepoint.Name
+		newCuepoint.TimeStart = cuepoint.TimeStart
+		newCuepoint.Save()
+	}
 	return nil
 }
 
