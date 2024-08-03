@@ -26,10 +26,13 @@
               <div class="media">
                 <div class="media-left">
                     <vue-load-image>
-                        <img slot="image" :src="getImageURL(props.row.ImageUrl)" width="150" />
+                        <img slot="image" :src="getImageURL(props.row.ImageUrl)" width="150" @mouseover="showTooltipImage(props.row.ImageUrl)" @mouseout="showTooltipImage('')" />
                         <img slot="preloader" src="/ui/images/blank.png" height="150"/>
                         <img slot="error" src="/ui/images/blank.png" height="150"/>
                     </vue-load-image>
+                    <div v-if="tooltipImage!='' && tooltipImage==props.row.ImageUrl" class="tooltipimg">
+                      <img :src="tooltipImage" alt="Tooltip Image" width="400px" />
+                    </div>
                   <div v-if="props.row.Date!=''"><small><strong>Released:</strong> {{format(parseISO(props.row.Date), "yyyy-MM-dd")}}</small></div>
                   <div v-if="props.row.Duration!=''"><small><strong>Durn:</strong> {{ props.row.Duration }}</small></div>
                   <div><small><strong>Score:</strong> {{ props.row.Weight }}</small></div>
@@ -85,6 +88,7 @@ export default {
         searchResults: [],
         queryString: "",
         isFetching: false,
+        tooltipImage: '',
         scene: "",
         }        
   },
@@ -152,6 +156,9 @@ export default {
         return "height: 65vh; width: 40vw; left: -20vw"
       }
     },
+    showTooltipImage(val){
+      this.tooltipImage=val
+    },
   },
   computed: {
 
@@ -169,5 +176,21 @@ export default {
 
 .tab-item {
   height: 40vh;
+}
+.tooltipimg {
+  position: absolute;
+  z-index: 1;
+  width: 350;
+  background-color: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  transform: translateX(60px) translateY(-50px);
+}
+.tooltipimg img {
+  max-width: 100%;
+  max-height: 100%;
 }
 </style>
