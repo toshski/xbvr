@@ -17,7 +17,6 @@ import (
 	"github.com/dustin/go-humanize"
 	restfulspec "github.com/emicklei/go-restful-openapi/v2"
 	"github.com/emicklei/go-restful/v3"
-	"github.com/markphelps/optional"
 	"github.com/tidwall/gjson"
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/text/language"
@@ -982,8 +981,8 @@ func (i HeresphereResource) getHeresphereLibrary(req *restful.Request, resp *res
 		var r models.RequestSceneList
 
 		if err := json.Unmarshal([]byte(savedPlaylists[i].SearchParams), &r); err == nil {
-			r.IsAccessible = optional.NewBool(true)
-			r.IsAvailable = optional.NewBool(true)
+			//r.IsAccessible = optional.NewBool(true)
+			//r.IsAvailable = optional.NewBool(true)
 
 			list := models.QuerySceneIDs(r)
 
