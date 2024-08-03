@@ -13,6 +13,7 @@
     <EditScene v-if="showEdit" />
     <ActorDetails v-if="showActorDetails"/>
     <EditActor v-if="showActorEdit" />
+    <SearchStashdb v-if="showSearchStashdb" />
 
     <QuickFind/>
 
@@ -30,9 +31,10 @@ import Details from './views/scenes/Details'
 import EditScene from './views/scenes/EditScene'
 import ActorDetails from './views/actors/ActorDetails'
 import EditActor from './views/actors/EditActor'
+import SearchStashdb from './views/scenes/SearchStashdb'
 
 export default {
-  components: { Navbar, Socket, QuickFind, GlobalEvents, Details, EditScene, ActorDetails, EditActor },
+  components: { Navbar, Socket, QuickFind, GlobalEvents, Details, EditScene, ActorDetails, EditActor, SearchStashdb },
   computed: {
     showOverlay () {
       return this.$store.state.overlay.details.show
@@ -45,6 +47,9 @@ export default {
     },
     showActorEdit() {
       return this.$store.state.overlay.actoredit.show
+    },
+    showSearchStashdb() {
+      return this.$store.state.overlay.searchStashDb.show
     },
   }
 }

@@ -50,6 +50,10 @@ func (i ExternalReference) WebService() *restful.WebService {
 	ws.Route(ws.GET("/generic/scrape_all").To(i.genericActorScraper).
 		Metadata(restfulspec.KeyOpenAPITags, tags))
 	ws.Route(ws.GET("/stashdb/link2scene/{scene-id}/{stashdb-id}").To(i.linkScene2Stashdb).
+		Metadata(restfulspec.KeyOpenAPITags, tags).
+		Writes(models.Scene{}))
+
+	ws.Route(ws.GET("/stashdb/search/{scene-id}").To(i.searchForStashdb).
 		Metadata(restfulspec.KeyOpenAPITags, tags))
 
 	ws.Route(ws.POST("/generic/scrape_single").To(i.genericSingleActorScraper).

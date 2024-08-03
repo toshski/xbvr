@@ -40,6 +40,11 @@ const state = {
     show:false,
     site: '',
   },
+  searchStashDb: {
+    show: false,
+    scene: null
+  },
+  changeDetailsTab: -1,
 }
 
 const mutations = {
@@ -134,6 +139,21 @@ const mutations = {
   },
   hideSceneMatchParams (state, payload) {
     state.sceneMatchParams.show = false
+  },
+  showSearchStashdb (state, payload) {
+    console.log("overlay showSearchStashdb")
+    state.searchStashDb.scene = payload.scene
+    state.searchStashDb.show = true
+  },
+  hideSearchStashdb (state) {
+    console.log("overlay hideSearchStashdb")
+    state.searchStashDb.scene = null
+    state.searchStashDb.show = false
+  },
+  changeDetailsTab (state, payload) {
+    console.log("ochange tab")
+    console.log(payload)
+    state.changeDetailsTab = payload.tab
   },
 }
 

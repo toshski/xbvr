@@ -150,7 +150,7 @@ func StashDb() {
 		if i := strings.Index(sitename, " ("); i != -1 {
 			sitename = sitename[:i]
 		}
-		studio := findStudio(sitename, "name")
+		studio := FindStashdbStudio(sitename, "name")
 
 		sitecfg, cfgExists := Config.StashSceneMatching[site.ID]
 		if !cfgExists {
@@ -159,7 +159,7 @@ func StashDb() {
 
 		// check for a config entry if site not found
 		for _, cfgEntry := range sitecfg {
-			studio = findStudio(cfgEntry.StashId, "id")
+			studio = FindStashdbStudio(cfgEntry.StashId, "id")
 			siteConfig := Config.StashSceneMatching[site.ID]
 			var ext models.ExternalReference
 			ext.FindExternalId("stashdb studio", studio.Data.Studio.ID)
@@ -210,7 +210,7 @@ func GetStashDbScene(stashId string) FindScenesResult {
 	return result
 }
 
-func findStudio(studio string, field string) FindStudioResult {
+func FindStashdbStudio(studio string, field string) FindStudioResult {
 	fieldType := "String"
 	if field == "id" {
 		fieldType = "ID"
