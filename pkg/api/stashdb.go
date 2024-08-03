@@ -6,6 +6,7 @@ import (
 	"math"
 	"net/http"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -137,6 +138,7 @@ func (i ExternalReference) searchForStashdb(req *restful.Request, resp *restful.
 		Description string
 		Weight      int
 		Date        string
+		Id          string
 	}
 	type StashSearchResponse struct {
 		Status  string
@@ -166,7 +168,7 @@ func (i ExternalReference) searchForStashdb(req *restful.Request, resp *restful.
 
 	setupStashSearchResult := func(stashScene models.StashScene, weight int) StashSearchResult {
 		//common function to call to setup stash response details
-		result := StashSearchResult{Url: "https://stashdb.org/scenes/" + stashScene.ID, Weight: weight, Title: stashScene.Title, Description: stashScene.Details, Date: stashScene.Date, Studio: stashScene.Studio.Name}
+		result := StashSearchResult{Id: stashScene.ID, Url: "https://stashdb.org/scenes/" + stashScene.ID, Weight: weight, Title: stashScene.Title, Description: stashScene.Details, Date: stashScene.Date, Studio: stashScene.Studio.Name}
 		if len(stashScene.Images) > 0 {
 			result.ImageUrl = stashScene.Images[0].URL
 		}
@@ -255,53 +257,55 @@ func (i ExternalReference) searchForStashdb(req *restful.Request, resp *restful.
 					scoreBump += 20
 				}
 			}
+
 			for _, sp := range stashscene.Performers {
-				foundId := false
+				foundBump := -5
 				for _, xp := range performers {
 					if strings.Contains(xp, sp.Performer.ID) {
-						foundId = true
+						if sp.Performer.Gender == "FEMALE" {
+							foundBump += 10
+						} else {
+							foundBump += 5
+						}
 					}
-				}
-				if foundId {
-					scoreBump += 5
-				} else {
-					scoreBump -= 5
 				}
 			}
-			// check actor matches using performer stash id
-			for _, sp := range stashscene.Performers {
-				foundId := false
-				for _, xp := range performers {
+			// we have checked if stash performers match xbvr, now check for xbvr performers not matched in stash
+			for _, xp := range performers {
+				foundBump := -5
+				for _, sp := range stashscene.Performers {
 					if strings.Contains(xp, sp.Performer.ID) {
-						foundId = true
+						if sp.Performer.Gender == "FEMALE" {
+							foundBump += 10
+						} else {
+							foundBump += 5
+						}
 					}
-				}
-				if foundId {
-					scoreBump += 5
-				} else {
-					scoreBump -= 5
 				}
 			}
 			// check actor matches using names and aliases
 			for _, actor := range scene.Cast {
-				found := false
+				foundBump := -5
 				for _, sp := range stashscene.Performers {
 					if strings.EqualFold(actor.Name, sp.Performer.Name) || strings.EqualFold(actor.Name, sp.As) {
-						found = true
+						if sp.Performer.Gender == "FEMALE" {
+							foundBump += 10
+						} else {
+							foundBump += 5
+						}
 						continue
 					}
 					// try aliases
 					for _, alias := range sp.Performer.Aliases {
 						if strings.EqualFold(alias, actor.Name) {
-							found = true
+							if sp.Performer.Gender == "FEMALE" {
+								foundBump += 10
+							} else {
+								foundBump += 5
+							}
 							continue
 						}
 					}
-				}
-				if found {
-					scoreBump += 5
-				} else {
-					scoreBump -= 5
 				}
 			}
 			if mapEntry, exists := results[stashscene.ID]; exists {
@@ -384,7 +388,7 @@ func (i ExternalReference) searchForStashdb(req *restful.Request, resp *restful.
 		{"input":{
 					"parentStudio": ` + studio + `,
 					"page": 1,
-					"per_page": 50,
+					"per_page": 100,
 					"sort": "UPDATED_AT",
 					"title": "` +
 				scene.Title + `"
@@ -392,11 +396,47 @@ func (i ExternalReference) searchForStashdb(req *restful.Request, resp *restful.
 			}`
 			stashScenes = scrape.GetScenePage(titleQuery)
 			updateResults(stashScenes, 150, performers, stashStudioIds)
+			page := 2
+			for i := 101; i < stashScenes.Data.QueryScenes.Count && page <= 5; {
+				titleQuery := `
+					{"input":{
+								"parentStudio": ` + studio + `,
+								"page": ` + strconv.Itoa(page) + `,
+								"per_page": 100,
+								"sort": "UPDATED_AT",
+								"title": "` +
+					scene.Title + `"
+							}
+						}`
+				stashScenes = scrape.GetScenePage(titleQuery)
+				updateResults(stashScenes, 150, performers, stashStudioIds)
+				i = i + 100
+				page += 1
+			}
 		}
 	}
 
 	if len(results) == 0 {
 		warnings = append(warnings, "No Stashdb Scenes Found")
+	}
+	if len(results) > 100 {
+		// sort and limit the number of results
+
+		// Convert map to a slice of key-value pairs
+		pairs := make([]StashSearchResult, 0, len(results))
+		for _, v := range results {
+			pairs = append(pairs, v)
+		}
+		// Sort the slice by weight in descending order
+		sort.Slice(pairs, func(i, j int) bool {
+			return pairs[i].Weight > pairs[j].Weight
+		})
+		// Take the first 100 entries (or less if there are fewer than 100 entries)
+		top100 := pairs[:min(len(pairs), 100)]
+		results = make(map[string]StashSearchResult)
+		for _, item := range top100 {
+			results[item.Id] = item
+		}
 	}
 	var response StashSearchResponse
 	response.Results = results
