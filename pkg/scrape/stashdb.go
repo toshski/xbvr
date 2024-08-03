@@ -578,6 +578,13 @@ func SearchStashPerformer(performer string) SearchPerformerResult {
   breast_type
   career_start_year
   career_end_year
+  studios {
+    scene_count
+    studio { 
+	  name 
+	  id
+	}
+}
   images{
       id
       url
@@ -605,7 +612,7 @@ func SearchStashPerformer(performer string) SearchPerformerResult {
 	return data
 }
 
-func GetStashPerformerScenes(performer string) FindPerformerScenesResult {
+func GetStashPerformerFull(performer string) FindPerformerScenesResult {
 
 	query := `
 	query  findPerformer($id: ID!) {
@@ -630,13 +637,17 @@ func GetStashPerformerScenes(performer string) FindPerformerScenesResult {
 	title
 	details
 	release_date
-	date
-	updated
+	date	
 	studio{
 		id
-		name
-		updated
+		name		
 	}
+	studios { 
+		studio {
+			name 
+			id
+			}
+		}
 	images{
 		url
 		width
@@ -668,7 +679,6 @@ func CallStashDb(query string, rawVariables string) []byte {
 	jsonVariables, _ := json.Marshal(variables)
 
 	// Create an HTTP POST request to send the GraphQL query to the endpoint
-	log.Infof(`{"query":%q,"variables":%s}`, query, jsonVariables)
 	req, err := http.NewRequest("POST", "http://stashdb.org/graphql", bytes.NewBuffer([]byte(fmt.Sprintf(`{"query":%q,"variables":%s}`, query, jsonVariables))))
 	if err != nil {
 		log.Infof("error geting new request in callStashDb %s", err)
