@@ -36,6 +36,7 @@ func (i ExternalReference) stashRunAll(req *restful.Request, resp *restful.Respo
 func (i ExternalReference) linkScene2Stashdb(req *restful.Request, resp *restful.Response) {
 	sceneId := req.PathParameter("scene-id")
 	stashdbId := req.PathParameter("stashdb-id")
+	stashdbId = strings.TrimPrefix(stashdbId, "https://stashdb.org/scenes/")
 	var scene models.Scene
 
 	db, _ := models.GetDB()
