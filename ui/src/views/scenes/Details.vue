@@ -795,6 +795,9 @@ watch:{
         return u
       }
       try {
+        if (u.startsWith('/')){
+          u = "http://" + window.location.hostname + ':' + window.location.port + u
+        }
         if (u.startsWith('http')) {
           if (u.search("%") == -1) {
             return '/img/' + size + '/' + encodeURI(u)

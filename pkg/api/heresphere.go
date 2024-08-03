@@ -25,6 +25,7 @@ import (
 
 	"github.com/xbapps/xbvr/pkg/config"
 	"github.com/xbapps/xbvr/pkg/models"
+	"github.com/xbapps/xbvr/pkg/scrape"
 	"github.com/xbapps/xbvr/pkg/tasks"
 )
 
@@ -382,6 +383,9 @@ func (i HeresphereResource) getHeresphereScene(req *restful.Request, resp *restf
 			}
 		case "scrape_html":
 			sources := ScrapeHtml(scene.TrailerSource)
+			media = copyVideoSourceResponse(sources, media)
+		case "blacked", "blackedraw", "deeper", "tushy", "tushyraw", "vixen":
+			sources := scrape.ProcessVixenWatchRequest(scene.TrailerSource, scene.TrailerType)
 			media = copyVideoSourceResponse(sources, media)
 		case "scrape_json":
 			sources := ScrapeJson(scene.TrailerSource)
