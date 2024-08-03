@@ -542,7 +542,7 @@ func (i ExternalReference) searchForStashdbActor(req *restful.Request, resp *res
 			results[stashScene.Data.Performer.ID] = setupStashSearchResult(stashScene.Data.Performer, 10000)
 			//  need to get studios
 			var response StashSearchPerformersResponse
-			response.Results = []StashSearchPerformerResult{}
+			response.Results = []StashSearchPerformerResult{results[stashScene.Data.Performer.ID]}
 			response.Status = ""
 			resp.WriteHeaderAndEntity(http.StatusOK, response)
 			return
