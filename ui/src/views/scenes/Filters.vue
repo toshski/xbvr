@@ -55,6 +55,8 @@
             <option value="scene_updated_desc">↓ {{ $t("Scene updated date") }}</option>
             <option value="last_opened_desc">↓ {{ $t("Last viewed date") }}</option>
             <option value="last_opened_asc">↑ {{ $t("Last viewed date") }}</option>
+            <option value="ocount_desc">↓ {{ $t("O-Counter") }}</option>
+            <option value="last_ocount_desc">↓ {{ $t("Last O-Counter") }}</option>
             <option value="script_published_desc">↓ {{ $t("Published Script Added") }}</option>
             <option value="scene_id_desc">↓ {{ $t("Scene Id") }}</option>
             <option value="site_asc">↑ {{ $t("Site") }}</option>
