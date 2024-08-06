@@ -406,6 +406,7 @@ func (o *Scene) UpdateStatus() {
 	if changed {
 		o.Save()
 	}
+
 }
 
 func SceneCreateUpdateFromExternal(db *gorm.DB, ext ScrapedScene) error {

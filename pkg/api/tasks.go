@@ -100,6 +100,11 @@ func (i TaskResource) WebService() *restful.WebService {
 	ws.Route(ws.POST("/scrape-tpdb").To(i.scrapeTPDB).
 		Metadata(restfulspec.KeyOpenAPITags, tags))
 
+	ws.Route(ws.GET("/sql/event-trigger/{event-trigger}").To(i.sqlEventTrigger).
+		Metadata(restfulspec.KeyOpenAPITags, tags))
+	ws.Route(ws.GET("/sql/sqlgroup/{sqlgroup}").To(i.sqlGroup).
+		Metadata(restfulspec.KeyOpenAPITags, tags))
+
 	ws.Route(ws.GET("/relink_alt_aource_scenes").To(i.relink_alt_aource_scenes).
 		Metadata(restfulspec.KeyOpenAPITags, tags))
 	return ws
@@ -177,10 +182,11 @@ func (i TaskResource) backupBundle(req *restful.Request, resp *restful.Response)
 	inclConfig, _ := strconv.ParseBool(req.QueryParameter("inclConfig"))
 	extRefSubset := req.QueryParameter("extRefSubset")
 	playlistId := req.QueryParameter("playlistId")
+	inclSqlCommands, _ := strconv.ParseBool(req.QueryParameter("inclSqlCommands"))
 	download := req.QueryParameter("download")
 
 	bundle := tasks.BackupBundle(inclAllSites, onlyIncludeOfficalSites, inclScenes, inclFileLinks, inclCuepoints, inclHistory, inclPlaylists,
-		inclActorAkas, inclTagGroups, inclVolumes, inclSites, inclActions, inclExtRefs, inclActors, inclActorActions, inclConfig, extRefSubset, playlistId, "", "")
+		inclActorAkas, inclTagGroups, inclVolumes, inclSites, inclActions, inclExtRefs, inclActors, inclActorActions, inclConfig, extRefSubset, playlistId, "", "", inclSqlCommands)
 	if download == "true" {
 		resp.WriteHeaderAndEntity(http.StatusOK, ResponseBackupBundle{Response: "Ready to Download from http://xxx.xxx.xxx.xxx:9999/download/xbvr-content-bundle.json"})
 	} else {
@@ -229,6 +235,20 @@ func (i TaskResource) scrapeTPDB(req *restful.Request, resp *restful.Response) {
 	if r.ApiToken != "" && r.SceneUrl != "" {
 		go tasks.ScrapeTPDB(strings.TrimSpace(r.ApiToken), strings.TrimSpace(r.SceneUrl))
 	}
+}
+
+func (i TaskResource) sqlEventTrigger(req *restful.Request, resp *restful.Response) {
+	trigger := req.PathParameter("event-trigger")
+	go func() {
+		models.RunSQLTrigger(trigger, nil)
+	}()
+}
+func (i TaskResource) sqlGroup(req *restful.Request, resp *restful.Response) {
+	sqlGroup := req.PathParameter("sqlgroup")
+	go func() {
+		//models.RunSQLGroup(sqlGroup)
+		models.JobChan <- models.Job{Name: sqlGroup, Wg: nil}
+	}()
 }
 func (i TaskResource) relink_alt_aource_scenes(req *restful.Request, resp *restful.Response) {
 	go tasks.MatchAlternateSources()
