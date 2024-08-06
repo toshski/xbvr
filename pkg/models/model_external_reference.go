@@ -1199,6 +1199,7 @@ func (scrapeRules ActorScraperConfig) getSiteUrlMatchingRules() {
 				siteConfig := scrapeRules.StashSceneMatching[site.ID]
 				extRefLink := ExternalReferenceLink{}
 				extRefLink.Find("stashdb studio", site.ID)
+				siteConfig = []StashSiteConfig{StashSiteConfig{}}
 				siteConfig[0].StashId = extRefLink.ExternalId
 				siteConfig[0].Rules = append(siteConfig[0].Rules, SceneMatchRule{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(sexlikereal).com\/[^0-9]*(-\d*)`, StashMatchResultPosition: 2})
 				scrapeRules.StashSceneMatching[site.ID] = siteConfig
@@ -1207,6 +1208,7 @@ func (scrapeRules ActorScraperConfig) getSiteUrlMatchingRules() {
 				siteConfig := scrapeRules.StashSceneMatching[site.ID]
 				extRefLink := ExternalReferenceLink{}
 				extRefLink.Find("stashdb studio", site.ID)
+				siteConfig = []StashSiteConfig{StashSiteConfig{}}
 				siteConfig[0].StashId = extRefLink.ExternalId
 				if len(siteConfig[0].Rules) == 0 {
 					siteConfig[0].Rules = append(siteConfig[0].Rules, SceneMatchRule{XbvrField: "scene_id", XbvrMatch: `-\d+$`, XbvrMatchResultPosition: 0, StashRule: `(povr|wankzvr).com\/(.*)(-\d*?)\/?$`, StashMatchResultPosition: 2})
