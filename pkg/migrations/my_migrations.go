@@ -78,9 +78,9 @@ func MyMigrate() {
 			},
 		},
 		{
-			ID: "0012",
+			ID: "0012-Ocount",
 			Migrate: func(tx *gorm.DB) error {
-				return nil
+				return tx.AutoMigrate(&models.OCount{}).Error
 			},
 		},
 		{
