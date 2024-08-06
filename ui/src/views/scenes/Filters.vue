@@ -59,6 +59,7 @@
             <option value="scene_id_desc">↓ {{ $t("Scene Id") }}</option>
             <option value="site_asc">↑ {{ $t("Site") }}</option>
             <option value="alt_src_desc">↓ {{ $t("Linked to Alternate Sites") }}</option>
+            <option value="studio_downloads_desc">↓ {{ $t("Studio Download Counts") }}</option>
             <option value="random">↯ {{ $t("Random") }}</option>
           </select>
         </div>
