@@ -680,6 +680,11 @@ func (i HeresphereResource) getHeresphereScene(req *restful.Request, resp *restf
 		projection = "fisheye"
 	}
 
+	if scene.SceneType == "2D" {
+		addFeatureTag("Flat video")
+		projection = "perspective"
+		stereo = "mono"
+	}
 	title := scene.Title
 	thumbnailURL := getProto(req) + "://" + req.Request.Host + "/img/700x/" + strings.Replace(scene.CoverURL, "://", ":/", -1)
 
@@ -695,6 +700,12 @@ func (i HeresphereResource) getHeresphereScene(req *restful.Request, resp *restf
 	}
 	if scene.Trailerlist {
 		addFeatureTag("Trailer List")
+	}
+
+	if scene.SceneType == "VR" {
+		addFeatureTag("VR")
+	} else {
+		addFeatureTag("2D")
 	}
 
 	if scene.ReleaseDate.Year() > 1900 {
@@ -756,7 +767,8 @@ func copyVideoSourceResponse(sources models.VideoSourceResponse, media []Heresph
 			var hsp HeresphereMedia
 			hsp.Name = source.Quality
 			hspSource := HeresphereSource{
-				URL: source.URL,
+				URL:        source.URL,
+				Resolution: source.Resolution,
 			}
 			hsp.Sources = append(hsp.Sources, hspSource)
 			media = append(media, hsp)
