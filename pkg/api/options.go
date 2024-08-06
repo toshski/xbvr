@@ -995,7 +995,7 @@ func (i ConfigResource) createCustomSite(req *restful.Request, resp *restful.Res
 	var scraperConfig config.ScraperList
 	scraperConfig.Load()
 
-	re := regexp.MustCompile(`^(https?://)?(www\.)?([^./]+)\.`)
+	re := regexp.MustCompile(`^(https?://)?(www\.|members\.)?([^./]+)\.`)
 	match := re.FindStringSubmatch(r.Url)
 	if len(match) < 3 {
 		return
@@ -1004,6 +1004,7 @@ func (i ConfigResource) createCustomSite(req *restful.Request, resp *restful.Res
 	r.Url = strings.TrimSuffix(r.Url, "/")
 
 	scrapers := make(map[string][]config.ScraperConfig)
+	scrapers["adulttime"] = scraperConfig.CustomScrapers.AdulttimeScrapers
 	scrapers["povr"] = scraperConfig.CustomScrapers.PovrScrapers
 	scrapers["slr"] = scraperConfig.CustomScrapers.SlrScrapers
 	scrapers["vrphub"] = scraperConfig.CustomScrapers.VrphubScrapers
@@ -1025,6 +1026,8 @@ func (i ConfigResource) createCustomSite(req *restful.Request, resp *restful.Res
 	if !exists {
 		scraper := config.ScraperConfig{URL: r.Url, Name: r.Name, Company: r.Company, AvatarUrl: r.Avatar, MasterSiteId: r.MasterSiteId}
 		switch match[3] {
+		case "adulttime":
+			scrapers["adulttime"] = append(scrapers["adulttime"], scraper)
 		case "povr":
 			scrapers["povr"] = append(scrapers["povr"], scraper)
 		case "sexlikereal":
@@ -1035,6 +1038,7 @@ func (i ConfigResource) createCustomSite(req *restful.Request, resp *restful.Res
 			scrapers["vrporn"] = append(scrapers["vrporn"], scraper)
 		}
 	}
+	scraperConfig.CustomScrapers.AdulttimeScrapers = scrapers["adulttime"]
 	scraperConfig.CustomScrapers.PovrScrapers = scrapers["povr"]
 	scraperConfig.CustomScrapers.SlrScrapers = scrapers["slr"]
 	scraperConfig.CustomScrapers.VrphubScrapers = scrapers["vrphub"]
