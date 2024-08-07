@@ -1162,6 +1162,8 @@ func queryScenes(db *gorm.DB, r RequestSceneList) (*gorm.DB, *gorm.DB) {
 	case "alt_src_desc":
 		//tx = tx.Order(`(select max(er.external_date) from external_reference_links erl join external_references er on er.id=erl.external_reference_id where erl.internal_table='scenes' and erl.internal_db_id=scenes.id and er.external_source like 'alternate scene %') desc`)
 		tx = tx.Order(`(select max(erl.udf_datetime1) from external_reference_links erl where erl.internal_table='scenes' and erl.internal_db_id=scenes.id and erl.external_source like 'alternate scene %') desc`)
+	case "studio_downloads_desc":
+		tx = tx.Order(`(select count(*) from scenes s2 cross join tags t on t.name = 'download' join scene_tags st on st.scene_id = s2.id and st.tag_id = t.id where s2.site=scenes.site and s2.is_available=0) desc, site, release_date desc`)
 	default:
 		tx = tx.Order("release_date desc")
 	}
