@@ -314,6 +314,19 @@ func (i HeresphereResource) getHeresphereScene(req *restful.Request, resp *restf
 		}
 	}
 
+	talentTags := make(map[string]bool, 30)
+	addTalentTag := func(talent string) {
+		if !talentTags[talent] {
+			talentTags[talent] = true
+		}
+	}
+	maleTags := make(map[string]bool, 30)
+	addMaleTag := func(talent string) {
+		if !maleTags[talent] {
+			maleTags[talent] = true
+		}
+	}
+
 	var media []HeresphereMedia
 
 	videoLength := float64(scene.Duration)
@@ -511,22 +524,44 @@ func (i HeresphereResource) getHeresphereScene(req *restful.Request, resp *restf
 	})
 
 	akaCnt := 0
+	maleAkaCnt := 0
+	maleCnt := 0
+	otherCnt := 0
 	for i := range scene.Cast {
 		if strings.HasPrefix(scene.Cast[i].Name, "aka:") {
-			akaCnt++
+			if strings.ToLower(scene.Cast[i].Gender) == "male" {
+				maleAkaCnt++
+			} else {
+				akaCnt++
+			}
 			tags = append(tags, HeresphereTag{
 				Name: strings.Replace(scene.Cast[i].Name, ",", "/", -1),
 			})
 		} else {
-			tags = append(tags, HeresphereTag{
-				Name: "Talent:" + scene.Cast[i].Name,
-			})
+			if strings.ToLower(scene.Cast[i].Gender) == "male" {
+				maleCnt++
+				addMaleTag("Male:" + scene.Cast[i].Name)
+			} else {
+				otherCnt++
+				addTalentTag("Talent:" + scene.Cast[i].Name)
+			}
 		}
 	}
-	if (len(scene.Cast) - akaCnt) > 5 {
+	if (maleCnt) > 5 {
+		addFeatureTag("Male: 6+")
+	} else if (maleCnt) > 0 {
+		addFeatureTag(fmt.Sprintf("Male: %d", maleCnt))
+	}
+
+	if (maleCnt + otherCnt) > 5 {
 		addFeatureTag("Cast: 6+")
-	} else if (len(scene.Cast) - akaCnt) > 0 {
-		addFeatureTag(fmt.Sprintf("Cast: %d", (len(scene.Cast) - akaCnt)))
+	} else if (maleCnt + otherCnt) > 0 {
+		addFeatureTag(fmt.Sprintf("Cast: %d", (maleCnt + otherCnt)))
+	}
+	if (otherCnt) > 5 {
+		addFeatureTag("Female: 6+")
+	} else if (otherCnt) > 0 {
+		addFeatureTag(fmt.Sprintf("Female: %d", otherCnt))
 	}
 
 	for i := range scene.Tags {
@@ -711,9 +746,19 @@ func (i HeresphereResource) getHeresphereScene(req *restful.Request, resp *restf
 		}
 	}
 
+	for t := range maleTags {
+		tags = append(tags, HeresphereTag{
+			Name: t,
+		})
+	}
 	for f := range features {
 		tags = append(tags, HeresphereTag{
 			Name: "Feature:" + f,
+		})
+	}
+	for t := range talentTags {
+		tags = append(tags, HeresphereTag{
+			Name: t,
 		})
 	}
 
@@ -1094,4 +1139,16 @@ func getTrackAssignment(name string, trackAssignments *[]string) int {
 	}
 	*trackAssignments = append(*trackAssignments, name)
 	return len(*trackAssignments)
+}
+func findFemalePos(scene models.Scene, pos int) int {
+	cnt := 0
+	for castPos, cast := range scene.Cast {
+		if strings.ToLower(cast.Gender) != "male" {
+			cnt++
+			if cnt == pos {
+				return castPos
+			}
+		}
+	}
+	return -1
 }
