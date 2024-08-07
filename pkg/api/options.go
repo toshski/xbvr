@@ -861,6 +861,7 @@ func (i ConfigResource) generateTestPreview(req *restful.Request, resp *restful.
 				r.SnippetAmount,
 				r.Resolution,
 				r.ExtraSnippet,
+				scene,
 			)
 
 			common.PublishWS("options.previews.previewReady", map[string]interface{}{"previewFn": previewFn})
