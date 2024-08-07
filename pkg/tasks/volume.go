@@ -35,6 +35,8 @@ func RescanVolumes(id int) {
 		tlog := log.WithFields(logrus.Fields{"task": "rescan"})
 		tlog.Infof("Start scanning volumes")
 
+		models.WaitSQLTrigger("pre RescanVolumes")
+
 		models.CheckVolumes()
 
 		db, _ := models.GetDB()
@@ -71,7 +73,9 @@ func RescanVolumes(id int) {
 			json.HTMLEscape(&buffer, []byte(s))
 			return buffer.String()
 		}
+		models.WaitSQLTrigger("pre UpdateStatus")
 
+		lastProgressUpdate := time.Now()
 		for i := range files {
 			unescapedFilename := path.Base(files[i].Filename)
 			filename := escape(unescapedFilename)
@@ -158,10 +162,12 @@ func RescanVolumes(id int) {
 				}
 			}
 
-			if (i % 50) == 0 {
+			if time.Since(lastProgressUpdate) > time.Duration(config.Config.Advanced.ProgressTimeInterval)*time.Second {
 				tlog.Infof("Matching Scenes to known filenames (%v/%v)", i+1, len(files))
+				lastProgressUpdate = time.Now()
 			}
 		}
+		models.WaitSQLTrigger("post UpdateStatus")
 
 		tlog.Infof("Generating heatmaps")
 
@@ -203,6 +209,13 @@ func RescanVolumes(id int) {
 		r = models.RequestSceneList{IsWatched: optional.NewBool(false), IsAvailable: optional.NewBool(true)}
 		common.AddMetricPoint("scenes_downloaded_unwatched", float64(models.QueryScenes(r, false).Results))
 	}
+
+	models.RemoveLock("rescan")
+
+	go func() {
+		models.RunSQLTrigger("post RescanVolumes", nil)
+	}()
+
 }
 
 func scanLocalVolume(vol models.Volume, db *gorm.DB, tlog *logrus.Entry) {
@@ -371,6 +384,7 @@ func scanLocalVolume(vol models.Volume, db *gorm.DB, tlog *logrus.Entry) {
 		vol.LastScan = time.Now()
 		vol.Save()
 
+		models.WaitSQLTrigger("pre UpdateStatus")
 		var scene models.Scene
 		// Check if files are still present at the location
 		allFiles := vol.Files()
@@ -384,6 +398,7 @@ func scanLocalVolume(vol models.Volume, db *gorm.DB, tlog *logrus.Entry) {
 				}
 			}
 		}
+		models.WaitSQLTrigger("post UpdateStatus")
 	}
 }
 
@@ -429,6 +444,7 @@ func scanPutIO(vol models.Volume, db *gorm.DB, tlog *logrus.Entry) {
 		}
 	}
 
+	models.WaitSQLTrigger("pre UpdateStatus")
 	var scene models.Scene
 	// Check if local files are present in listing
 	allFiles := vol.Files()
@@ -442,6 +458,7 @@ func scanPutIO(vol models.Volume, db *gorm.DB, tlog *logrus.Entry) {
 			}
 		}
 	}
+	models.WaitSQLTrigger("post UpdateStatus")
 
 	// Update volume info
 	vol.IsAvailable = true
@@ -456,15 +473,19 @@ func RefreshSceneStatuses() {
 	db, _ := models.GetDB()
 	defer db.Close()
 
+	models.WaitSQLTrigger("pre UpdateStatus")
 	var scenes []models.Scene
 	db.Model(&models.Scene{}).Find(&scenes)
 
+	lastProgressUpdate := time.Now()
 	for i := range scenes {
 		scenes[i].UpdateStatus()
-		if (i % 70) == 0 {
+		if time.Since(lastProgressUpdate) > time.Duration(config.Config.Advanced.ProgressTimeInterval)*time.Second {
 			tlog.Infof("Update status of Scenes (%v/%v)", i+1, len(scenes))
+			lastProgressUpdate = time.Now()
 		}
 	}
+	models.WaitSQLTrigger("post UpdateStatus")
 
 	tlog.Infof("Scene status refresh complete")
 }
