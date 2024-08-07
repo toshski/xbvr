@@ -64,6 +64,9 @@ func ScrapeHtml(scrapeParams string) models.VideoSourceResponse {
 	c := colly.NewCollector(colly.UserAgent(scrape.UserAgent))
 	var params models.TrailerScrape
 	json.Unmarshal([]byte(scrapeParams), &params)
+	if params.KVHttpConfig != "" {
+		scrape.SetupCollector(params.KVHttpConfig, c)
+	}
 
 	var srcs []models.VideoSource
 	c.OnHTML(`html`, func(e *colly.HTMLElement) {
@@ -102,6 +105,9 @@ func ScrapeJson(scrapeParams string) models.VideoSourceResponse {
 	c := colly.NewCollector(colly.UserAgent(scrape.UserAgent))
 	var params models.TrailerScrape
 	json.Unmarshal([]byte(scrapeParams), &params)
+	if params.KVHttpConfig != "" {
+		c = scrape.SetupCollector(params.KVHttpConfig, c)
+	}
 
 	var srcs []models.VideoSource
 	c.OnHTML(`html`, func(e *colly.HTMLElement) {
@@ -133,7 +139,15 @@ func LoadJson(scrapeParams string) models.VideoSourceResponse {
 	var params models.TrailerScrape
 	json.Unmarshal([]byte(scrapeParams), &params)
 
-	response, err := http.Get(params.SceneUrl)
+	method := "GET"
+	client := &http.Client{}
+	req, err := http.NewRequest(method, params.SceneUrl, nil)
+
+	if params.KVHttpConfig != "" {
+		req = scrape.SetupHtmlRequest(params.KVHttpConfig, req)
+	}
+	response, err := client.Do(req)
+
 	if err != nil {
 		return models.VideoSourceResponse{}
 	}
