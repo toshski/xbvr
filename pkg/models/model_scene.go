@@ -814,6 +814,8 @@ func queryScenes(db *gorm.DB, r RequestSceneList) (*gorm.DB, *gorm.DB) {
 			where = "exists (select 1 from scene_cuepoints where scene_cuepoints.scene_id = scenes.id and track is null)"
 		case "Has HSP Cuepoints":
 			where = "exists (select 1 from scene_cuepoints where scene_cuepoints.scene_id = scenes.id and track is not null)"
+		case "Has OCounter":
+			where = "exists (select 1 from o_counts where o_counts.scene_id = scenes.id)"
 		case "In Trailer List":
 			where = "trailerlist = 1"
 		case "Has Preview":
@@ -1140,6 +1142,10 @@ func queryScenes(db *gorm.DB, r RequestSceneList) (*gorm.DB, *gorm.DB) {
 		tx = tx.Order("created_at desc")
 	case "scene_updated_desc":
 		tx = tx.Order("updated_at desc")
+	case "last_ocount_desc":
+		tx = tx.Order("(SELECT max(recorded) from o_counts oc where oc.scene_id = scenes.id) desc")
+	case "ocount_desc":
+		tx = tx.Order("(SELECT count(*) from o_counts oc where oc.scene_id = scenes.id) desc, (SELECT max(recorded) from o_counts oc where oc.scene_id = scenes.id) desc")
 	case "script_published_desc":
 		// querying the scenes in from alternate sources (stored in external_reference) has a performance impact, so it's user choice
 		if config.Advanced.UseAltSrcInFileMatching {
