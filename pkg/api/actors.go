@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -78,6 +79,10 @@ func (i ActorResource) WebService() *restful.WebService {
 		Writes([]models.Actor{}))
 
 	ws.Route(ws.GET("/extrefs/{actor-id}").To(i.getActorExtRefs).
+		Metadata(restfulspec.KeyOpenAPITags, tags).
+		Writes(models.ExternalReferenceLink{}))
+
+	ws.Route(ws.GET("/split/{actor-id}").To(i.splitActorByStashId).
 		Metadata(restfulspec.KeyOpenAPITags, tags).
 		Writes(models.ExternalReferenceLink{}))
 
@@ -781,4 +786,105 @@ func (i ActorResource) editActorExtRefs(req *restful.Request, resp *restful.Resp
 		}
 	}
 	resp.WriteHeaderAndEntity(http.StatusOK, readExtRefs(id))
+}
+func (i ActorResource) splitActorByStashId(req *restful.Request, resp *restful.Response) {
+	db, _ := models.GetDB()
+	defer db.Close()
+	var actor models.Actor
+	var newActor models.Actor
+
+	actor_id, _ := strconv.ParseUint(req.PathParameter("actor-id"), 10, 32)
+	stashId := req.QueryParameter("stashid")
+	stashId = strings.ReplaceAll(stashId, "https://stashdb.org/performers/", "")
+	db.Preload("Scenes").Where("id = ?", actor_id).Find(&actor)
+	if actor.ID == 0 {
+		return
+	}
+	var actorStashLink models.ExternalReferenceLink
+	db.Preload("ExternalReference").Where(&models.ExternalReferenceLink{InternalTable: "actors", InternalDbId: actor.ID, ExternalId: stashId}).First(&actorStashLink)
+	if actorStashLink.ID == 0 {
+		return
+	}
+	var performer models.StashPerformer
+	json.Unmarshal([]byte(actorStashLink.ExternalReference.ExternalData), &performer)
+
+	// the new actor will be the stash actor name plus (ex the existing name)
+	newName := fmt.Sprintf("%s (ex %s)", performer.Name, actor.Name)
+	if performer.Disambiguation != "" {
+		newName = fmt.Sprintf("%s (%s)(ex %s)", performer.Name, performer.Disambiguation, actor.Name)
+	}
+
+	var existingActorImages []string
+	json.Unmarshal([]byte(actor.ImageArr), &existingActorImages)
+	var existingActorURLs []models.ActorLink
+	json.Unmarshal([]byte(actor.URLs), &existingActorURLs)
+
+	db.Where(&models.Actor{Name: strings.Replace(newName, ".", "", -1)}).FirstOrCreate(&newActor)
+	newName = newActor.Name // name rules, eg not full stops, may change the name from the one submitted
+
+	for _, img := range performer.Images {
+		// remove images from existing actor
+		existingActorImages = removeStringFromArray(existingActorImages, img.URL)
+		if actor.ImageUrl == img.URL {
+			if len(existingActorImages) > 0 {
+				actor.ImageUrl = existingActorImages[0]
+			} else {
+				actor.ImageUrl = ""
+			}
+		}
+	}
+
+	for _, url := range performer.URLs {
+		existingActorURLs = removeActorURLFromArray(existingActorURLs, strings.Trim(url.URL, "/"))
+	}
+
+	// update the imageArr for the existing actors
+	jsonString, _ := json.Marshal(existingActorImages)
+	actor.ImageArr = string(jsonString)
+	jsonString, _ = json.Marshal(existingActorURLs)
+	actor.URLs = string(jsonString)
+	actor.Save()
+	newActor.Save()
+
+	// update scenes, shift to new actor
+	for _, scene := range actor.Scenes {
+		var sceneLink models.ExternalReferenceLink
+		db.Preload("ExternalReference").Where(&models.ExternalReferenceLink{InternalTable: "scenes", InternalDbId: scene.ID, ExternalSource: "stashdb scene"}).First(&sceneLink)
+		if strings.Contains(sceneLink.ExternalReference.ExternalData, stashId) {
+			var s models.Scene
+			s.GetIfExistByPK(scene.ID)
+			db.Model(&s).Association("Cast").Append(&newActor)
+			db.Model(&s).Association("Cast").Delete(&actor)
+
+			models.AddAction(scene.SceneID, "edit", "cast", "-"+actor.Name)
+			models.AddAction(scene.SceneID, "edit", "cast", "+"+newActor.Name)
+		}
+	}
+
+	// update the external reference link to point to the new actor
+	actorStashLink.InternalNameId = newActor.Name
+	actorStashLink.InternalDbId = newActor.ID
+	actorStashLink.Save()
+
+	scrape.RefreshPerformer(stashId)
+
+	resp.WriteHeaderAndEntity(http.StatusOK, nil)
+}
+func removeStringFromArray(slice []string, s string) []string {
+	for i, v := range slice {
+		if v == s {
+			// Remove the element at index i from slice.
+			return append(slice[:i], slice[i+1:]...)
+		}
+	}
+	return slice
+}
+func removeActorURLFromArray(slice []models.ActorLink, s string) []models.ActorLink {
+	for i, v := range slice {
+		if v.Url == s {
+			// Remove the element at index i from slice.
+			return append(slice[:i], slice[i+1:]...)
+		}
+	}
+	return slice
 }
