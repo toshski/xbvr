@@ -546,6 +546,21 @@ func (i HeresphereResource) getHeresphereScene(req *restful.Request, resp *restf
 				addTalentTag("Talent:" + scene.Cast[i].Name)
 			}
 		}
+		var extreflinks []models.ExternalReferenceLink
+		db.Preload("ExternalReference").Where(&models.ExternalReferenceLink{InternalTable: "actors", InternalDbId: scene.Cast[i].ID, ExternalSource: "stashdb performer"}).Find(&extreflinks)
+		for _, link := range extreflinks {
+			var stashPerf models.StashPerformer
+			json.Unmarshal([]byte(link.ExternalReference.ExternalData), &stashPerf)
+			tagName := stashPerf.Name
+			if stashPerf.Disambiguation != "" {
+				tagName += " (" + stashPerf.Disambiguation + ")"
+			}
+			if strings.ToLower(stashPerf.Gender) == "male" {
+				addMaleTag("Stash Actor:" + tagName)
+			} else {
+				addTalentTag("Stash Actor:" + tagName)
+			}
+		}
 	}
 	if (maleCnt) > 5 {
 		addFeatureTag("Male: 6+")
