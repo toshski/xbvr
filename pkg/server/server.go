@@ -55,6 +55,7 @@ func StartServer(version, commit, branch, date string) {
 
 	// First setup
 	migrations.Migrate()
+	migrations.MyMigrate()
 
 	// Remove old locks
 	models.RemoveAllLocks()
