@@ -1,6 +1,7 @@
 package scrape
 
 import (
+	"encoding/json"
 	"fmt"
 	"path"
 	"regexp"
@@ -109,7 +110,9 @@ func POVR(wg *sync.WaitGroup, updateSite bool, knownScenes []string, out chan<- 
 
 		// trailer details
 		sc.TrailerType = "heresphere"
-		sc.TrailerSrc = "https://www.povr.com/heresphere/" + sc.SiteID
+		params := models.TrailerScrape{SceneUrl: "https://www.povr.com/heresphere/" + sc.SiteID, KVHttpConfig: "povr-trailers"}
+		strParams, _ := json.Marshal(params)
+		sc.TrailerSrc = string(strParams)
 
 		// Cast
 		sc.ActorDetails = make(map[string]models.ActorDetails)
