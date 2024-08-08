@@ -768,7 +768,7 @@ func copyVideoSourceResponse(sources models.VideoSourceResponse, media []Heresph
 			hsp.Name = source.Quality
 			hspSource := HeresphereSource{
 				URL:        source.URL,
-				Resolution: source.Resolution,
+				Resolution: strconv.Itoa(source.Resolution),
 			}
 			hsp.Sources = append(hsp.Sources, hspSource)
 			media = append(media, hsp)
