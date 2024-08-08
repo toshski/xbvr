@@ -18,41 +18,63 @@ import (
 	"github.com/xbapps/xbvr/pkg/scrape"
 )
 
-func LoadHeresphereScene(url string) HeresphereVideo {
-	response, err := http.Get(url)
+func LoadHeresphereScene(scrapeParams string) HeresphereVideo {
+	var params models.TrailerScrape
+	json.Unmarshal([]byte(scrapeParams), &params)
+
+	method := "POST"
+	client := &http.Client{}
+	req, _ := http.NewRequest(method, params.SceneUrl, nil)
+
+	if params.KVHttpConfig != "" {
+		req = scrape.SetupHtmlRequest(params.KVHttpConfig, req)
+	}
+	response, err := client.Do(req)
+
 	if err != nil {
 		return HeresphereVideo{}
 	}
 
 	responseData, err := io.ReadAll(response.Body)
 	if err != nil {
-		log.Errorf("Error from %s %s", url, err)
+		log.Errorf("Error from %s %s", params.SceneUrl, err)
 	}
 
 	var video HeresphereVideo
 	err = json.Unmarshal(responseData, &video)
 	if err != nil {
-		log.Errorf("Error from %s %s", url, err)
+		log.Errorf("Error from %s %s", params.SceneUrl, err)
 	}
 
 	return video
 }
 
-func LoadDeovrScene(url string) DeoScene {
-	response, err := http.Get(url)
+func LoadDeovrScene(scrapeParams string) DeoScene {
+	var params models.TrailerScrape
+	json.Unmarshal([]byte(scrapeParams), &params)
+
+	method := "POST"
+	client := &http.Client{}
+	req, _ := http.NewRequest(method, params.SceneUrl, nil)
+
+	if params.KVHttpConfig != "" {
+		req = scrape.SetupHtmlRequest(params.KVHttpConfig, req)
+	}
+	response, err := client.Do(req)
+
 	if err != nil {
 		return DeoScene{}
 	}
 
 	responseData, err := io.ReadAll(response.Body)
 	if err != nil {
-		log.Errorf("Error from %s %s", url, err)
+		log.Errorf("Error from %s %s", params.SceneUrl, err)
 	}
 
 	var video DeoScene
 	err = json.Unmarshal(responseData, &video)
 	if err != nil {
-		log.Errorf("Error from %s %s", url, err)
+		log.Errorf("Error from %s %s", params.SceneUrl, err)
 	}
 
 	db, _ := models.GetDB()
