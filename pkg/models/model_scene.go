@@ -116,7 +116,8 @@ type Scene struct {
 	Description string  `gorm:"-" json:"description" xbvrbackup:"-"`
 	Score       float64 `gorm:"-" json:"_score" xbvrbackup:"-"`
 
-	AlternateSource []ExternalReferenceLink `json:"alternate_source" xbvrbackup:"-"`
+	AlternateSource  []ExternalReferenceLink `json:"alternate_source" xbvrbackup:"-"`
+	AvailableOnSites string                  `json:"available_on_sites" xbvrbackup:"available_on_sites"`
 }
 
 type Image struct {
@@ -437,6 +438,8 @@ func SceneCreateUpdateFromExternal(db *gorm.DB, ext ScrapedScene) error {
 	var site Site
 	db.Where("id = ?", o.ScraperId).FirstOrInit(&site)
 	o.IsSubscribed = site.Subscribed
+	data, _ := json.Marshal(ext.AvailableOnSites)
+	o.AvailableOnSites = string(data)
 
 	// Clean & Associate Tags
 	var tags = o.Tags
@@ -470,6 +473,10 @@ func SceneCreateUpdateFromExternal(db *gorm.DB, ext ScrapedScene) error {
 				saveActor = true
 			}
 		}
+		if ext.ActorDetails[name].Gender != "" {
+			tmpActor.Gender = ext.ActorDetails[name].Gender
+			saveActor = true
+		}
 		if saveActor {
 			tmpActor.Save()
 		}
@@ -482,7 +489,14 @@ func SceneCreateUpdateFromExternal(db *gorm.DB, ext ScrapedScene) error {
 		db.Where("external_reference_id = ?", extref.ID).Delete(&ExternalReferenceLink{})
 		db.Delete(&extref)
 	}
-
+	for _, cuepoint := range ext.Cuepoints {
+		var newCuepoint SceneCuepoint
+		db.Where("scene_id = ? and name = ? and time_start = ?", o.ID, cuepoint.Name, cuepoint.TimeStart).Find(&newCuepoint)
+		newCuepoint.SceneID = o.ID
+		newCuepoint.Name = cuepoint.Name
+		newCuepoint.TimeStart = cuepoint.TimeStart
+		newCuepoint.Save()
+	}
 	return nil
 }
 
@@ -613,6 +627,7 @@ func SceneUpdateScriptData(db *gorm.DB, ext ScrapedScene) {
 				externalData.Scene.HumanScript = ext.HumanScript
 				externalData.Scene.AiScript = ext.AiScript
 				newjson, _ := json.Marshal(externalData)
+
 				extref.ExternalData = string(newjson)
 				extref.Save()
 			}
