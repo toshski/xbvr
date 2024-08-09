@@ -198,13 +198,9 @@ func processAdulttimeScrapedScene(adulttimeScene AdulttimeSceneHit, scraperId st
 		sc.ActorDetails[modelName] = models.ActorDetails{ProfileUrl: "https://members.adulttime.com/en/pornstar/view/" + model.UrlName + "/" + model.ActorID, Source: sc.ScraperID + " scrape", Gender: model.Gender}
 	}
 
-	var trailers models.VideoSourceResponse
-	sc.TrailerType = "urls"
-	for _, atTrailer := range adulttimeScene.VideoFormats {
-		newTrailer := models.VideoSource{Quality: atTrailer.Slug, URL: atTrailer.TrailerURL}
-		trailers.VideoSources = append(trailers.VideoSources, newTrailer)
-	}
-	strParams, _ := json.Marshal(trailers)
+	sc.TrailerType = "scrape_json"
+	params := models.TrailerScrape{SceneUrl: sc.MembersUrl, HtmlElement: ".Cms_SceneSignUrlData script", ExtractRegex: "window.defaultStateScene =  (.*);", RecordPath: "*.videos", ContentPath: "url", QualityPath: "format", KVHttpConfig: "adulttime-trailers"}
+	strParams, _ := json.Marshal(params)
 	sc.TrailerSrc = string(strParams)
 
 	var cuepoints []models.ScrapedCuepoint
