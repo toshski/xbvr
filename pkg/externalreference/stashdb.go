@@ -171,7 +171,7 @@ func matchSceneOnRules(sitename string, config models.StashSiteConfig) {
 	urlLoop:
 		for _, rule := range config.Rules { // for each rule on this site
 			var xbvrScene models.Scene
-			switch rule.StashField {
+			switch rule.StashRule {
 			case "", "url":
 				for _, url := range data.URLs {
 					if url.Type == "STUDIO" {
