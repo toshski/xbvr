@@ -59,7 +59,7 @@
                           :allow-new="true"
                           :allow-duplicates="false"
                           :data="filteredCast"
-                          @typing="getFilteredCast"
+                          @typing="debounce_getFilteredCast"
                           @blur="blur('castArray')"/>
             </b-field>
 
@@ -164,6 +164,11 @@ export default {
   },
   methods: {
     getFilteredCast (text) {
+      if (text==""){
+        // don't build a list it may take ages to render since text is now a space
+        this.filteredCast = [] 
+        return
+      }
       this.filteredCast = this.filters.cast.filter(option => (
         option.toString().toLowerCase().indexOf(text.toLowerCase()) >= 0) &&
         !this.scene.cast.some(entry => entry.name === option.toString())
@@ -251,7 +256,18 @@ export default {
       } else if (this.scene[field] !== this.source[field]) {
         this.changesMade = true
       }
-    }
+    },
+      debounce_getFilteredCast(text) {
+      // Clear the existing timeout if there's one.
+      if (this.timeoutId) {
+        clearTimeout(this.timeoutId);
+      }
+
+      // Set a new timeout to call getFilteredCast after 300ms.
+      this.timeoutId = setTimeout(() => {
+        this.getFilteredCast(text);
+      }, 300);
+    },
   },
   computed: {
     filters () {
