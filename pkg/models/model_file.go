@@ -102,6 +102,8 @@ func (f *File) CalculateFramerate() error {
 		return err
 	}
 
-	f.VideoAvgFrameRateVal = math.Ceil(v1 / v2)
+	if v2 != 0 {
+		f.VideoAvgFrameRateVal = math.Ceil(v1 / v2)
+	}
 	return nil
 }
