@@ -100,6 +100,7 @@ func CheckVolumes() {
 	var vol []Volume
 	db.Find(&vol)
 
+	WaitSQLTrigger("pre UpdateStatus")
 	var files []File
 	for i := range vol {
 		isMounted := vol[i].IsMounted()
@@ -119,4 +120,5 @@ func CheckVolumes() {
 			}
 		}
 	}
+	WaitSQLTrigger("post UpdateStatus")
 }

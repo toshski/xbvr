@@ -174,6 +174,13 @@
             <b-switch v-model="includeConfig">Include Config Settings</b-switch>
           </b-tooltip>
         </b-field>
+        <b-field>
+          <b-tooltip
+            label="Include Custom Sql Commands"
+            size="is-large" type="is-primary is-light" multilined :delay="1000" >
+            <b-switch v-model="includeSqlCommands">Include Sql Commands</b-switch>
+          </b-tooltip>
+        </b-field>
         <b-button type="is-info is-small" style="margin-bottom: 1em;"  @click="toggleSettingsIncludes()">Toggle Includes</b-button>
       </div>
       <hr />
@@ -245,6 +252,7 @@ export default {
       includeSites: true,
       includeConfig: false,
       includeActorAkas: true,
+      includeSqlCommands: true,
       includeExternalReferences: true,
       includeTagGroups: true,
       includeActors: true,
@@ -328,7 +336,7 @@ export default {
         ky.post('/api/task/bundle/restore', {
           json: { allSites: this.allSites == "true", onlyIncludeOfficalSites: this.onlyIncludeOfficalSites, inclScenes: this.includeScenes, inclHistory: this.includeHistory, 
           inclLinks: this.includeFileLinks, inclCuepoints: this.includeCuepoints, inclActions: this.includeActions, inclPlaylists: this.includePlaylists, inclActorAkas: this.includeActorAkas, inclTagGroups: this.includeTagGroups, 
-          inclVolumes: this.includeVolumes, inclExtRefs: this.includeExternalReferences, inclSites: this.includeSites, inclActors: this.includeActors,inclActorActions: this.inclActorActions, 
+          inclVolumes: this.includeVolumes, inclExtRefs: this.includeExternalReferences, inclSites: this.includeSites, inclSqlCmds: this.includeSqlCommands, inclActors: this.includeActors,inclActorActions: this.inclActorActions, 
           inclConfig: this.includeConfig, extRefSubset: this.extRefSubset, overwrite: this.overwrite, uploadData: this.uploadData }
         })
         this.file = null
@@ -337,7 +345,7 @@ export default {
     backupContent () {      
       ky.get('/api/task/bundle/backup', { timeout: false, searchParams: { allSites: this.allSites == "true", onlyIncludeOfficalSites: this.onlyIncludeOfficalSites, inclScenes: this.includeScenes, inclHistory: this.includeHistory,
            inclLinks: this.includeFileLinks, inclCuepoints: this.includeCuepoints, inclActions: this.includeActions, inclPlaylists: this.includePlaylists, inclActorAkas: this.includeActorAkas, inclTagGroups: this.includeTagGroups, 
-           inclVolumes: this.includeVolumes, inclExtRefs: this.includeExternalReferences, inclSites: this.includeSites, inclActors: this.includeActors,inclActorActions: this.inclActorActions,
+           inclVolumes: this.includeVolumes, inclExtRefs: this.includeExternalReferences, inclSites: this.includeSites, inclSqlCommands: this.includeSqlCommands, inclActors: this.includeActors,inclActorActions: this.inclActorActions,
            inclConfig: this.includeConfig, extRefSubset: this.extRefSubset, playlistId: this.currentPlaylist, download: true } }).json().then(data => {      
         const link = document.createElement('a')
         link.href = this.myUrl
