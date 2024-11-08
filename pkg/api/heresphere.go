@@ -13,6 +13,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/dustin/go-humanize"
 	restfulspec "github.com/emicklei/go-restful-openapi/v2"
@@ -512,6 +513,12 @@ func (i HeresphereResource) getHeresphereScene(req *restful.Request, resp *restf
 
 	akaCnt := 0
 	for i := range scene.Cast {
+		if scene.Cast[i].Favourite {
+			addFeatureTag("Actor Favourite")
+		}
+		if scene.Cast[i].Watchlist {
+			addFeatureTag("Actor Watchlist")
+		}
 		if strings.HasPrefix(scene.Cast[i].Name, "aka:") {
 			akaCnt++
 			tags = append(tags, HeresphereTag{
@@ -690,6 +697,10 @@ func (i HeresphereResource) getHeresphereScene(req *restful.Request, resp *restf
 		}
 	}
 
+	if scene.Favourite {
+		addFeatureTag("Favourite")
+	}
+
 	if scene.Watchlist {
 		addFeatureTag("Watchlist")
 	}
@@ -766,6 +777,7 @@ func copyVideoSourceResponse(sources models.VideoSourceResponse, media []Heresph
 }
 
 var lockHeresphereUpdates sync.Mutex
+var lastSceneOCounter uint = 0
 
 func ProcessHeresphereUpdates(scene *models.Scene, requestData HereSphereAuthRequest, videoFile models.File) {
 	db, _ := models.GetDB()
@@ -797,6 +809,46 @@ func ProcessHeresphereUpdates(scene *models.Scene, requestData HereSphereAuthReq
 		for _, tag := range *requestData.Tags {
 			if strings.HasPrefix(strings.ToLower(tag.Name), "category:") {
 				newTags = append(newTags, tag.Name[9:])
+			}
+			if strings.HasPrefix(strings.ToLower(tag.Name), "action:") {
+				switch strings.ToLower(tag.Name) {
+				case "action:ocounter":
+					if scene.ID != lastSceneOCounter {
+						counter := models.OCount{SceneID: scene.ID, Recorded: time.Now()}
+						counter.Save()
+						lastSceneOCounter = scene.ID
+					}
+				case "action:actor favourite":
+					if len(scene.Cast) > 0 {
+						var actor models.Actor
+						actor.GetIfExistByPK(scene.Cast[0].ID)
+						actor.Favourite = true
+						actor.Save()
+					}
+				case "action:actor 1 favourite", "action:actor 2 favourite", "action:actor 3 favourite", "action:actor 4 favourite", "action:actor 5 favourite":
+					cnt, _ := strconv.Atoi(tag.Name[14:14])
+					if len(scene.Cast) >= cnt {
+						var actor models.Actor
+						actor.GetIfExistByPK(scene.Cast[cnt-1].ID)
+						actor.Favourite = true
+						actor.Save()
+					}
+				case "action:actor watchlist":
+					if len(scene.Cast) > 0 {
+						var actor models.Actor
+						actor.GetIfExistByPK(scene.Cast[0].ID)
+						actor.Watchlist = true
+						actor.Save()
+					}
+				case "action:actor 1 watchlist", "action:actor 2 watchlist", "action:actor 3 watchlist", "action:actor 4 watchlist", "action:actor 5 watchlist":
+					cnt, _ := strconv.Atoi(tag.Name[14:14])
+					if len(scene.Cast) >= cnt {
+						var actor models.Actor
+						actor.GetIfExistByPK(scene.Cast[cnt-1].ID)
+						actor.Favourite = true
+						actor.Save()
+					}
+				}
 			}
 		}
 		ProcessTagChanges(scene, &newTags, db)
