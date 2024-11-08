@@ -107,6 +107,7 @@ func MyMigrate() {
 				e := json.Unmarshal(b, &newCustomScrapeRules)
 				if e == nil {
 					// if we can read the file with the new model, it has already been converted
+					common.Log.Info("Ignoring migration of actor_scraper_custom_config.json, already appears to have been done")
 					return nil
 				}
 
@@ -114,7 +115,7 @@ func MyMigrate() {
 				e = json.Unmarshal(b, &oldCustomScrapeRules)
 				if e != nil {
 					// can't read the old layout either ?
-					return err
+					return e
 				}
 
 				newCustomScrapeRules = models.ActorScraperConfig{}
