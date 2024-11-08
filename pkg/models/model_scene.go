@@ -129,8 +129,9 @@ type VideoSourceResponse struct {
 }
 
 type VideoSource struct {
-	URL     string `json:"url"`
-	Quality string `json:"quality"`
+	URL        string `json:"url"`
+	Quality    string `json:"quality"`
+	Resolution int    `json:"resolution"`
 }
 
 type Config struct {
@@ -871,6 +872,10 @@ func queryScenes(db *gorm.DB, r RequestSceneList) (*gorm.DB, *gorm.DB) {
 			where = "scenes.watchlist = 1"
 		case "Is Scripted":
 			where = "is_scripted = 1"
+		case "Is 2D":
+			where = "scene_type = '2D'"
+		case "Is VR":
+			where = "scene_type = 'VR'"
 		case "Is Favourite":
 			where = "scenes.favourite = 1"
 		case "Is Passthrough":

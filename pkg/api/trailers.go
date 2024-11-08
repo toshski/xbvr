@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"path"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/gocolly/colly/v2"
@@ -161,11 +162,28 @@ func extractFromJson(inputJson string, params models.TrailerScrape, srcs []model
 			quality := gjson.Get(value.String(), params.QualityPath).String()
 			encoding := ""
 			if params.EncodingPath != "" {
-				encoding = gjson.Get(value.String(), params.EncodingPath).String() + "-"
+				encoding = gjson.Get(value.String(), params.EncodingPath).String()
 			}
 
 			if url != "" {
-				srcs = append(srcs, models.VideoSource{URL: url, Quality: encoding + quality})
+				res, err := strconv.Atoi(quality)
+				if err != nil {
+					switch quality {
+					case "720p":
+						res = 1440
+					case "1080p":
+						res = 1080
+					case "2160p":
+						res = 2160
+					default:
+						res = 0
+					}
+				}
+				if res > 0 {
+					srcs = append(srcs, models.VideoSource{URL: url, Quality: encoding, Resolution: res})
+				} else {
+					srcs = append(srcs, models.VideoSource{URL: url, Quality: encoding + quality})
+				}
 			}
 			return true // keep iterating
 		})

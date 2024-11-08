@@ -25,7 +25,7 @@ import (
 	"github.com/xbapps/xbvr/pkg/scrape"
 )
 
-var allowedVideoExt = []string{".mp4", ".avi", ".wmv", ".mpeg4", ".mov", ".mkv"}
+var allowedVideoExt = []string{".mp4", ".avi", ".wmv", ".mpeg4", ".mov", ".mkv", ".f4v", ".flv"}
 
 func RescanVolumes(id int) {
 	if !models.CheckLock("rescan") {
