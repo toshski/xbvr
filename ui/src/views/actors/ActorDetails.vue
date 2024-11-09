@@ -232,7 +232,11 @@
                               <a @click="refreshScraper(extref.external_reference.external_url)" :title="'Rescrape Actor Details now'">
                                 <b-icon pack="mdi" icon="refresh" size="is-small" style="margin-right: 1em;"/>
                               </a>
-                            <a class="tag is-info" :href="extref.external_reference.external_url" target="_blank" rel="noreferrer" style="margin-bottom: .5em;">{{extref.external_source}} - Updated: {{format(parseISO(extref.external_reference.external_date), "yyyy-MM-dd") }}</a>                            
+                              <a class="tag is-info" :href="extref.external_reference.external_url" target="_blank" rel="noreferrer" style="margin-bottom: .5em;">{{extref.external_source}} - Updated: {{format(parseISO(extref.external_reference.external_date), "yyyy-MM-dd") }}</a>                            
+                              <a v-if="extref.external_reference.external_url.startsWith('https://stashdb.org')" 
+                                  @click="splitActorUsingStash(extref.external_reference.external_url)" :title="'Split actor using Stash Id'">
+                                <b-icon pack="mdi" icon="call-split" size="is-small" style="margin-left: 1em;"/>
+                              </a>
                             </b-field>
                           </div>                        
                         </div>
@@ -641,6 +645,19 @@ export default {
           })
       }
       this.$store.state.actorList.isLoading = false
+    },
+    splitActorUsingStash(url){      
+      this.$store.state.actorList.isLoading = true
+      ky.get(`/api/actor/split/${this.actor.id}`, {searchParams: { stashid: url },timeout: 60000}).then(data => {
+          ky.get('/api/actor/'+this.actor.id).json().then(data => {          
+            if (data.id != 0){
+              this.$store.state.overlay.actordetails.actor = data
+              this.$store.state.actorList.isLoading = false
+              this.$store.dispatch('actorList/load', { offset: this.$store.state.actorList.offset - this.$store.state.actorList.limit })
+            }
+          })
+        })
+        this.$store.state.actorList.isLoading = false
     },
     format,
     parseISO
