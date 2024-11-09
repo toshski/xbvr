@@ -48,9 +48,40 @@ func MyMigrate() {
 			},
 		},
 		{
-			ID: "0007",
+			ID: "KM0007 SQL Statements",
 			Migrate: func(tx *gorm.DB) error {
-				return nil
+				type SqlCmd struct {
+					ID uint `gorm:"primary_key" json:"id"  xbvrbackup:"-"`
+
+					SqlGroupID int    `json:"sql_group_id" xbvrbackup:"-"`
+					Seq        int    `json:"seq" xbvrbackup:"seq"`
+					DbType     string `json:"db_type" xbvrbackup:"db_type"`
+					Cmd        string `json:"cmd" gorm:"size:4095" xbvrbackup:"cmd"`
+				}
+				type SqlEventTrigger struct {
+					ID           uint   `gorm:"primary_key" json:"id"  xbvrbackup:"-"`
+					SqlGroupID   int    `json:"sql_group_id" xbvrbackup:"-"`
+					EventTrigger string `json:"event_trigger" xbvrbackup:"event_trigger"`
+				}
+				type SqlGroup struct {
+					ID uint `gorm:"primary_key" json:"id"  xbvrbackup:"-"`
+
+					Name        string            `json:"name" xbvrbackup:"name"`
+					Description string            `json:"description" xbvrbackup:"description"`
+					Seq         int               `json:"seq" xbvrbackup:"seq"`
+					Triggers    []SqlEventTrigger `json:"triggers" xbvrbackup:"triggers"`
+					Commands    []SqlCmd          `json:"commands" xbvrbackup:"commands"`
+				}
+
+				err := tx.AutoMigrate(&SqlGroup{}).Error
+				if err != nil {
+					return err
+				}
+				err = tx.AutoMigrate(&SqlCmd{}).Error
+				if err != nil {
+					return err
+				}
+				return tx.AutoMigrate(&SqlEventTrigger{}).Error
 			},
 		},
 		{
