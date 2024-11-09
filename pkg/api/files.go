@@ -221,6 +221,8 @@ func (i FilesResource) matchFile(req *restful.Request, resp *restful.Response) {
 	db, _ := models.GetDB()
 	defer db.Close()
 
+	models.WaitSQLTrigger("pre matchFile")
+
 	var r RequestMatchFile
 	err := req.ReadEntity(&r)
 	if err != nil {
@@ -260,9 +262,16 @@ func (i FilesResource) matchFile(req *restful.Request, resp *restful.Response) {
 	models.AddAction(scene.SceneID, "match", "filenames_arr", scene.FilenamesArr)
 
 	// Finally, update scene available/accessible status
+	models.WaitSQLTrigger("pre UpdateStatus")
 	scene.UpdateStatus()
+	models.WaitSQLTrigger("post UpdateStatus")
 
 	resp.WriteHeaderAndEntity(http.StatusOK, nil)
+
+	go func() {
+		models.RunSQLTrigger("post matchFile", nil)
+	}()
+
 }
 
 func (i FilesResource) unmatchFile(req *restful.Request, resp *restful.Response) {
@@ -320,7 +329,9 @@ func (i FilesResource) unmatchFile(req *restful.Request, resp *restful.Response)
 		models.AddAction(scene.SceneID, "unmatch", "filenames_arr", scene.FilenamesArr)
 
 		// Finally, update scene available/accessible status
+		models.WaitSQLTrigger("pre UpdateStatus")
 		scene.UpdateStatus()
+		models.WaitSQLTrigger("post UpdateStatus")
 	}
 
 	resp.WriteHeaderAndEntity(http.StatusOK, scene)
@@ -372,7 +383,9 @@ func removeFileByFileId(fileId uint) models.Scene {
 			db.Delete(&file)
 			if file.SceneID != 0 {
 				scene.GetIfExistByPK(file.SceneID)
+				models.WaitSQLTrigger("pre UpdateStatus")
 				scene.UpdateStatus()
+				models.WaitSQLTrigger("post UpdateStatus")
 			}
 		}
 	} else {

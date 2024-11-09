@@ -728,6 +728,9 @@ func (i SceneResource) addSceneCuepoint(req *restful.Request, resp *restful.Resp
 	db.Close()
 
 	resp.WriteHeaderAndEntity(http.StatusOK, scene)
+	go func() {
+		models.RunSQLTrigger("addSceneCuepoint", nil)
+	}()
 }
 
 func (i SceneResource) deleteSceneCuepoint(req *restful.Request, resp *restful.Response) {
@@ -761,6 +764,9 @@ func (i SceneResource) deleteSceneCuepoint(req *restful.Request, resp *restful.R
 	defer db.Close()
 
 	resp.WriteHeaderAndEntity(http.StatusOK, scene)
+	go func() {
+		models.RunSQLTrigger("deleteSceneCuepoint", nil)
+	}()
 }
 
 func (i SceneResource) rateScene(req *restful.Request, resp *restful.Response) {
@@ -783,6 +789,9 @@ func (i SceneResource) rateScene(req *restful.Request, resp *restful.Response) {
 	if err == nil {
 		scene.StarRating = r.Rating
 		scene.Save()
+		go func() {
+			models.RunSQLTrigger("rateScene", nil)
+		}()
 	}
 	db.Close()
 

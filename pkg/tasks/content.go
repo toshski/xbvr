@@ -66,6 +66,7 @@ type BackupContentBundle struct {
 	History            []BackupSceneHistory       `xbvrbackup:"sceneHistory"`
 	Actions            []BackupSceneAction        `xbvrbackup:"actions"`
 	Akas               []models.Aka               `xbvrbackup:"akas"`
+	SqlGroups          []models.SqlGroup          `xbvrbackup:"sqlGroups"`
 	TagGroups          []models.TagGroup          `xbvrbackup:"tagGroups"`
 	ExternalRefs       []models.ExternalReference `xbvrbackup:"externalReferences"`
 	ManualSceneMatches []models.ExternalReference `xbvrbackup:"manualSceneMatches"`
@@ -86,6 +87,7 @@ type RequestRestore struct {
 	InclVolumes      bool   `json:"inclVolumes"`
 	InclSites        bool   `json:"inclSites"`
 	InclActions      bool   `json:"inclActions"`
+	InclSqlCmds      bool   `json:"inclSqlCmds"`
 	Overwrite        bool   `json:"overwrite"`
 	UploadData       string `json:"uploadData"`
 	InclExternalRefs bool   `json:"inclExtRefs"`
@@ -158,6 +160,7 @@ func runScrapers(knownScenes []string, toScrape string, updateSite bool, collect
 	}
 
 	wg.Wait(0)
+	models.WaitSQLTrigger("post runScrapers")
 	return nil
 }
 
@@ -221,9 +224,11 @@ func ReapplyEdits() {
 
 	actionCnt := 0
 
+	lastProgressUpdate := time.Now()
 	for _, a := range actions {
-		if actionCnt%100 == 0 {
+		if time.Since(lastProgressUpdate) > time.Duration(config.Config.Advanced.ProgressTimeInterval)*time.Second {
 			tlog.Infof("Processing %v of %v edits", actionCnt+1, len(actions))
+			lastProgressUpdate = time.Now()
 		}
 		actionCnt += 1
 
@@ -304,6 +309,8 @@ func Scrape(toScrape string, singleSceneURL string, singeScrapeAdditionalInfo st
 		defer models.RemoveLock("scrape")
 		t0 := time.Now()
 		tlog := log.WithField("task", "scrape")
+
+		models.WaitSQLTrigger("pre Scrape")
 		tlog.Infof("Scraping started at %s", t0.Format("Mon Jan _2 15:04:05 2006"))
 
 		// Get all known scenes
@@ -374,6 +381,12 @@ func Scrape(toScrape string, singleSceneURL string, singeScrapeAdditionalInfo st
 
 		}
 	}
+
+	models.RemoveLock("scrape")
+
+	go func() {
+		models.RunSQLTrigger("post Scrape", nil)
+	}()
 }
 
 func ScrapeJAVR(queryString string, scraper string) {
@@ -547,14 +560,18 @@ func ImportBundleV1(bundleData ContentBundle) {
 	db, _ := models.GetDB()
 	defer db.Close()
 
+	lastProgressUpdate := time.Now()
 	for i := range bundleData.Scenes {
-		tlog.Infof("Importing %v of %v scenes", i+1, len(bundleData.Scenes))
+		if time.Since(lastProgressUpdate) > time.Duration(config.Config.Advanced.ProgressTimeInterval)*time.Second {
+			tlog.Infof("Importing %v of %v scenes", i+1, len(bundleData.Scenes))
+			lastProgressUpdate = time.Now()
+		}
 		models.SceneCreateUpdateFromExternal(db, bundleData.Scenes[i])
 	}
 
 }
 
-func BackupBundle(inclAllSites bool, onlyIncludeOfficalSites bool, inclScenes bool, inclFileLinks bool, inclCuepoints bool, inclHistory bool, inclPlaylists bool, InclActorAkas bool, inclTagGroups bool, inclVolumes bool, inclSites bool, inclActions bool, inclExtRefs bool, inclActors bool, inclActorActions bool, inclConfig bool, extRefSubset string, playlistId string, outputBundleFilename string, version string) string {
+func BackupBundle(inclAllSites bool, onlyIncludeOfficalSites bool, inclScenes bool, inclFileLinks bool, inclCuepoints bool, inclHistory bool, inclPlaylists bool, InclActorAkas bool, inclTagGroups bool, inclVolumes bool, inclSites bool, inclActions bool, inclExtRefs bool, inclActors bool, inclActorActions bool, inclConfig bool, extRefSubset string, playlistId string, outputBundleFilename string, version string, inclSqlCommands bool) string {
 	var out BackupContentBundle
 	var content []byte
 	exportCnt := 0
@@ -613,10 +630,12 @@ func BackupBundle(inclAllSites bool, onlyIncludeOfficalSites bool, inclScenes bo
 				db.Select("id, scene_id").Find(&scenes)
 			}
 
+			lastProgressUpdate := time.Now()
 			var err error
 			for cnt, scene := range scenes {
-				if cnt%500 == 0 {
+				if time.Since(lastProgressUpdate) > time.Duration(config.Config.Advanced.ProgressTimeInterval)*time.Second {
 					tlog.Infof("Reading scene %v of %v, selected %v scenes", cnt+1, len(scenes), exportCnt)
+					lastProgressUpdate = time.Now()
 				}
 
 				// check if the scene is for a site we want
@@ -688,6 +707,15 @@ func BackupBundle(inclAllSites bool, onlyIncludeOfficalSites bool, inclScenes bo
 		var akas []models.Aka
 		if InclActorAkas {
 			db.Preload("AkaActor").Preload("Akas").Find(&akas)
+		}
+
+		var sqlGroups []models.SqlGroup
+		if inclSqlCommands {
+			db.
+				Preload("Commands", func(db *gorm.DB) *gorm.DB { return db.Order("sql_cmds.seq") }).
+				Preload("Triggers").
+				Order("seq").
+				Find(&sqlGroups)
 		}
 
 		var tagGroups []models.TagGroup
@@ -783,6 +811,7 @@ func BackupBundle(inclAllSites bool, onlyIncludeOfficalSites bool, inclScenes bo
 			History:       backupHistoryList,
 			Actions:       backupActionList,
 			Akas:          akas,
+			SqlGroups:     sqlGroups,
 			TagGroups:     tagGroups,
 			ExternalRefs:  externalReferences,
 			Actors:        actors,
@@ -864,6 +893,9 @@ func RestoreBundle(request RequestRestore) {
 			if request.InclSites {
 				RestoreSites(bundleData.Sites, request.Overwrite, db)
 			}
+			if request.InclSqlCmds {
+				RestoreSqlCmds(bundleData.SqlGroups, request.Overwrite, db)
+			}
 			if request.InclScenes {
 				RestoreScenes(bundleData.Scenes, request.InclAllSites, selectedSites, request.Overwrite, request.InclCuepoints, request.InclFileLinks, request.InclHistory, db)
 			}
@@ -928,9 +960,11 @@ func RestoreScenes(scenes []models.Scene, inclAllSites bool, selectedSites []mod
 	tlog.Infof("Restoring scenes")
 
 	addedCnt := 0
+	lastProgressUpdate := time.Now()
 	for sceneCnt, scene := range scenes {
-		if sceneCnt%250 == 0 {
+		if time.Since(lastProgressUpdate) > time.Duration(config.Config.Advanced.ProgressTimeInterval)*time.Second {
 			tlog.Infof("Processing %v of %v scenes", sceneCnt+1, len(scenes))
+			lastProgressUpdate = time.Now()
 		}
 		// check if the scene is for a site we want
 		if !inclAllSites {
@@ -978,9 +1012,11 @@ func RestoreCuepoints(sceneCuepointList []BackupSceneCuepoint, inclAllSites bool
 	tlog.Infof("Restoring scene cuepoints")
 
 	addedCnt := 0
+	lastProgressUpdate := time.Now()
 	for cnt, cuepoints := range sceneCuepointList {
-		if cnt%500 == 0 {
+		if time.Since(lastProgressUpdate) > time.Duration(config.Config.Advanced.ProgressTimeInterval)*time.Second {
 			tlog.Infof("Processing cuepoints %v of %v", cnt+1, len(sceneCuepointList))
+			lastProgressUpdate = time.Now()
 		}
 		// check if the scene is for a site we want
 		if !inclAllSites {
@@ -1026,9 +1062,11 @@ func RestoreSceneFileLinks(backupFileList []BackupFileLink, inclAllSites bool, s
 	db.Find(&volumes)
 
 	addedCnt := 0
+	lastProgressUpdate := time.Now()
 	for cnt, backupSceneFiles := range backupFileList {
-		if cnt%500 == 0 {
+		if time.Since(lastProgressUpdate) > time.Duration(config.Config.Advanced.ProgressTimeInterval)*time.Second {
 			tlog.Infof("Processing files %v of %v", cnt+1, len(backupFileList))
+			lastProgressUpdate = time.Now()
 		}
 
 		// check if the scene is for a site we want
@@ -1077,9 +1115,11 @@ func RestoreHistory(sceneHistoryList []BackupSceneHistory, inclAllSites bool, se
 	tlog.Infof("Restoring scene watch history")
 
 	addedCnt := 0
+	lastProgressUpdate := time.Now()
 	for cnt, histories := range sceneHistoryList {
-		if cnt%500 == 0 {
+		if time.Since(lastProgressUpdate) > time.Duration(config.Config.Advanced.ProgressTimeInterval)*time.Second {
 			tlog.Infof("Processing history %v of %v", cnt+1, len(sceneHistoryList))
+			lastProgressUpdate = time.Now()
 		}
 		// check if the scene is for a site we want
 		if !inclAllSites {
@@ -1134,9 +1174,11 @@ func RestoreActions(sceneActionList []BackupSceneAction, inclAllSites bool, sele
 	tlog.Infof("Restoring scene edits")
 
 	addedCnt := 0
+	lastProgressUpdate := time.Now()
 	for cnt, actions := range sceneActionList {
-		if cnt%500 == 0 {
+		if time.Since(lastProgressUpdate) > time.Duration(config.Config.Advanced.ProgressTimeInterval)*time.Second {
 			tlog.Infof("Processing actions %v of %v", cnt+1, len(sceneActionList))
+			lastProgressUpdate = time.Now()
 		}
 		// check if the scene is for a site we want
 		if !inclAllSites {
@@ -1240,6 +1282,55 @@ func RestoreSites(sites []models.Site, overwrite bool, db *gorm.DB) {
 		db.Model(&models.Scene{}).Where("scraper_id = ?", site.ID).Update("is_subscribed", site.Subscribed)
 	}
 	tlog.Infof("%v Sites  restored", addedCnt)
+}
+func RestoreSqlCmds(sqlGroups []models.SqlGroup, overwrite bool, db *gorm.DB) {
+	tlog := log.WithField("task", "scrape")
+	tlog.Infof("Restoring sql commands")
+
+	addedCnt := 0
+	for _, sqlGroup := range sqlGroups {
+		var found models.SqlGroup
+		db.Preload("Commands").Preload("Triggers").Where(&models.SqlGroup{Name: sqlGroup.Name, Seq: sqlGroup.Seq}).First(&found)
+
+		if found.ID == 0 { // id = 0 is a new record
+			sqlGroup.ID = 0 // dont use the id from json
+			models.SaveWithRetry(db, &sqlGroup)
+			addedCnt++
+		} else {
+			if overwrite {
+				found.Description = sqlGroup.Description
+				for _, sqlCmd := range sqlGroup.Commands {
+					addedCnt++
+					exists := false
+					for idx, existingCmd := range found.Commands {
+						if existingCmd.Seq == sqlCmd.Seq && existingCmd.DbType == sqlCmd.DbType {
+							exists = true
+							found.Commands[idx].Cmd = sqlCmd.Cmd
+						}
+					}
+					if !exists {
+						sqlCmd.SqlGroupID = int(found.ID)
+						found.Commands = append(found.Commands, sqlCmd)
+					}
+				}
+				for _, trigger := range sqlGroup.Triggers {
+					exists := false
+					for _, existingTrigger := range found.Triggers {
+						if existingTrigger.EventTrigger == trigger.EventTrigger {
+							exists = true
+						}
+					}
+					if !exists {
+						trigger.SqlGroupID = int(found.ID)
+						found.Triggers = append(found.Triggers, trigger)
+					}
+				}
+				models.SaveWithRetry(db, &found)
+			}
+		}
+	}
+	tlog.Infof("%v Sql Commands restored", addedCnt)
+
 }
 
 func RestoreAkas(akas []models.Aka, overwrite bool, db *gorm.DB) {
@@ -1660,11 +1751,16 @@ func RestoreKvs(kvs []models.KV, db *gorm.DB) {
 }
 
 func CountTags() {
+	models.WaitSQLTrigger("pre CountTags")
 	var tag models.Tag
 	tag.CountTags()
-
 	var actor models.Actor
 	actor.CountActorTags()
+
+	go func() {
+		models.RunSQLTrigger("post CountTags", nil)
+	}()
+
 }
 
 func FindSite(sites []models.Site, scraperId string) int {
@@ -1725,11 +1821,15 @@ func UpdateSceneStatus(db *gorm.DB) {
 	tlog.Infof("Update status of Scenes")
 	scenes := []models.Scene{}
 	db.Model(&models.Scene{}).Find(&scenes)
+	models.WaitSQLTrigger("pre UpdateStatus")
 
+	lastProgressUpdate := time.Now()
 	for i := range scenes {
 		scenes[i].UpdateStatus()
-		if (i % 70) == 0 {
+		if time.Since(lastProgressUpdate) > time.Duration(config.Config.Advanced.ProgressTimeInterval)*time.Second {
 			tlog.Infof("Update status of Scenes (%v/%v)", i+1, len(scenes))
+			lastProgressUpdate = time.Now()
 		}
 	}
+	models.WaitSQLTrigger("post UpdateStatus")
 }
