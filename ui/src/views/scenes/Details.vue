@@ -7,6 +7,16 @@
       @keydown.right="handleRightArrow"
       @keydown.o="prevScene"
       @keydown.p="nextScene"
+      @keydown.49="setRating(.5)"
+      @keydown.50="setRating(1)"
+      @keydown.51="setRating(1.5)"
+      @keydown.52="setRating(2)"
+      @keydown.53="setRating(2.5)"
+      @keydown.54="setRating(3)"
+      @keydown.55="setRating(3.5)"
+      @keydown.56="setRating(4)"
+      @keydown.57="setRating(4.5)"
+      @keydown.-="setRating(5)"
       @keydown.f="$store.commit('sceneList/toggleSceneList', {scene_id: item.scene_id, list: 'favourite'})"
       @keydown.exact.w="$store.commit('sceneList/toggleSceneList', {scene_id: item.scene_id, list: 'watchlist'})"
       @keydown.shift.w="$store.commit('sceneList/toggleSceneList', {scene_id: item.scene_id, list: 'watched'})"
@@ -1015,6 +1025,14 @@ watch:{
         this.carouselSlide = this.carouselSlide + 1
       } else {
         this.playerStepForward(this.lastSkipFowardInterval)
+      }
+    },
+    ratescene () {
+      if (this.activeMedia === 0)
+      {
+        this.carouselSlide = this.carouselSlide + 1
+      } else {
+        this.playerStepForward()
       }
     },
     scrollToActiveIndicator (value) {
