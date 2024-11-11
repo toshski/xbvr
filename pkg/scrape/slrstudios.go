@@ -122,9 +122,14 @@ func SexLikeReal(wg *models.ScrapeWG, updateSite bool, knownScenes []string, out
 
 		sc.TrailerType = "slr"
 		sc.TrailerSrc = "https://api.sexlikereal.com/virtualreality/video/id/" + sc.SiteID
+
+		params := models.TrailerScrape{SceneUrl: "https://api.sexlikereal.com/virtualreality/video/id/" + sc.SiteID}
+		tmpjson, _ := json.Marshal(params)
+		sc.TrailerSrc = string(tmpjson)
+
 		s, _ := resty.New().R().
 			SetHeader("User-Agent", UserAgent).
-			Get(sc.TrailerSrc)
+			Get(params.SceneUrl)
 		JsonMetadataA := s.String()
 
 		isTransScene := e.Request.Ctx.GetAny("isTransScene").(bool)
