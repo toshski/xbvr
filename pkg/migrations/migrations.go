@@ -808,6 +808,15 @@ func Migrate() {
 			},
 		},
 		{
+			ID: "KM76-scrape-stash-flag",
+			Migrate: func(tx *gorm.DB) error {
+				type Site struct {
+					ScrapeStash bool `json:"scrape_stash" xbvrbackup:"scrape_stash"`
+				}
+				return tx.AutoMigrate(Site{}).Error
+			},
+		},
+		{
 			ID: "0077-trailer-source-and-external-data-size-change",
 			Migrate: func(tx *gorm.DB) error {
 				if models.GetDBConn().Driver == "mysql" {
