@@ -129,8 +129,8 @@ func VRBangersSite(wg *models.ScrapeWG, updateSite bool, knownScenes []string, o
 
 		// setup trailers
 		if scraperID != "vrconk" {
-			sc.TrailerType = "load_json"
-			params := models.TrailerScrape{SceneUrl: "https://content." + sc.Site + ".com/api/content/v1/videos/" + content_id, RecordPath: "data.item.videoPlayerSources.trailer", ContentPath: "src", QualityPath: "quality"}
+			sc.TrailerType = "scrape_html"
+			params := models.TrailerScrape{SceneUrl: sc.HomepageURL, HtmlElement: "script", ExtractRegex: `(?m)src:"(https:\\u002F\\u002Fmov.vrbangers.com.*?mp4.*?expired.*?)",quality`}
 			strParma, _ := json.Marshal(params)
 			sc.TrailerSrc = string(strParma)
 		}

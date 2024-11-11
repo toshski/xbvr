@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"path"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/gocolly/colly/v2"
@@ -111,10 +112,11 @@ func ScrapeHtml(scrapeParams string) models.VideoSourceResponse {
 				re := regexp.MustCompile(params.ExtractRegex)
 				results := re.FindAllStringSubmatch(e.Text, -1)
 				for _, result := range results {
-					parsedURL, _ := url.Parse(result[0])
+					unquotedStr, _ := strconv.Unquote(`"` + result[1] + `"`) // handle  charac ters encoded with strings like  \u002F
+					parsedURL, _ := url.Parse(unquotedStr)
 					filename := path.Base(parsedURL.Path)
 					baseFilename := strings.TrimSuffix(filename, path.Ext(filename))
-					srcs = append(srcs, models.VideoSource{URL: result[1], Quality: baseFilename})
+					srcs = append(srcs, models.VideoSource{URL: unquotedStr, Quality: baseFilename})
 				}
 			}
 		})
