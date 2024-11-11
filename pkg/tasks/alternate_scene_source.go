@@ -30,6 +30,14 @@ func AddAlternateSceneSource(db *gorm.DB, scrapedScene models.ScrapedScene) {
 		newCastList = append(newCastList, models.Actor{ID: actor.ID, Name: actor.Name})
 	}
 	scene.Cast = newCastList
+
+	for _, cuepoint := range scrapedScene.Cuepoints {
+		var newCuepoint models.SceneCuepoint
+		newCuepoint.Name = cuepoint.Name
+		newCuepoint.TimeStart = cuepoint.TimeStart
+		scene.Cuepoints = append(scene.Cuepoints, newCuepoint)
+	}
+
 	var data models.SceneAlternateSource
 	data.MasterSiteId = scrapedScene.MasterSiteId
 	data.Scene = scene
@@ -39,6 +47,12 @@ func AddAlternateSceneSource(db *gorm.DB, scrapedScene models.ScrapedScene) {
 	extref.UdfBool1 = scene.HumanScript
 	extref.UdfBool2 = scene.AiScript
 	extref.UdfDatetime1 = scene.ScriptPublished
+	if len(scrapedScene.Cuepoints) > 0 {
+		extref.UdfBool10 = true
+	}
+	if scrapedScene.TrailerType != "" {
+		extref.UdfBool11 = true
+	}
 	extref.Save()
 }
 

@@ -782,6 +782,24 @@ func Migrate() {
 			},
 		},
 		{
+			ID: "KM077-MyUDFs",
+			Migrate: func(tx *gorm.DB) error {
+				type ExternalReference struct {
+					UdfBool10 bool `json:"udf_bool1" xbvrbackup:"udf_bool10"` // user defined fields, use depends what type of data the extref is for.
+					UdfBool11 bool `json:"udf_bool2" xbvrbackup:"udf_bool11"`
+				}
+				type Scene struct {
+					TrailerSource    string `json:"trailer_source" sql:"type:longtext;"  xbvrbackup:"trailer_source"`
+					AvailableOnSites string `json:"available_on_sites" xbvrbackup:"available_on_sites"`
+				}
+				err := tx.AutoMigrate(Scene{}).Error
+				if err != nil {
+					return err
+				}
+				return tx.AutoMigrate(ExternalReference{}).Error
+			},
+		},
+		{
 			ID: "0076-Scene-Alt-Sources",
 			Migrate: func(tx *gorm.DB) error {
 				type Site struct {
