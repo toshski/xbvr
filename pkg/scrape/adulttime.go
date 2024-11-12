@@ -7,7 +7,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -20,7 +19,7 @@ import (
 
 var apikey string
 
-func Adulttime(wg *sync.WaitGroup, updateSite bool, knownScenes []string, out chan<- models.ScrapedScene, singleSceneURL string, singeScrapeAdditionalInfo string, scraper string, name string, limitScraping bool, studioUrl string, masterSiteId string, additionalInfo interface{}) error {
+func Adulttime(wg *models.ScrapeWG, updateSite bool, knownScenes []string, out chan<- models.ScrapedScene, singleSceneURL string, singeScrapeAdditionalInfo string, scraper string, name string, limitScraping bool, studioUrl string, masterSiteId string, additionalInfo interface{}) error {
 	defer wg.Done()
 	commonDb, _ := models.GetCommonDB()
 
@@ -241,11 +240,11 @@ func init() {
 }
 func addAdulttimeScraper(id string, name string, avatarURL string, adulttimeURL string, masterSiteId string, addtionalInfo interface{}) {
 	if masterSiteId == "" {
-		registerScraper(id, name+" (Adulttime)", avatarURL, "adulttime.com", func(wg *sync.WaitGroup, updateSite bool, knownScenes []string, out chan<- models.ScrapedScene, singleSceneURL string, singeScrapeAdditionalInfo string, limitScraping bool) error {
+		registerScraper(id, name+" (Adulttime)", avatarURL, "adulttime.com", func(wg *models.ScrapeWG, updateSite bool, knownScenes []string, out chan<- models.ScrapedScene, singleSceneURL string, singeScrapeAdditionalInfo string, limitScraping bool) error {
 			return Adulttime(wg, updateSite, knownScenes, out, singleSceneURL, singeScrapeAdditionalInfo, id, name, limitScraping, adulttimeURL, masterSiteId, addtionalInfo)
 		})
 	} else {
-		registerAlternateScraper(id, name+" (Adulttime)", avatarURL, "adulttime.com", masterSiteId, func(wg *sync.WaitGroup, updateSite bool, knownScenes []string, out chan<- models.ScrapedScene, singleSceneURL string, singeScrapeAdditionalInfo string, limitScraping bool) error {
+		registerAlternateScraper(id, name+" (Adulttime)", avatarURL, "adulttime.com", masterSiteId, func(wg *models.ScrapeWG, updateSite bool, knownScenes []string, out chan<- models.ScrapedScene, singleSceneURL string, singeScrapeAdditionalInfo string, limitScraping bool) error {
 			return Adulttime(wg, updateSite, knownScenes, out, singleSceneURL, singeScrapeAdditionalInfo, id, name, limitScraping, adulttimeURL, masterSiteId, addtionalInfo)
 		})
 	}
