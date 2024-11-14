@@ -109,7 +109,7 @@ func processAdulttimeScrapedScene(adulttimeScene AdulttimeSceneHit, scraperId st
 
 	sc := models.ScrapedScene{}
 	sc.MasterSiteId = masterSiteId
-	sc.ScraperID = slugify.Slugify(adulttimeScene.Sitename + "-adulttime")
+	sc.ScraperID = slugify.Slugify(strings.TrimSuffix(adulttimeScene.Sitename, "-channel") + "-adulttime")
 	sc.SceneType = "2D"
 	if additionalScraperInfo.Site == "" {
 		sc.Site = adulttimeScene.MainChannel.Name + " (Adulttime)"
