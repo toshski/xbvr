@@ -21,25 +21,28 @@ type ScraperList struct {
 	XbvrScrapers   XbvrScrapers   `json:"xbvr"`
 }
 type XbvrScrapers struct {
-	PovrScrapers   []ScraperConfig `json:"povr"`
-	SlrScrapers    []ScraperConfig `json:"slr"`
-	VrpornScrapers []ScraperConfig `json:"vrporn"`
-	VrphubScrapers []ScraperConfig `json:"vrphub"`
+	AdulttimeScrapers []ScraperConfig `json:"adulttime"`
+	PovrScrapers      []ScraperConfig `json:"povr"`
+	SlrScrapers       []ScraperConfig `json:"slr"`
+	VrpornScrapers    []ScraperConfig `json:"vrporn"`
+	VrphubScrapers    []ScraperConfig `json:"vrphub"`
 }
 type CustomScrapers struct {
-	PovrScrapers   []ScraperConfig `json:"povr"`
-	SlrScrapers    []ScraperConfig `json:"slr"`
-	VrpornScrapers []ScraperConfig `json:"vrporn"`
-	VrphubScrapers []ScraperConfig `json:"vrphub"`
+	AdulttimeScrapers []ScraperConfig `json:"adulttime"`
+	PovrScrapers      []ScraperConfig `json:"povr"`
+	SlrScrapers       []ScraperConfig `json:"slr"`
+	VrpornScrapers    []ScraperConfig `json:"vrporn"`
+	VrphubScrapers    []ScraperConfig `json:"vrphub"`
 }
 type ScraperConfig struct {
-	ID           string `json:"-"`
-	URL          string `json:"url"`
-	Name         string `json:"name"`
-	Company      string `json:"company"`
-	AvatarUrl    string `json:"avatar_url"`
-	FileID       string `json:"id,omitempty"`
-	MasterSiteId string `json:"master_site_id,omitempty"`
+	ID             string      `json:"-"`
+	URL            string      `json:"url"`
+	Name           string      `json:"name"`
+	Company        string      `json:"company"`
+	AvatarUrl      string      `json:"avatar_url"`
+	FileID         string      `json:"id,omitempty"`
+	MasterSiteId   string      `json:"master_site_id,omitempty"`
+	AdditionalInfo interface{} `json:"additional_info,omitempty"`
 }
 
 var loadLock sync.Mutex
@@ -69,16 +72,19 @@ func (o *ScraperList) Load() error {
 	o.XbvrScrapers = officalScrapers.XbvrScrapers
 	o.Warnings = officalScrapers.Warnings
 
+	SetSiteId(&o.XbvrScrapers.AdulttimeScrapers, "")
 	SetSiteId(&o.XbvrScrapers.PovrScrapers, "")
 	SetSiteId(&o.XbvrScrapers.SlrScrapers, "")
 	SetSiteId(&o.XbvrScrapers.VrphubScrapers, "")
 	SetSiteId(&o.XbvrScrapers.VrpornScrapers, "")
+	SetSiteId(&o.CustomScrapers.AdulttimeScrapers, "adulttime")
 	SetSiteId(&o.CustomScrapers.PovrScrapers, "povr")
 	SetSiteId(&o.CustomScrapers.SlrScrapers, "slr")
 	SetSiteId(&o.CustomScrapers.VrphubScrapers, "vrphub")
 	SetSiteId(&o.CustomScrapers.VrpornScrapers, "vrporn")
 
 	// remove custom sites that are now offical for the same aggregation site
+	o.CustomScrapers.AdulttimeScrapers = RemoveCustomListNowOffical(o.CustomScrapers.AdulttimeScrapers, o.XbvrScrapers.AdulttimeScrapers)
 	o.CustomScrapers.PovrScrapers = RemoveCustomListNowOffical(o.CustomScrapers.PovrScrapers, o.XbvrScrapers.PovrScrapers)
 	o.CustomScrapers.SlrScrapers = RemoveCustomListNowOffical(o.CustomScrapers.SlrScrapers, o.XbvrScrapers.SlrScrapers)
 	o.CustomScrapers.VrphubScrapers = RemoveCustomListNowOffical(o.CustomScrapers.VrphubScrapers, o.XbvrScrapers.VrphubScrapers)
