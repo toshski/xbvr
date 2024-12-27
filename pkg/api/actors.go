@@ -86,6 +86,14 @@ func (i ActorResource) WebService() *restful.WebService {
 		Metadata(restfulspec.KeyOpenAPITags, tags).
 		Writes(models.ExternalReferenceLink{}))
 
+	ws.Route(ws.GET("/splitallbystashid").To(i.splitAllActorsByStashId).
+		Metadata(restfulspec.KeyOpenAPITags, tags).
+		Writes(models.ExternalReferenceLink{}))
+
+	ws.Route(ws.GET("/deleteallwithnoscenes").To(i.deleteAllActorsWithNoScenes).
+		Metadata(restfulspec.KeyOpenAPITags, tags).
+		Writes(models.ExternalReferenceLink{}))
+
 	ws.Route(ws.POST("/edit_extrefs/{id}").To(i.editActorExtRefs).
 		Metadata(restfulspec.KeyOpenAPITags, tags).
 		Writes(models.ExternalReferenceLink{}))
@@ -437,7 +445,10 @@ func (i ActorResource) deleteActor(req *restful.Request, resp *restful.Response)
 		log.Error(err)
 		return
 	}
+	resp.WriteHeaderAndEntity(http.StatusOK, deleteActor(id))
+}
 
+func deleteActor(id int) models.Actor {
 	var actor models.Actor
 	db, _ := models.GetDB()
 	defer db.Close()
@@ -447,7 +458,7 @@ func (i ActorResource) deleteActor(req *restful.Request, resp *restful.Response)
 	db.Where("internal_table = 'actors' and internal_db_id = ?", uint(id)).Delete(&models.ExternalReferenceLink{})
 	db.Where("id = ?", uint(id)).Delete(&models.Actor{})
 
-	resp.WriteHeaderAndEntity(http.StatusOK, actor)
+	return actor
 }
 
 func checkStringFieldChanged(field_name string, newValue *string, actorField *string, actorId uint) {
@@ -787,15 +798,46 @@ func (i ActorResource) editActorExtRefs(req *restful.Request, resp *restful.Resp
 	}
 	resp.WriteHeaderAndEntity(http.StatusOK, readExtRefs(id))
 }
+
+func (i ActorResource) splitAllActorsByStashId(req *restful.Request, resp *restful.Response) {
+	db, _ := models.GetDB()
+	defer db.Close()
+	var links []models.ExternalReferenceLink
+
+	query := `
+		with dups as (
+		select internal_db_id from external_reference_links erl 
+		where internal_table ='actors' and external_source='stashdb performer'
+		group by internal_db_id 
+		having count(*) > 1
+		)
+		select * from external_reference_links erl
+		where erl.internal_db_id  in (select internal_db_id from dups where erl.internal_db_id=dups.internal_db_id) and erl.external_source = 'stashdb performer'
+		order by erl.internal_db_id  	
+`
+	db.Raw(query).Scan(&links)
+
+	for _, link := range links {
+		splitActorByStashId(int(link.InternalDbId), link.ExternalId)
+	}
+	resp.WriteHeaderAndEntity(http.StatusOK, nil)
+}
+
 func (i ActorResource) splitActorByStashId(req *restful.Request, resp *restful.Response) {
+	actor_id, _ := strconv.ParseUint(req.PathParameter("actor-id"), 10, 32)
+	stashId := req.QueryParameter("stashid")
+	stashId = strings.ReplaceAll(stashId, "https://stashdb.org/performers/", "")
+
+	splitActorByStashId(int(actor_id), stashId)
+	resp.WriteHeaderAndEntity(http.StatusOK, nil)
+}
+
+func splitActorByStashId(actor_id int, stashId string) {
 	db, _ := models.GetDB()
 	defer db.Close()
 	var actor models.Actor
 	var newActor models.Actor
 
-	actor_id, _ := strconv.ParseUint(req.PathParameter("actor-id"), 10, 32)
-	stashId := req.QueryParameter("stashid")
-	stashId = strings.ReplaceAll(stashId, "https://stashdb.org/performers/", "")
 	db.Preload("Scenes").Where("id = ?", actor_id).Find(&actor)
 	if actor.ID == 0 {
 		return
@@ -867,9 +909,25 @@ func (i ActorResource) splitActorByStashId(req *restful.Request, resp *restful.R
 	actorStashLink.Save()
 
 	scrape.RefreshPerformer(stashId)
+}
 
+func (i ActorResource) deleteAllActorsWithNoScenes(req *restful.Request, resp *restful.Response) {
+	db, _ := models.GetDB()
+	defer db.Close()
+	var actors []models.Actor
+
+	query := `
+		select * from actors a 
+		where ( select count(*) from scene_cast sc left join scenes s on s.id=sc.scene_id where sc.actor_id =a.id and s.deleted_at is null ) = 0 
+	`
+	db.Raw(query).Scan(&actors)
+
+	for _, actor := range actors {
+		deleteActor(int(actor.ID))
+	}
 	resp.WriteHeaderAndEntity(http.StatusOK, nil)
 }
+
 func removeStringFromArray(slice []string, s string) []string {
 	for i, v := range slice {
 		if v == s {

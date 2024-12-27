@@ -240,5 +240,12 @@
   "Linked to Alternate Sites":"Linked to Alternate Sites",
   "Go": "Go",
   "Limit scraping to newest scenes on the website. Turn off if you are missing scenes.": "Limit scraping to newest scenes on the website. Turn off if you are missing scenes.",
-  "Highlights this studio in the scene view and includes scenes in the &quot;Has subscription&quot; attribute filter": "Highlights this studio in the scene view and includes scenes in the &quot;Has subscription&quot; attribute filter"
+  "Highlights this studio in the scene view and includes scenes in the &quot;Has subscription&quot; attribute filter": "Highlights this studio in the scene view and includes scenes in the &quot;Has subscription&quot; attribute filter",
+  "Will split any actors that are linked to multiple stash actors, into seperate actors in XBVR for each stashdb actor link. You can also split Actors individually in the Actor Details": "Will split any actors that are linked to multiple stash actors, into seperate actors in XBVR for each stashdb actor link. You can also split Actors individually in the Actor Details",
+  "Split Actors with Multiple Stash Ids":"Split Actors with Multiple Stash Ids",
+  "Delete Actors with No Scenes": "Delete Actors with No Scenes",
+  "Splitting actors with multiple stash ids, please wait": "Splitting actors with multiple stash ids, please wait",
+  "Actors with multiple stash ids have been split":"Actors with multiple stash ids have been split",
+  "Deleting actors with no scenes, please wait":"Deleting actors with no scenes, please wait",
+  "Actors with no scenes deleted":"Actors with no scenes deleted"
 }

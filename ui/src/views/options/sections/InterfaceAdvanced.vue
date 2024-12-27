@@ -59,6 +59,9 @@
               <b-input v-model="stashApiKey" placeholder="Visit https://discord.com/invite/2TsNFKt to sign up to Stashdb" type="password"></b-input>
             </b-field>
             <b-field>
+              <b-button type="is-primary" @click="save">Save</b-button>
+            </b-field>
+            <b-field>
               <b-tooltip :active="stashApiKey==''" :label="$t('Enter a StashApi key to enable')" >
                 <b-button type="is-primary" :disabled="stashApiKey==''" @click="stashdb">{{ $t('Scrape StashDB') }}</b-button>
               </b-tooltip>
@@ -67,7 +70,13 @@
               <b-button type="is-primary" @click="scrapeXbvrActors">{{ $t('Scrape Actor Details from XBVR Sites') }}</b-button>
             </b-field>
             <b-field>
-              <b-button type="is-primary" @click="save">Save</b-button>
+              <b-tooltip :label="$t('Will split any actors that are linked to multiple stash actors, into seperate actors in XBVR for each stashdb actor link. You can also split Actors individually in the Actor Details')" 
+                type="is-warning" position="is-right" multilined>
+                <b-button type="is-primary" @click="splitActorsWithMultipleStashIds">{{ $t('Split Actors with Multiple Stash Ids') }}</b-button>
+            </b-tooltip>
+            </b-field>
+            <b-field>
+              <b-button type="is-primary" @click="deleteActorsNoScenes">{{ $t('Delete Actors with No Scenes') }}</b-button>
             </b-field>
           </section>
         </div>
@@ -228,7 +237,21 @@ export default {
     relinkAltSrc () {
       ky.get('/api/task/relink_alt_aource_scenes')
     },
-  },
+    splitActorsWithMultipleStashIds() {
+      this.$buefy.toast.open({message: `Splitting actors with multiple stash ids, please wait`, duration: 5000})      
+      ky.get(`/api/actor/deleteallwithnoscenes`, {timeout: false}).then(data => {
+        this.$buefy.toast.open({message: `Actors with multiple stash ids have been split`, type: 'is-success', duration: 5000})      
+      }
+    )
+    },
+    deleteActorsNoScenes() {
+      this.$buefy.toast.open({message: `Deleting actors with no scenes, please wait`, duration: 5000})      
+      ky.get('/api/actor/deleteallwithnoscenes', {timeout: false}).then(data => {
+        this.$buefy.toast.open({message: `Actors with no scenes deleted`, type: 'is-success', duration: 5000})      
+      }
+    )
+    },
+},
   computed: {
     showInternalSceneId: {
       get () {
