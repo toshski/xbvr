@@ -12,6 +12,7 @@ import (
 	"github.com/gocolly/colly/v2"
 	"github.com/thoas/go-funk"
 	"github.com/tidwall/gjson"
+	"github.com/xbapps/xbvr/pkg/common"
 	"github.com/xbapps/xbvr/pkg/config"
 	"github.com/xbapps/xbvr/pkg/models"
 )
@@ -107,6 +108,16 @@ func SexLikeReal(wg *models.ScrapeWG, updateSite bool, knownScenes []string, out
 				alphA = "PT"
 			}
 
+		})
+
+		flatVideo := false
+		e.ForEach(`ul.c-meta--scene-specs li a`, func(id int, e *colly.HTMLElement) {
+			if !skiptags[e.Attr("title")] {
+				sc.Tags = append(sc.Tags, e.Attr("title"))
+			}
+			if strings.ToLower(e.Attr("title")) == "immersive flat" {
+				flatVideo = true
+			}
 		})
 
 		// Duration
@@ -328,7 +339,22 @@ func SexLikeReal(wg *models.ScrapeWG, updateSite bool, knownScenes []string, out
 			})
 		}
 
-		out <- sc
+		if common.IncludeFlat == "" {
+			out <- sc
+		}
+		switch common.IncludeFlat {
+		case "include":
+			if flatVideo {
+				out <- sc
+			}
+		case "exclude":
+			if !flatVideo {
+				out <- sc
+			}
+
+		default:
+			out <- sc
+		}
 	})
 
 	siteCollector.OnHTML(`div.c-pagination ul li a`, func(e *colly.HTMLElement) {
