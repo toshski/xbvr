@@ -111,14 +111,22 @@ func SexLikeReal(wg *models.ScrapeWG, updateSite bool, knownScenes []string, out
 		})
 
 		flatVideo := false
+		stereo := false
 		e.ForEach(`ul.c-meta--scene-specs li a`, func(id int, e *colly.HTMLElement) {
 			if !skiptags[e.Attr("title")] {
 				sc.Tags = append(sc.Tags, e.Attr("title"))
 			}
 			if strings.ToLower(e.Attr("title")) == "immersive flat" {
 				flatVideo = true
+				sc.SceneType = "2D"
+			}
+			if strings.ToLower(e.Attr("title")) == "stereo ai (3d)" {
+				stereo = true
 			}
 		})
+		if stereo {
+			sc.SceneType = "VR"
+		}
 
 		// Duration
 		sc.Duration = e.Request.Ctx.GetAny("duration").(int)
