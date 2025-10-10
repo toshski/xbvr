@@ -48,6 +48,7 @@ func SaveWithRetry(db *gorm.DB, i interface{}) error {
 	)
 
 	if err != nil {
+		log.Infof("%s", common.GetStackTrace())
 		log.Fatal("Failed to save ", err)
 	}
 
@@ -74,6 +75,7 @@ func GetDB() (*gorm.DB, error) {
 	)
 
 	if err != nil {
+		log.Infof("%s", common.GetStackTrace())
 		log.Fatal("Failed to connect to database ", err)
 	}
 
