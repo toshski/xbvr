@@ -29,6 +29,7 @@ func POVR(wg *models.ScrapeWG, updateSite bool, knownScenes []string, out chan<-
 		sc.Studio = company
 		sc.Site = siteID
 		sc.HomepageURL = strings.Split(e.Request.URL.String(), "?")[0]
+		sc.MembersUrl = strings.ReplaceAll(sc.HomepageURL, "povr.com", "wankzvr.com")
 		sc.MasterSiteId = masterSiteId
 
 		if scraperID == "" {
