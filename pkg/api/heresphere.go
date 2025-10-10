@@ -639,6 +639,10 @@ func (i HeresphereResource) getHeresphereScene(req *restful.Request, resp *restf
 		addFeatureTag("Flat video")
 		projection = "perspective"
 		stereo = "mono"
+	case "flatsbs":
+		addFeatureTag("Flat Stero video")
+		projection = "perspective"
+		stereo = "sbs"
 
 	case "180_mono":
 		addFeatureTag("FOV: 180°")
@@ -690,6 +694,12 @@ func (i HeresphereResource) getHeresphereScene(req *restful.Request, resp *restf
 	case "fisheye":
 		addFeatureTag("FOV: 180°")
 		projection = "fisheye"
+	default:
+		if scene.SceneType == "2D" {
+			addFeatureTag("Flat video")
+			projection = "perspective"
+			stereo = "mono"
+		}
 	}
 
 	title := scene.Title
