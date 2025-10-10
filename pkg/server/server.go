@@ -53,6 +53,11 @@ func StartServer(version, commit, branch, date string) {
 
 	config.LoadConfig()
 
+	// First setup
+	migrations.Migrate()
+
+	models.SetupSQLChannel()
+
 	// Remove old locks
 	models.RemoveAllLocks()
 
