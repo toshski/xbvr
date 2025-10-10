@@ -40,6 +40,7 @@ type ScrapedScene struct {
 	TrailerType       string   `json:"trailer_type"`
 	TrailerSrc        string   `json:"trailer_source"`
 	ChromaKey         string   `json:"chromakey"`
+	VideoPerviewUrl   string   `json:"video_perview_url"`
 	HasScriptDownload bool     `json:"has_script_Download"`
 	AiScript          bool     `json:"ai_script"`
 	HumanScript       bool     `json:"human_script"`
