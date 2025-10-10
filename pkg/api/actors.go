@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -78,6 +79,18 @@ func (i ActorResource) WebService() *restful.WebService {
 		Writes([]models.Actor{}))
 
 	ws.Route(ws.GET("/extrefs/{actor-id}").To(i.getActorExtRefs).
+		Metadata(restfulspec.KeyOpenAPITags, tags).
+		Writes(models.ExternalReferenceLink{}))
+
+	ws.Route(ws.GET("/split/{actor-id}").To(i.splitActorByStashId).
+		Metadata(restfulspec.KeyOpenAPITags, tags).
+		Writes(models.ExternalReferenceLink{}))
+
+	ws.Route(ws.GET("/splitallbystashid").To(i.splitAllActorsByStashId).
+		Metadata(restfulspec.KeyOpenAPITags, tags).
+		Writes(models.ExternalReferenceLink{}))
+
+	ws.Route(ws.GET("/deleteallwithnoscenes").To(i.deleteAllActorsWithNoScenes).
 		Metadata(restfulspec.KeyOpenAPITags, tags).
 		Writes(models.ExternalReferenceLink{}))
 
@@ -432,7 +445,10 @@ func (i ActorResource) deleteActor(req *restful.Request, resp *restful.Response)
 		log.Error(err)
 		return
 	}
+	resp.WriteHeaderAndEntity(http.StatusOK, deleteActor(id))
+}
 
+func deleteActor(id int) models.Actor {
 	var actor models.Actor
 	db, _ := models.GetDB()
 	defer db.Close()
@@ -442,7 +458,7 @@ func (i ActorResource) deleteActor(req *restful.Request, resp *restful.Response)
 	db.Where("internal_table = 'actors' and internal_db_id = ?", uint(id)).Delete(&models.ExternalReferenceLink{})
 	db.Where("id = ?", uint(id)).Delete(&models.Actor{})
 
-	resp.WriteHeaderAndEntity(http.StatusOK, actor)
+	return actor
 }
 
 func checkStringFieldChanged(field_name string, newValue *string, actorField *string, actorId uint) {
@@ -781,4 +797,165 @@ func (i ActorResource) editActorExtRefs(req *restful.Request, resp *restful.Resp
 		}
 	}
 	resp.WriteHeaderAndEntity(http.StatusOK, readExtRefs(id))
+}
+
+func (i ActorResource) splitAllActorsByStashId(req *restful.Request, resp *restful.Response) {
+	db, _ := models.GetDB()
+	defer db.Close()
+	var links []models.ExternalReferenceLink
+
+	query := `
+		with dups as (
+		select internal_db_id from external_reference_links erl 
+		where internal_table ='actors' and external_source='stashdb performer'
+		group by internal_db_id 
+		having count(*) > 1
+		)
+		select * from external_reference_links erl
+		where erl.internal_db_id  in (select internal_db_id from dups where erl.internal_db_id=dups.internal_db_id) and erl.external_source = 'stashdb performer'
+		order by erl.internal_db_id  	
+`
+	db.Raw(query).Scan(&links)
+
+	for _, link := range links {
+		// clear favourites,watchlist, etc, if the actor relates to multiple actors, we don't know which was a favourite and which wasn't
+		var actor models.Actor
+		db.Where("id = ?", int(link.InternalDbId)).Find(&actor)
+		if actor.ID > 0 {
+			actor.Favourite = false
+			actor.Watchlist = false
+			actor.StarRating = 0
+			actor.Save()
+		}
+		// now split the actor based on the stash id
+		splitActorByStashId(int(link.InternalDbId), link.ExternalId)
+	}
+	resp.WriteHeaderAndEntity(http.StatusOK, nil)
+}
+
+func (i ActorResource) splitActorByStashId(req *restful.Request, resp *restful.Response) {
+	actor_id, _ := strconv.ParseUint(req.PathParameter("actor-id"), 10, 32)
+	stashId := req.QueryParameter("stashid")
+	stashId = strings.ReplaceAll(stashId, "https://stashdb.org/performers/", "")
+
+	splitActorByStashId(int(actor_id), stashId)
+	resp.WriteHeaderAndEntity(http.StatusOK, nil)
+}
+
+func splitActorByStashId(actor_id int, stashId string) {
+	db, _ := models.GetDB()
+	defer db.Close()
+	var actor models.Actor
+	var newActor models.Actor
+
+	db.Preload("Scenes").Where("id = ?", actor_id).Find(&actor)
+	if actor.ID == 0 {
+		return
+	}
+	var actorStashLink models.ExternalReferenceLink
+	db.Preload("ExternalReference").Where(&models.ExternalReferenceLink{InternalTable: "actors", InternalDbId: actor.ID, ExternalId: stashId}).First(&actorStashLink)
+	if actorStashLink.ID == 0 {
+		return
+	}
+	var performer models.StashPerformer
+	json.Unmarshal([]byte(actorStashLink.ExternalReference.ExternalData), &performer)
+
+	// the new actor will be the stash actor name plus (ex the existing name)
+	newName := fmt.Sprintf("%s (ex %s)", performer.Name, actor.Name)
+	if performer.Disambiguation != "" {
+		newName = fmt.Sprintf("%s (%s)(ex %s)", performer.Name, performer.Disambiguation, actor.Name)
+	}
+
+	var existingActorImages []string
+	json.Unmarshal([]byte(actor.ImageArr), &existingActorImages)
+	var existingActorURLs []models.ActorLink
+	json.Unmarshal([]byte(actor.URLs), &existingActorURLs)
+
+	db.Where(&models.Actor{Name: strings.Replace(newName, ".", "", -1)}).FirstOrCreate(&newActor)
+	newName = newActor.Name // name rules, eg not full stops, may change the name from the one submitted
+
+	for _, img := range performer.Images {
+		// remove images from existing actor
+		existingActorImages = removeStringFromArray(existingActorImages, img.URL)
+		if actor.ImageUrl == img.URL {
+			if len(existingActorImages) > 0 {
+				actor.ImageUrl = existingActorImages[0]
+			} else {
+				actor.ImageUrl = ""
+			}
+		}
+	}
+
+	for _, url := range performer.URLs {
+		existingActorURLs = removeActorURLFromArray(existingActorURLs, strings.Trim(url.URL, "/"))
+	}
+
+	// update the imageArr for the existing actors
+	jsonString, _ := json.Marshal(existingActorImages)
+	actor.ImageArr = string(jsonString)
+	jsonString, _ = json.Marshal(existingActorURLs)
+	actor.URLs = string(jsonString)
+	actor.Save()
+	newActor.Favourite = false
+	newActor.Watchlist = false
+	newActor.StarRating = 0
+	newActor.Save()
+
+	// update scenes, shift to new actor
+	for _, scene := range actor.Scenes {
+		var sceneLink models.ExternalReferenceLink
+		db.Preload("ExternalReference").Where(&models.ExternalReferenceLink{InternalTable: "scenes", InternalDbId: scene.ID, ExternalSource: "stashdb scene"}).First(&sceneLink)
+		if strings.Contains(sceneLink.ExternalReference.ExternalData, stashId) {
+			var s models.Scene
+			s.GetIfExistByPK(scene.ID)
+			db.Model(&s).Association("Cast").Append(&newActor)
+			db.Model(&s).Association("Cast").Delete(&actor)
+
+			models.AddAction(scene.SceneID, "edit", "cast", "-"+actor.Name)
+			models.AddAction(scene.SceneID, "edit", "cast", "+"+newActor.Name)
+		}
+	}
+
+	// update the external reference link to point to the new actor
+	actorStashLink.InternalNameId = newActor.Name
+	actorStashLink.InternalDbId = newActor.ID
+	actorStashLink.Save()
+
+	scrape.RefreshPerformer(stashId)
+}
+
+func (i ActorResource) deleteAllActorsWithNoScenes(req *restful.Request, resp *restful.Response) {
+	db, _ := models.GetDB()
+	defer db.Close()
+	var actors []models.Actor
+
+	query := `
+		select * from actors a 
+		where ( select count(*) from scene_cast sc left join scenes s on s.id=sc.scene_id where sc.actor_id =a.id and s.deleted_at is null ) = 0 
+	`
+	db.Raw(query).Scan(&actors)
+
+	for _, actor := range actors {
+		deleteActor(int(actor.ID))
+	}
+	resp.WriteHeaderAndEntity(http.StatusOK, nil)
+}
+
+func removeStringFromArray(slice []string, s string) []string {
+	for i, v := range slice {
+		if v == s {
+			// Remove the element at index i from slice.
+			return append(slice[:i], slice[i+1:]...)
+		}
+	}
+	return slice
+}
+func removeActorURLFromArray(slice []models.ActorLink, s string) []models.ActorLink {
+	for i, v := range slice {
+		if v.Url == s {
+			// Remove the element at index i from slice.
+			return append(slice[:i], slice[i+1:]...)
+		}
+	}
+	return slice
 }
