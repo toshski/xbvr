@@ -23,6 +23,7 @@ type EnvConfigSpec struct {
 	WebPort              int    `envconfig:"XBVR_WEB_PORT" required:"false" default:"0"`
 	DBConnectionPoolSize int    `envconfig:"DB_CONNECTION_POOL_SIZE" required:"false" default:"0"`
 	ConcurrentScrapers   int    `envconfig:"CONCURRENT_SCRAPERS" required:"false" default:"9999"`
+	KeepScraperCache     bool   `envconfig:"KEEP_CACHE" required:"false" default:"false"`
 }
 
 var EnvConfig EnvConfigSpec
