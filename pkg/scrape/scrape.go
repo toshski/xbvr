@@ -23,6 +23,10 @@ var log = &common.Log
 var UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36"
 
 func createCollector(domains ...string) *colly.Collector {
+	return createCollectorWithConfig("", domains...)
+}
+
+func createCollectorWithConfig(collectorConfig string, domains ...string) *colly.Collector {
 	c := colly.NewCollector(
 		colly.AllowedDomains(domains...),
 		colly.CacheDir(getScrapeCacheDir()),
@@ -43,8 +47,13 @@ func createCollector(domains ...string) *colly.Collector {
 
 	// see if the domain has a limit and set it
 	for _, domain := range domains {
-		SetupCollector(GetCoreDomain(domain)+"-scraper", c)
-		log.Debugf("Using Header/Cookies from %s", GetCoreDomain(domain)+"-scraper")
+		if collectorConfig == "" {
+			SetupCollector(GetCoreDomain(domain)+"-scraper", c)
+			log.Debugf("Using Header/Cookies from %s", GetCoreDomain(domain)+"-scraper")
+		} else {
+			SetupCollector(collectorConfig, c)
+			log.Debugf("Using Header/Cookies from %s", collectorConfig)
+		}
 		if Limiters == nil {
 			LoadScraperRateLimits()
 		}
