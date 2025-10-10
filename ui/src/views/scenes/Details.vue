@@ -140,6 +140,18 @@
                       </vue-load-image>
                     </b-tooltip>
                   </div>
+                  <div class="image-row is-flex is-pulled-right" v-if="getOtherDbLinks != 0">
+                    <div v-for="(altsrc, idx) in otherDbLinksWithTitles" :key="idx" class="altsrc-image-wrapper" >
+                      <b-tooltip type="is-light" :label="altsrc.title" :delay="100">
+                        <a :href="altsrc.url" target="_blank">
+                          <vue-load-image>
+                            <img slot="image" :src="getImageURL(altsrc.site_icon,'x700')" alt="Image" width="28px" />
+                            <b-icon slot="error" pack="mdi" icon="link" size="is-small" />
+                          </vue-load-image>
+                        </a>
+                      </b-tooltip>
+                    </div>
+                  </div>  
                 </div>
               </div>
             </div>
@@ -448,6 +460,7 @@ export default {
       castimages: [],
       searchfields: [],
       alternateSources: [],
+      otherDbLinks: [],
       waitingForQuickFind: false,
     }
   },
@@ -569,6 +582,23 @@ export default {
       if ( this.$store.state.overlay.details.altsrc != null) return true
       return false
     },
+    async getOtherDbLinks() {
+      this.otherDbLinks = [];      
+      try {
+        const response = await ky.get('/api/scene/alternate_source/' + this.item.id).json();
+        if (response==null){
+          return 0
+        }
+        response.forEach(altsrc => {
+          if (!altsrc.external_source.startsWith("alternate scene ")) {
+            this.otherDbLinks.push(altsrc)
+          }
+        });
+        return this.otherDbLinks.length;
+      } catch (error) {        
+        return 0; // Return 0 or handle error as needed
+      }
+    },
     async getAlternateSceneSources() {
       this.alternateSources = [];
       if (this.displayingAlternateSource) return 0
@@ -602,6 +632,15 @@ export default {
         return {
           ...altsrc,
           title: extdata.scene?.title || 'No Title'
+        };
+      });
+    },
+    otherDbLinksWithTitles() {
+      return this.otherDbLinks.map(altsrc => {
+        const extdata = JSON.parse(altsrc.external_data);
+        return {
+          ...altsrc,
+          title: extdata.title || 'No Title'
         };
       });
     }

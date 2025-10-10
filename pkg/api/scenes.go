@@ -16,6 +16,7 @@ import (
 	"github.com/go-test/deep"
 	"github.com/jinzhu/gorm"
 	"github.com/mozillazg/go-slugify"
+	"github.com/tidwall/gjson"
 
 	"github.com/xbapps/xbvr/pkg/models"
 	"github.com/xbapps/xbvr/pkg/tasks"
@@ -394,6 +395,8 @@ func (i SceneResource) getFilters(req *restful.Request, resp *restful.Response) 
 	outAttributes = append(outAttributes, "Available from VRPorn")
 	outAttributes = append(outAttributes, "Available from RealVR")
 	outAttributes = append(outAttributes, "Available from SLR")
+	outAttributes = append(outAttributes, "Available from mydbs")
+	outAttributes = append(outAttributes, "Multiple Scenes Available from mydbs")
 	outAttributes = append(outAttributes, "Multiple Scenes Available at an Alternate Site")
 	type Results struct {
 		Result string
@@ -425,6 +428,15 @@ func (i SceneResource) getFilters(req *restful.Request, resp *restful.Response) 
 		Find(&results)
 	for _, r := range results {
 		outAttributes = append(outAttributes, "Frame Rate "+r.Result+" fps")
+	}
+
+	// other databases
+	db.Table("external_reference_links").Select("distinct external_source as result").
+		Where("internal_table = 'scenes'").
+		Order("external_source").
+		Find(&results)
+	for _, r := range results {
+		outAttributes = append(outAttributes, "Available from "+strings.TrimSuffix(r.Result, "scene"))
 	}
 
 	// codec
@@ -1030,10 +1042,13 @@ func (i SceneResource) getSceneAlternateSources(req *restful.Request, resp *rest
 
 		if ref.ExternalSource == "stashdb scene" {
 			ressults = append(ressults, ResponseGetAlternateSources{Url: ref.ExternalReference.ExternalURL, Icon: "https://guidelines.stashdb.org/favicon.ico", ExternalSource: ref.ExternalReference.ExternalSource, ExternalId: ref.ExternalReference.ExternalId, ExternalData: ref.ExternalReference.ExternalData})
-		} else {
+		} else if strings.HasPrefix(ref.ExternalSource, "alternate ") {
 			json.Unmarshal([]byte(ref.ExternalReference.ExternalData), &altscene)
 			site.GetIfExist(altscene.Scene.ScraperId)
 			ressults = append(ressults, ResponseGetAlternateSources{Url: ref.ExternalReference.ExternalURL, Icon: site.AvatarURL, ExternalSource: ref.ExternalReference.ExternalSource, ExternalId: ref.ExternalReference.ExternalId, ExternalData: ref.ExternalReference.ExternalData})
+		} else {
+			icon := gjson.Get(ref.ExternalReference.ExternalData, "site_icon").String()
+			ressults = append(ressults, ResponseGetAlternateSources{Url: ref.ExternalReference.ExternalURL, Icon: icon, ExternalSource: ref.ExternalReference.ExternalSource, ExternalId: ref.ExternalReference.ExternalId, ExternalData: ref.ExternalReference.ExternalData})
 		}
 	}
 	db.Close()
