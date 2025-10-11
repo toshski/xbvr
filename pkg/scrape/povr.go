@@ -29,6 +29,7 @@ func POVR(wg *models.ScrapeWG, updateSite bool, knownScenes []string, out chan<-
 		sc.Studio = company
 		sc.Site = siteID
 		sc.HomepageURL = strings.Split(e.Request.URL.String(), "?")[0]
+		sc.MembersUrl = strings.ReplaceAll(sc.HomepageURL, "povr.com", "wankzvr.com")
 		sc.MasterSiteId = masterSiteId
 
 		if scraperID == "" {
@@ -109,7 +110,7 @@ func POVR(wg *models.ScrapeWG, updateSite bool, knownScenes []string, out chan<-
 
 		// trailer details
 		sc.TrailerType = "heresphere"
-		params := models.TrailerScrape{SceneUrl: "https://www.povr.com/heresphere/" + sc.SiteID}
+		params := models.TrailerScrape{SceneUrl: "https://www.wankzvr.com/heresphere/" + sc.SiteID, KVHttpConfig: "povr-trailers"}
 		strParams, _ := json.Marshal(params)
 		sc.TrailerSrc = string(strParams)
 
