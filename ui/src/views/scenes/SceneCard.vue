@@ -184,13 +184,15 @@ export default {
         }
 
         this.alternateSources = response
-          .filter(altsrc => altsrc.external_source.startsWith("alternate scene ") || altsrc.external_source == "stashdb scene")
+          .filter(altsrc => altsrc.external_source.startsWith("alternate scene ") || altsrc.external_source == "stashdb scene" || altsrc.external_source.startsWith("xbvr_") || altsrc.external_source.startsWith("mystash"))
           .map(altsrc => {
             const extdata = JSON.parse(altsrc.external_data);
             let title;
             if (altsrc.external_source.startsWith("alternate scene ")) {
               title = extdata.scene?.title || 'No Title';
             } else if (altsrc.external_source == "stashdb scene") {
+              title = extdata.title || 'No Title';
+            } else {
               title = extdata.title || 'No Title';
             }
             if (altsrc.external_source.includes('stashdb')) {

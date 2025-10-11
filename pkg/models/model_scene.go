@@ -838,6 +838,11 @@ func queryScenes(db *gorm.DB, r RequestSceneList) (*gorm.DB, *gorm.DB) {
 			fieldName = "Rating"
 		}
 
+		if strings.HasPrefix(fieldName, "Available from ") && fieldName != "Available from Alternate Sites" && fieldName != "Available from mydbs" {
+			value = fieldName[15:] + "scene"
+			fieldName = "myDb"
+		}
+
 		where := ""
 		switch fieldName {
 		case "Multiple Video Files":
@@ -981,6 +986,12 @@ func queryScenes(db *gorm.DB, r RequestSceneList) (*gorm.DB, *gorm.DB) {
 			where = "exists (select 1 from external_reference_links where external_source like 'alternate scene %' and internal_db_id = scenes.id)"
 		case "Multiple Scenes Available at an Alternate Site":
 			where = "exists (select 1 from external_reference_links where external_source like 'alternate scene %' and internal_db_id = scenes.id  group by external_source having count(*)>1)"
+		case "myDb":
+			where = "exists (select 1 from external_reference_links where external_source = '" + value + "' and internal_db_id = scenes.id)"
+		case "Available from mydbs":
+			where = "exists (select 1 from external_reference_links where (external_source like 'xbvr_% scene' or external_source = 'mystashdb scene') and internal_db_id = scenes.id)"
+		case "Multiple Scenes Available from mydbs":
+			where = "exists (select 1 from external_reference_links where (external_source like 'xbvr_% scene' or external_source = 'mystashdb scene') and internal_db_id = scenes.id group by internal_db_id having count(*)>1)"
 		}
 
 		if negate {
