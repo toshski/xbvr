@@ -96,7 +96,8 @@ type Scene struct {
 	TotalFileSize  int64           `json:"total_file_size" xbvrbackup:"-"`
 	TotalWatchTime int             `json:"total_watch_time" gorm:"default:0" xbvrbackup:"total_watch_time"`
 
-	HasVideoPreview bool `json:"has_preview" gorm:"default:false" xbvrbackup:"-"`
+	HasVideoPreview bool   `json:"has_preview" gorm:"default:false" xbvrbackup:"-"`
+	VideoPreviewURL string `json:"video_preview_url" xbvrbackup:"video_preview_url"`
 	// HasVideoThumbnail bool `json:"has_video_thumbnail" gorm:"default:false"`
 
 	NeedsUpdate   bool   `json:"needs_update" xbvrbackup:"-"`
@@ -554,6 +555,8 @@ func (o *Scene) PopulateSceneFieldsFromExternal(db *gorm.DB, ext ScrapedScene) {
 	}
 	o.AiScript = ext.AiScript
 	o.HumanScript = ext.HumanScript
+
+	o.VideoPreviewURL = ext.VideoPerviewUrl
 
 	// Trailers
 	o.TrailerType = ext.TrailerType
