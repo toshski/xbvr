@@ -974,6 +974,18 @@ func queryScenes(db *gorm.DB, r RequestSceneList) (*gorm.DB, *gorm.DB) {
 			where = "exists (select * from scene_cast join actors on actors.id=scene_cast.actor_id where actors.favourite=1 and scene_cast.scene_id=scenes.id)"
 		case "Has Actor in Watchlist":
 			where = "exists (select * from scene_cast join actors on actors.id=scene_cast.actor_id where actors.watchlist=1 and scene_cast.scene_id=scenes.id)"
+		case "Has Male Actor":
+			where = "exists (select * from scene_cast join actors on actors.id=scene_cast.actor_id where actors.gender = 'MALE' and scene_cast.scene_id=scenes.id)"
+		case "Has Multiple Male Actors":
+			where = "exists (select 1 from scene_cast join actors on actors.id=scene_cast.actor_id where actors.gender = 'MALE' and scene_cast.scene_id=scenes.id group by actors.gender having count(*)>1)"
+		case "Has 1 Female Actor":
+			where = "exists (select 1 from scene_cast join actors on actors.id=scene_cast.actor_id where actors.gender = 'FEMALE' and scene_cast.scene_id=scenes.id group by actors.gender having count(*)=1)"
+		case "Has 2 Female Actors":
+			where = "exists (select 1 from scene_cast join actors on actors.id=scene_cast.actor_id where actors.gender = 'FEMALE' and scene_cast.scene_id=scenes.id group by actors.gender having count(*)=2)"
+		case "Has 3 Female Actors":
+			where = "exists (select 1 from scene_cast join actors on actors.id=scene_cast.actor_id where actors.gender = 'FEMALE' and scene_cast.scene_id=scenes.id group by actors.gender having count(*)=3)"
+		case "Has 3+ Female Actors":
+			where = "exists (select 1 from scene_cast join actors on actors.id=scene_cast.actor_id where actors.gender = 'FEMALE' and scene_cast.scene_id=scenes.id group by actors.gender having count(*)>3)"
 		case "Available from POVR":
 			where = "exists (select 1 from external_reference_links where external_source like 'alternate scene %' and external_id like 'povr-%' and internal_db_id = scenes.id)"
 		case "Available from VRPorn":
