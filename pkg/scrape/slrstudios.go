@@ -14,6 +14,7 @@ import (
 	"github.com/go-resty/resty/v2"
 	"github.com/thoas/go-funk"
 	"github.com/tidwall/gjson"
+	"github.com/xbapps/xbvr/pkg/common"
 	"github.com/xbapps/xbvr/pkg/config"
 	"github.com/xbapps/xbvr/pkg/models"
 )
@@ -213,6 +214,8 @@ func SexLikeReal(wg *models.ScrapeWG, updateSite bool, knownScenes []string, out
 		var FB360 string
 		alphA := "false"
 
+		flatVideo := false
+		stereo := false
 		categories := sceneData.Get("categories")
 		if categories.Exists() {
 			categories.ForEach(func(key, value gjson.Result) bool {
@@ -230,9 +233,19 @@ func SexLikeReal(wg *models.ScrapeWG, updateSite bool, knownScenes []string, out
 					if tagName == "Passthrough" || tagName == "Passthrough hack" || tagName == "Passthrough AR" || tagName == "Passthrough AI" {
 						alphA = "PT"
 					}
+					if tagName == "immersive flat" {
+						flatVideo = true
+						sc.SceneType = "2D"
+					}
+					if tagName == "stereo ai (3d)" {
+						stereo = true
+					}
 				}
 				return true
 			})
+		}
+		if stereo {
+			sc.SceneType = "VR"
 		}
 
 		// Process timestamps from API and save as JSON array
@@ -351,7 +364,22 @@ func SexLikeReal(wg *models.ScrapeWG, updateSite bool, knownScenes []string, out
 			}
 		}
 
-		out <- sc
+		if common.IncludeFlat == "" {
+			out <- sc
+		}
+		switch common.IncludeFlat {
+		case "include":
+			if flatVideo {
+				out <- sc
+			}
+		case "exclude":
+			if !flatVideo {
+				out <- sc
+			}
+
+		default:
+			out <- sc
+		}
 	}
 
 	// Function to extract studio code from URL
