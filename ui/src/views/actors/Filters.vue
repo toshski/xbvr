@@ -53,7 +53,7 @@
 
     <div v-if="Object.keys(filters).length !== 0">
       <b-field :label="$t('Cast')" label-position="on-border" class="field-extra">
-        <b-taginput v-model="cast" autocomplete :data="filteredCast" @typing="getFilteredCast">
+        <b-taginput v-model="cast" autocomplete :data="filteredCast" @typing="debounce_getFilteredCast">
           <template slot-scope="props">{{ props.option }}</template>
           <template slot="empty">{{ $t("No matching cast") }}</template>
           <template #selected="props">
@@ -195,6 +195,11 @@ export default {
     },
     getFilteredCast (text) {
       // Load cast matching at the start 
+       if (text==""){
+        // don't build a list it may take ages to render since text is now a space
+        this.filteredCast = [] 
+        return
+      }
       let startWithText = this.filters.cast.filter(option => (
         (option.toString().toLowerCase().indexOf(text.toLowerCase()) == 0 || option.toString().toLowerCase().indexOf("aka:" + text.toLowerCase()) == 0 ) &&
         !this.cast.some(entry => this.removeConditionPrefix(entry.toString()) === option.toString())
@@ -334,6 +339,17 @@ export default {
         return txt.substring(1) 
       }
       return txt
+    },
+    debounce_getFilteredCast(text) {
+      // Clear the existing timeout if there's one.
+      if (this.timeoutId) {
+        clearTimeout(this.timeoutId);
+      }
+
+      // Set a new timeout to call getFilteredCast after 300ms.
+      this.timeoutId = setTimeout(() => {
+        this.getFilteredCast(text);
+      }, 300);
     },
     async fetchFilters() {
         this.filteredAttributes=['Loading attributes']
