@@ -88,8 +88,8 @@ func VirtualTaboo(wg *models.ScrapeWG, updateSite bool, knownScenes []string, ou
 		})
 
 		// trailer details
-		sc.TrailerType = "load_json"
-		params := models.TrailerScrape{SceneUrl: `https://virtualtaboo.com/gizmo/videoinfo/` + sc.SiteID, RecordPath: "sources", ContentPath: "url", QualityPath: "title"}
+		sc.TrailerType = "scrape_html"
+		params := models.TrailerScrape{SceneUrl: sc.HomepageURL, HtmlElement: "script", ExtractRegex: `url\":\"(https:.*?\.mp4)\"`}
 		strParma, _ := json.Marshal(params)
 		sc.TrailerSrc = string(strParma)
 
