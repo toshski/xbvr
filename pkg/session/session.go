@@ -22,6 +22,7 @@ var (
 	currentSceneID     uint
 	lastSessionID      uint
 	lastSessionSceneID uint
+	kevslastSceneID    uint
 	lastSessionStart   time.Time
 	lastSessionEnd     time.Time
 )
@@ -119,6 +120,12 @@ func newWatchSession(sceneID uint) {
 		watchSessionFlush()
 	}
 
+	if kevslastSceneID != sceneID {
+		kevslastSceneID = sceneID
+		go func() {
+			models.RunSQLTrigger("newWatchSession", nil)
+		}()
+	}
 	lastSessionSceneID = sceneID
 	lastSessionStart = time.Now()
 
