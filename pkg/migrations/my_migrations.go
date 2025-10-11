@@ -115,9 +115,12 @@ func MyMigrate() {
 			},
 		},
 		{
-			ID: "0013",
+			ID: "0013-video-previews",
 			Migrate: func(tx *gorm.DB) error {
-				return nil
+				type Scene struct {
+					VideoPreviewURL string `json:"video_preview_url" xbvrbackup:"video_preview_url"`
+				}
+				return tx.AutoMigrate(Scene{}).Error
 			},
 		},
 		{
