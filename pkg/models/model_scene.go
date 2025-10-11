@@ -673,6 +673,8 @@ type RequestSceneList struct {
 	Volume       optional.Int      `json:"volume"`
 	Released     optional.String   `json:"releaseMonth"`
 	Sort         optional.String   `json:"sort"`
+	Id           optional.String   `json:"id"`
+	Scene_Id     optional.String   `json:"scene_id"`
 }
 
 type ResponseSceneList struct {
@@ -774,6 +776,12 @@ func queryScenes(db *gorm.DB, r RequestSceneList) (*gorm.DB, *gorm.DB) {
 
 	tx := db.Model(&Scene{})
 
+	if r.Scene_Id.Present() {
+		tx = tx.Where("scene_id = ?", r.Scene_Id.OrElse(""))
+	}
+	if r.Id.Present() {
+		tx = tx.Where("id = ?", r.Id.OrElse("0"))
+	}
 	if r.IsWatched.Present() {
 		tx = tx.Where("is_watched = ?", r.IsWatched.OrElse(true))
 	}
