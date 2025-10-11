@@ -125,7 +125,8 @@ func ScrapeHtml(scrapeParams string) models.VideoSourceResponse {
 				re := regexp.MustCompile(params.ExtractRegex)
 				results := re.FindAllStringSubmatch(e.Text, -1)
 				for _, result := range results {
-					unquotedStr, _ := strconv.Unquote(`"` + result[1] + `"`) // handle  charac ters encoded with strings like  \u002F
+					str := strings.ReplaceAll(result[1], `\/`, `/`)
+					unquotedStr, _ := strconv.Unquote(`"` + str + `"`) // handle  characters encoded with strings like  \u002F
 					parsedURL, _ := url.Parse(unquotedStr)
 					filename := path.Base(parsedURL.Path)
 					baseFilename := strings.TrimSuffix(filename, path.Ext(filename))
