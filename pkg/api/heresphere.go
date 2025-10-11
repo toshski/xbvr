@@ -580,6 +580,9 @@ func (i HeresphereResource) getHeresphereScene(req *restful.Request, resp *restf
 				addTalentTag("Stash Actor:" + tagName)
 			}
 		}
+		if scene.Cast[i].CupSize != "" {
+			addFeatureTag("Actor Cup Size " + scene.Cast[i].CupSize)
+		}
 	}
 	if (maleCnt) > 5 {
 		addFeatureTag("Male: 6+")
