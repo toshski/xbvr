@@ -45,6 +45,7 @@ func GeneratePreviews(endTime *time.Time) {
 							config.Config.Library.Preview.SnippetAmount,
 							config.Config.Library.Preview.Resolution,
 							config.Config.Library.Preview.ExtraSnippet,
+							scene,
 						)
 						if err == nil {
 							scene.HasVideoPreview = true
@@ -62,7 +63,7 @@ func GeneratePreviews(endTime *time.Time) {
 	log.Infof("Previews generated")
 }
 
-func RenderPreview(inputFile string, destFile string, videoProjection string, startTime int, snippetLength float64, snippetAmount int, resolution int, extraSnippet bool) error {
+func RenderPreview(inputFile string, destFile string, videoProjection string, startTime int, snippetLength float64, snippetAmount int, resolution int, extraSnippet bool, scene models.Scene) error {
 	tmpPath := filepath.Join(common.VideoPreviewDir, "tmp")
 	os.MkdirAll(tmpPath, os.ModePerm)
 	defer os.RemoveAll(tmpPath)
@@ -81,6 +82,9 @@ func RenderPreview(inputFile string, destFile string, videoProjection string, st
 	}
 	if videoProjection == "flat" {
 		crop = "iw:ih:iw:ih" // LR videos
+	}
+	if scene.SceneType == "2D" {
+		crop = "iw:ih:iw:ih"
 	}
 	// Mono 360 crop args: (no way of accurately determining)
 	// "iw/2:ih:iw/4:ih"

@@ -192,7 +192,7 @@ var (
 	Config                   ObjectConfig
 	RecentIPAddresses        []string
 	ForbiddenVideoExtensions = []string{".funscript", ".cmscript", ".hsp", ".srt", ".ssa", ".ass"}
-	DefaultVideoExtensions   = []string{".mp4", ".avi", ".wmv", ".mpeg4", ".mov", ".mkv"}
+	DefaultVideoExtensions   = []string{".mp4", ".f4v", ".flv", ".avi", ".wmv", ".mpeg4", ".mov", ".mkv"}
 )
 
 func LoadConfig() {
