@@ -307,6 +307,12 @@ func SexLikeReal(wg *models.ScrapeWG, updateSite bool, knownScenes []string, out
 		strParams, _ := json.Marshal(params)
 		sc.TrailerSrc = string(strParams)
 
+		sc.TrailerType = "load_json"
+		jsonRequest := models.TrailerScrape{SceneUrl: "https://api.sexlikereal.com/v3/scenes/" + sc.SiteID + "/files", HtmlElement: "", ExtractRegex: "",
+			RecordPath: "data.encodings.1.videoSources", ContentPath: "url", EncodingPath: "resolution", QualityPath: "resolution", ContentBaseUrl: ""}
+		jsonStr, _ := json.Marshal(jsonRequest)
+		sc.TrailerSrc = string(jsonStr)
+
 		// Passthrough/ChromaKey data
 		if alphA == "PT" {
 			if sceneData.Get("passthrough").Exists() {
