@@ -376,7 +376,7 @@ func (i HeresphereResource) getHeresphereScene(req *restful.Request, resp *restf
 		videoLength = file.VideoDuration
 	}
 
-	if len(videoFiles) == 0 && config.Config.Web.SceneTrailerlist && requestData.NeedsMediaSource.OrElse(true) {
+	if config.Config.Web.SceneTrailerlist && requestData.NeedsMediaSource.OrElse(true) {
 		switch scene.TrailerType {
 		case "heresphere":
 			heresphereScene := LoadHeresphereScene(scene.TrailerSource)
@@ -1131,8 +1131,8 @@ func (i HeresphereResource) getHeresphereLibrary(req *restful.Request, resp *res
 		var r models.RequestSceneList
 
 		if err := json.Unmarshal([]byte(savedPlaylists[i].SearchParams), &r); err == nil {
-			r.IsAccessible = optional.NewBool(true)
-			r.IsAvailable = optional.NewBool(true)
+			// r.IsAccessible = optional.NewBool(true)
+			// r.IsAvailable = optional.NewBool(true)
 
 			list := models.QuerySceneIDs(r)
 
