@@ -130,7 +130,7 @@ func ScrapeHtml(scrapeParams string) models.VideoSourceResponse {
 					parsedURL, _ := url.Parse(unquotedStr)
 					filename := path.Base(parsedURL.Path)
 					baseFilename := strings.TrimSuffix(filename, path.Ext(filename))
-					srcs = append(srcs, models.VideoSource{URL: result[1], Quality: baseFilename})
+					srcs = append(srcs, models.VideoSource{URL: unquotedStr, Quality: baseFilename})
 				}
 			}
 		})
