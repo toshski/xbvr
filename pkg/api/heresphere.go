@@ -775,6 +775,13 @@ func (i HeresphereResource) getHeresphereScene(req *restful.Request, resp *restf
 		addFeatureTag("Year: " + scene.ReleaseDate.Format("2006"))
 	}
 
+	if scene.StarRating > 0 {
+		tags = append(tags, HeresphereTag{Name: "Ratings:Has Rating"})
+		tags = append(tags, HeresphereTag{Name: fmt.Sprintf("Ratings: Rating %v", scene.StarRating)})
+	} else {
+		tags = append(tags, HeresphereTag{Name: "Ratings:No Rating"})
+	}
+
 	var alphaPackedSettings *HereSphereAlphaPackedSettings = nil
 	if videoFiles[0].HasAlpha {
 		alphaPackedSettings = &HereSphereAlphaPackedSettings{DefaultSettings: true}
