@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/ProtonMail/go-appdir"
 )
@@ -24,6 +25,7 @@ var MyFilesDir string
 var DownloadDir string
 var WebPort int
 var DBConnectionPoolSize int
+var IncludeFlat string
 var ConcurrentScrapers int
 
 func DirSize(path string) (int64, error) {
@@ -54,6 +56,7 @@ func InitPaths() {
 	web_port := flag.Int("web_port", 0, "Optional: override default Web Page port 9999")
 	ws_addr := flag.String("ws_addr", "", "Optional: override default Websocket address from the default 0.0.0.0:9998")
 	db_connection_pool_size := flag.Int("db_connection_pool_size", 0, "Optional: sets a limit to the number of db connections while scraping")
+	includeflat := flag.String("include_flat", "", "Optional: set to include or exclude")
 	concurrentSscrapers := flag.Int("concurrent_scrapers", 0, "Optional: sets a limit to the number of concurrent scrapers")
 
 	flag.Parse()
@@ -115,6 +118,13 @@ func InitPaths() {
 	} else {
 		if EnvConfig.WsAddr != "" {
 			WsAddr = EnvConfig.WsAddr
+		}
+	}
+	if *includeflat != "" {
+		IncludeFlat = strings.ToLower(*includeflat)
+	} else {
+		if EnvConfig.IncludeFlat != "" {
+			IncludeFlat = strings.ToLower(EnvConfig.IncludeFlat)
 		}
 	}
 	if *db_connection_pool_size != 0 {
