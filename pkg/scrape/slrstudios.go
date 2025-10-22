@@ -239,11 +239,11 @@ func SexLikeReal(wg *models.ScrapeWG, updateSite bool, knownScenes []string, out
 					if tagName == "Passthrough" || tagName == "Passthrough hack" || tagName == "Passthrough AR" || tagName == "Passthrough AI" {
 						alphA = "PT"
 					}
-					if tagName == "immersive flat" {
+					if strings.ToLower(tagName) == "immersive flat" {
 						flatVideo = true
 						sc.SceneType = "2D"
 					}
-					if tagName == "stereo ai (3d)" {
+					if strings.ToLower(tagName) == "stereo ai (3d)" {
 						stereo = true
 					}
 				}
