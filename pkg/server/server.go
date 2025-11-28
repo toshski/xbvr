@@ -53,9 +53,6 @@ func StartServer(version, commit, branch, date string) {
 
 	config.LoadConfig()
 
-	// First setup
-	migrations.Migrate()
-
 	models.SetupSQLChannel()
 
 	// Remove old locks
@@ -68,6 +65,7 @@ func StartServer(version, commit, branch, date string) {
 		config.State.Migration.IsRunning = true
 		migrations.Migrate("")
 		migrations.MyMigrate()
+		migrations.ProcessCustomSceneRemappingFiles()
 		config.CompleteMigration()
 	}()
 
