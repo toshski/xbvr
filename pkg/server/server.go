@@ -61,10 +61,12 @@ func StartServer(version, commit, branch, date string) {
 	// Remove old locks
 	models.RemoveAllLocks()
 
+	migrations.Migrate("0024-drop-actions-old")
+
 	// Run migrations in background
 	go func() {
 		config.State.Migration.IsRunning = true
-		migrations.Migrate()
+		migrations.Migrate("")
 		migrations.MyMigrate()
 		config.CompleteMigration()
 	}()
