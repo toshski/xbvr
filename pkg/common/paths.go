@@ -3,6 +3,7 @@ package common
 import (
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -165,4 +166,78 @@ func getPath(commandLinePath string, environmentName string, directoryName strin
 		return os.Getenv(environmentName)
 	}
 	return filepath.Join(AppDir, directoryName)
+}
+
+func CopyXbvrData() {
+	exePath, err := os.Executable()
+	if err != nil {
+		Log.Warnf("Error setting up xbvr_data %s", err)
+		return
+	}
+	exeDir := filepath.Dir(exePath)
+
+	sourceDir := filepath.Join(exeDir, "xbvr_data") // directory next to executable
+	destDir := filepath.Join(AppDir, "xbvr_data")
+
+	if sourceDir == destDir {
+		return
+	}
+	if err := CopyDirSkipExisting(sourceDir, destDir); err != nil {
+		Log.Warnf("Error setting up xbvr_data %s", err)
+		return
+	}
+}
+func CopyDirSkipExisting(src, dst string) error {
+	return filepath.Walk(src, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		// Compute the relative path from src → path
+		rel, err := filepath.Rel(src, path)
+		if err != nil {
+			return err
+		}
+
+		targetPath := filepath.Join(dst, rel)
+
+		// If it's a directory, ensure it exists
+		if info.IsDir() {
+			return os.MkdirAll(targetPath, 0755)
+		}
+
+		destInfo, err := os.Stat(targetPath)
+		if err == nil {
+			// File exists → only copy if source is newer
+			if !info.ModTime().After(destInfo.ModTime()) {
+				return nil // skip
+			}
+		}
+
+		// Copy file
+		return copyFile(path, targetPath)
+	})
+}
+
+func copyFile(src, dst string) error {
+	Log.Infof("copying %s to %s", src, dst)
+	// Ensure parent directory exists
+	if err := os.MkdirAll(filepath.Dir(dst), 0755); err != nil {
+		return err
+	}
+
+	in, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer in.Close()
+
+	out, err := os.Create(dst)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+
+	_, err = io.Copy(out, in)
+	return err
 }

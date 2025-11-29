@@ -58,6 +58,8 @@ func StartServer(version, commit, branch, date string) {
 	// Remove old locks
 	models.RemoveAllLocks()
 
+	common.CopyXbvrData()
+
 	migrations.Migrate("0024-drop-actions-old")
 
 	// Run migrations in background
